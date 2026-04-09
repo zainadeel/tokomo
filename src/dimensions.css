@@ -144,13 +144,13 @@
   --dimension-stroke-width-006: calc(var(--dimension-stroke-width-base) / 16);      /* 0.5px */
   --dimension-stroke-width-009: calc(var(--dimension-stroke-width-base) * 3 / 32);  /* 0.75px */
 
-  /* Intermediate size used by toggle and similar components */
-  --dimension-size-450: calc(var(--dimension-size-base) * 9 / 2);  /* 36px */
+  /* Intermediate size (36px — between size-400 and size-500) */
+  --dimension-size-450: calc(var(--dimension-size-base) * 9 / 2);
 
-  /* Breakpoint */
+  /* Breakpoints */
   --dimension-breakpoint-mobile: 768px;
 
-  /* Offset tokens — for transforms, background-position */
+  /* Offset tokens — for transforms and background-position */
   --dimension-offset-000:  0;
   --dimension-offset-050:  calc(var(--dimension-space-base) / 2);
   --dimension-offset-100:  var(--dimension-space-base);
@@ -166,56 +166,11 @@
   --dimension-scale-100:    1;
   --dimension-scale-subtle: 0.99;
 
-  /* Table density multiplier system — CSS-only concept, not applicable in Figma.
-     Override --dimension-table-multiplier to change table density without touching
-     any other part of the dimension system. */
-  --dimension-table-multiplier: 1;
-  --dimension-table-space-000:  0px;
-  --dimension-table-space-012:  calc(var(--dimension-base) * var(--dimension-table-multiplier) / 8);
-  --dimension-table-space-025:  calc(var(--dimension-base) * var(--dimension-table-multiplier) / 4);
-  --dimension-table-space-037:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 3 / 8);
-  --dimension-table-space-050:  calc(var(--dimension-base) * var(--dimension-table-multiplier) / 2);
-  --dimension-table-space-075:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 3 / 4);
-  --dimension-table-space-100:  calc(var(--dimension-base) * var(--dimension-table-multiplier));
-  --dimension-table-space-125:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 5 / 4);
-  --dimension-table-space-150:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 3 / 2);
-  --dimension-table-space-175:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 7 / 4);
-  --dimension-table-space-200:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 2);
-  --dimension-table-space-250:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 5 / 2);
-  --dimension-table-space-300:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 3);
-  --dimension-table-space-400:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 4);
-  --dimension-table-space-600:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 6);
-  --dimension-table-space-800:  calc(var(--dimension-base) * var(--dimension-table-multiplier) * 8);
-  --dimension-table-radius-200: calc(var(--dimension-radius-100) * var(--dimension-table-multiplier) * 2);
-
   /* Z-index layers */
-  --dimension-z-index-base:                0;
-  --dimension-z-index-aside:               50;
-  --dimension-z-index-overlay:             250;
-  --dimension-z-index-overlay-button:      300;
-  --dimension-z-index-floating-assistant:  400;
-  --dimension-z-index-modal:               450;
-  --dimension-z-index-floating:            500;
-  --dimension-z-index-tooltip:             750;
-  --dimension-z-index-theme-transition:    999999;
-
-  /* Interaction / magic thresholds */
-  --dimension-magic-resize-edge:          calc(var(--dimension-space-base) / 2);
-  --dimension-magic-resize-snap:          var(--dimension-space-base);
-  --dimension-magic-drag-threshold:       calc(var(--dimension-space-base) * 3 / 8);
-  --dimension-magic-speed-threshold:      calc(var(--dimension-space-base) * 5 / 8);
-  --dimension-magic-scroll-fade-divisor:  15;
-
-  /* Component-specific */
-  --dimension-chat-input-min-height:          calc(var(--dimension-size-base) * 4);
-  --dimension-chat-input-max-height:          calc(var(--dimension-size-base) * 14);
-  --dimension-chat-input-container-max-height: calc(var(--dimension-size-base) * 41 / 2);
-  --dimension-color-preview-width:            calc(var(--dimension-size-base) * 8);
-  --dimension-color-swatch-height:            calc(var(--dimension-size-base) * 10);
-  --dimension-tooltip-max-height:             calc(var(--dimension-size-base) * 25 / 2);
-  --dimension-floating-width:                 300px;
-  --dimension-floating-height-default:        400px;
-  --dimension-floating-height-max:            600px;
-  --dimension-cell-width-default:             200px;
-  --dimension-cell-width-color:               200px;
+  --dimension-z-index-base:     0;
+  --dimension-z-index-raised:   50;
+  --dimension-z-index-overlay:  250;
+  --dimension-z-index-modal:    450;
+  --dimension-z-index-floating: 500;
+  --dimension-z-index-tooltip:  750;
 }

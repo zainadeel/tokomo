@@ -1,58 +1,26 @@
-# TokoMo
+# @tokomo/tokens
 
-An open-source design token system — colors, dimensions, typography, and effects delivered as CSS custom properties, JSON, and TypeScript constants.
+Design tokens as CSS custom properties, JSON, and TypeScript constants.
 
-Figma-first: tokens are exported from Figma variables and built into CSS via generator scripts. One source of truth, zero manual maintenance.
+Figma-first: tokens are exported from Figma variables and built into CSS via generator scripts. Drop in new JSON, run the build, everything updates.
 
-## Packages
-
-| Package | Description | Status |
-|---------|-------------|--------|
-| [`@tokomo/tokens`](./packages/tokens) | Design tokens as CSS custom properties, JSON, and TypeScript constants | **Ready** |
-| [`@tokomo/components`](./packages/components) | React UI components built on the token system | Scaffold |
-
-## Quick Start
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Build tokens only
-pnpm build:tokens
-```
-
-## Using in a Project
-
-### Option 1 — npm (once published)
+## Install
 
 ```bash
 npm install @tokomo/tokens
 # or
 pnpm add @tokomo/tokens
+
+# Local development (no npm publish needed):
+pnpm add file:../path/to/tokomo
 ```
 
-### Option 2 — Local development (file reference)
+## Usage
 
-```bash
-# In your consuming project:
-pnpm add ../path/to/tokomo/packages/tokens
-# or via npm:
-npm install file:../path/to/tokomo/packages/tokens
-```
-
-### Option 3 — Direct from GitHub (no npm publish needed)
-
-```bash
-npm install github:your-username/tokomo
-```
-
-### Import Tokens
+### CSS
 
 ```css
-/* In your entry CSS — import all tokens */
+/* All tokens at once */
 @import '@tokomo/tokens';
 
 /* Or selectively */
@@ -61,86 +29,112 @@ npm install github:your-username/tokomo
 @import '@tokomo/tokens/typography';
 @import '@tokomo/tokens/effects';
 
-/* Optional: global base styles (font, focus rings, reduced-motion) */
+/* Optional: base styles (font loading, reduced-motion, focus rings) */
 @import '@tokomo/tokens/globals';
 
 /* Optional: CSS reset */
 @import '@tokomo/tokens/reset';
 ```
 
+### JS / TypeScript (via bundler)
+
 ```ts
-// TypeScript — type-safe token name constants
+import '@tokomo/tokens';
+import '@tokomo/tokens/globals';
+
+// Type-safe token name constants
 import { colorBackgroundPrimary, dimensionSpace200 } from '@tokomo/tokens/ts';
-// colorBackgroundPrimary === '--color-background-primary'
+// value is just the CSS variable name string: '--color-background-primary'
 element.style.setProperty(colorBackgroundPrimary, 'red');
 ```
 
-## Architecture
+### JSON (for tooling, plugins, etc.)
 
-```
-tokomo/
-├── packages/
-│   ├── tokens/          @tokomo/tokens — CSS variables, JSON, TypeScript
-│   └── components/      @tokomo/components — React components (scaffold)
-├── apps/
-│   └── docs/            Storybook documentation (planned)
-├── turbo.json           Turborepo configuration
-├── pnpm-workspace.yaml  Workspace definition
-└── tsconfig.base.json   Shared TypeScript config
+```ts
+import tokens from '@tokomo/tokens/json';
+import colors from '@tokomo/tokens/json/colors';
 ```
 
-### Token Pipeline
+## Theming
 
+Light/dark theme is controlled via a `data-theme` attribute on `<html>`:
+
+```ts
+document.documentElement.setAttribute('data-theme', 'dark');
+document.documentElement.setAttribute('data-theme', 'light');
 ```
-Figma Variables → JSON export → generator scripts → CSS custom properties
-                                                  → dist/tokens.json
-                                                  → TypeScript constants
-```
 
-1. Figma variables are exported as JSON into `packages/tokens/src/json/`
-2. Generator scripts (`scripts/generate-*.mjs`) produce CSS from JSON
-3. CSS files define all tokens in `:root` with light/dark theme overrides
-4. Consuming apps import CSS and use `var(--token-name)` anywhere
-5. TypeScript constants enable type-safe token references in JS/TS
+Light is the default. No JS required — pure CSS variable overrides.
 
-### Token Categories
+## Token categories
 
-| Category | CSS prefix | Notes |
+| File | Prefix | Contains |
 |---|---|---|
-| Colors | `--color-*` | Semantic + reference palette + data visualization |
-| Dimensions | `--dimension-*` | Space, radius, size, stroke — all `calc()` from `--dimension-base` |
-| Typography | `--typography-*` | Weight, size, line-height, letter-spacing + `.text-*` classes |
-| Effects | `--effect-*` | Blur, animation timing, easing, elevation shadows |
+| `colors.css` | `--color-*` | Semantic colors (light + dark), reference palette, data viz |
+| `dimensions.css` | `--dimension-*` | Space, radius, size, stroke-width — all `calc()` from `--dimension-base` |
+| `typography.css` | `--typography-*` | Weight, font-size, line-height, letter-spacing + `.text-*` classes |
+| `effects.css` | `--effect-*` | Blur, animation timing, easing, elevation shadows |
 
-### Design Principles
+## Scaling
 
-- **Token-driven**: Every visual value comes from a token
-- **8px grid**: All dimensions derived from `--dimension-base: 8px`
-- **Theme-ready**: Light/dark via `data-theme` attribute on `<html>`
-- **Framework-agnostic**: CSS custom properties work everywhere
-- **Figma-first**: Token names match Figma variable names exactly
+All dimension tokens are `calc()` from `--dimension-base: 8px`. Override it to scale everything:
 
-## Development
-
-```bash
-# Watch mode (rebuilds on JSON/CSS changes)
-pnpm dev
-
-# After updating Figma JSON sources, regenerate CSS:
-cd packages/tokens && node scripts/build.mjs
+```css
+:root {
+  --dimension-base: 10px; /* scales all spacing, radius, size, stroke-width */
+}
 ```
 
-## Versioning
+Or override a single category:
 
-Uses [Changesets](https://github.com/changesets/changesets):
+```css
+:root {
+  --dimension-space-base: 10px;
+  --dimension-radius-base: 6px;
+}
+```
 
-- Token additions → `minor`
-- Token renames/removals → `major`
-- Bug fixes → `patch`
+## Elevation
+
+Each level gives you three tokens to handle `overflow: hidden` clipping:
+
+```css
+/* Simple case — no overflow clipping */
+.card { box-shadow: var(--effect-elevation-elevated-sm); }
+
+/* With overflow: hidden — split shadow and highlight */
+.card {
+  overflow: hidden;
+  box-shadow: var(--effect-shadow-elevated-sm);   /* outset on root */
+  position: relative;
+}
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--effect-highlight-elevated-sm); /* inset on overlay */
+  pointer-events: none;
+}
+```
+
+Available: `elevated-none`, `elevated-sm`, `elevated-md`, `elevated-floating`, `depressed-sm`, `depressed-md`, `elevated-panel-top/right/bottom/left`
+
+## Updating from Figma
+
+1. Export updated variable JSON from Figma
+2. Drop into `src/json/{colors,dimensions,typography,effects}/`
+3. Run the build:
 
 ```bash
-pnpm changeset     # create a changeset
-pnpm release       # build + publish
+node scripts/build.mjs
+```
+
+## Dev
+
+```bash
+node scripts/build.mjs          # full build
+node scripts/build.mjs --watch  # watch mode
 ```
 
 ## License

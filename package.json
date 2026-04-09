@@ -1,28 +1,49 @@
 {
-  "name": "tokomo",
-  "private": true,
-  "description": "TokoMo — open-source design token system: colors, dimensions, typography, and effects as CSS custom properties, JSON, and TypeScript",
+  "name": "@tokomo/tokens",
+  "version": "0.1.0",
+  "description": "TokoMo design tokens — colors, dimensions, typography, and effects as CSS custom properties, JSON, and TypeScript constants",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.css",
+  "exports": {
+    ".": "./dist/index.css",
+    "./css": "./dist/index.css",
+    "./colors": "./dist/colors.css",
+    "./dimensions": "./dist/dimensions.css",
+    "./typography": "./dist/typography.css",
+    "./effects": "./dist/effects.css",
+    "./reset": "./dist/reset.css",
+    "./globals": "./dist/globals.css",
+    "./utilities": "./dist/utilities.css",
+    "./themes/light": "./dist/themes/light.css",
+    "./themes/dark": "./dist/themes/dark.css",
+    "./json": "./dist/tokens.json",
+    "./json/colors": "./dist/json/colors.json",
+    "./json/dimensions": "./dist/json/dimensions.json",
+    "./json/typography": "./dist/json/typography.json",
+    "./json/effects": "./dist/json/effects.json",
+    "./ts": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
-    "build": "turbo run build",
-    "build:tokens": "turbo run build --filter=@tokomo/tokens",
-    "build:components": "turbo run build --filter=@tokomo/components",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,css,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,css,json,md}\"",
-    "clean": "turbo run clean",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "turbo run build && changeset publish"
+    "build": "node scripts/build.mjs",
+    "build:colors": "node scripts/generate-color-tokens.mjs",
+    "build:json": "node scripts/generate-json-tokens.mjs",
+    "build:ts": "node scripts/generate-ts-constants.mjs",
+    "clean": "rm -rf dist",
+    "dev": "node scripts/build.mjs --watch"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.0",
-    "prettier": "^3.2.0",
-    "turbo": "^2.3.0",
-    "typescript": "^5.7.0"
+    "chokidar": "^4.0.0"
   },
-  "packageManager": "pnpm@9.15.0",
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "sideEffects": [
+    "**/*.css"
+  ]
 }

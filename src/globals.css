@@ -66,25 +66,6 @@ button {
   -ms-user-select: none;
 }
 
-/* Reusable press effect for buttons — scales down to 99% on press */
-.buttonPress {
-  transition: transform var(--effect-motion-short-2);
-}
-
-.buttonPress:active {
-  transform: scale(var(--dimension-scale-subtle));
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .buttonPress {
-    transition: none;
-  }
-
-  .buttonPress:active {
-    transform: none;
-  }
-}
-
 /* Remove default browser focus outlines */
 *:focus {
   outline: none;

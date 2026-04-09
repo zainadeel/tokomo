@@ -1,0 +1,166 @@
+/* Effects */
+:root {
+  --effect-blur-sm: 8px;   /* 8px */
+  --effect-blur-md: 16px;   /* 16px */
+  --effect-blur-lg: 32px;  /* 32px */
+  
+  /* Animation speeds (canonical effect-prefixed tokens) */
+  --effect-animation-speed-instant: 0ms;
+  --effect-animation-speed-fast: 100ms;
+  --effect-animation-speed-medium: 200ms;
+  --effect-animation-speed-slow: 300ms;
+  --effect-animation-speed-slower: 500ms;
+  --effect-animation-speed-slowest: 1000ms;
+
+  /* Animation easing (canonical effect-prefixed tokens) */
+  --effect-animation-easing-cubic: cubic-bezier(0.4, 0, 0.2, 1);
+  --effect-animation-easing-spring: cubic-bezier(0.22, 0.61, 0.01, 1.03); /* Spring bounce for drag animations */
+
+  /* Motion presets
+   * Use like: transition: background-color var(--effect-motion-fast);
+   * This keeps “speed/easing” consistent while letting each caller choose properties.
+   */
+  --effect-motion-instant: var(--effect-animation-speed-instant) var(--effect-animation-easing-cubic);
+  --effect-motion-fast: var(--effect-animation-speed-fast) var(--effect-animation-easing-cubic);
+  --effect-motion-medium: var(--effect-animation-speed-medium) var(--effect-animation-easing-cubic);
+  --effect-motion-slow: var(--effect-animation-speed-slow) var(--effect-animation-easing-cubic);
+  --effect-motion-slower: var(--effect-animation-speed-slower) var(--effect-animation-easing-cubic);
+  --effect-motion-slowest: var(--effect-animation-speed-slowest) var(--effect-animation-easing-cubic);
+
+  /* Motion delay tokens */
+  --effect-motion-delay-instant: 0ms;
+  --effect-motion-delay-little: 100ms;
+  --effect-motion-delay-medium: 200ms;
+  --effect-motion-delay-more: 500ms;
+  --effect-motion-delay-alot: 1000ms;
+  --effect-motion-delay-most: 2000ms;
+  --effect-motion-delay-toomuch: 4000ms;
+
+  /* Interaction transitions (property-specific convenience shorthands) */
+  --effect-transition-interaction-background-instant: background-color var(--effect-motion-instant);
+  --effect-transition-interaction-background-fast: background-color var(--effect-motion-fast);
+  --effect-transition-interaction-background-medium: background-color var(--effect-motion-medium);
+  --effect-transition-interaction-background-slow: background-color var(--effect-motion-slow);
+  --effect-transition-interaction-background-slower: background-color var(--effect-motion-slower);
+  --effect-transition-interaction-background-slowest: background-color var(--effect-motion-slowest);
+
+  --effect-transition-interaction-color-instant: color var(--effect-motion-instant);
+  --effect-transition-interaction-color-fast: color var(--effect-motion-fast);
+  --effect-transition-interaction-color-medium: color var(--effect-motion-medium);
+  --effect-transition-interaction-color-slow: color var(--effect-motion-slow);
+  --effect-transition-interaction-color-slower: color var(--effect-motion-slower);
+  --effect-transition-interaction-color-slowest: color var(--effect-motion-slowest);
+  
+  --effect-transition-interaction-opacity-instant: opacity var(--effect-motion-instant);
+  --effect-transition-interaction-opacity-fast: opacity var(--effect-motion-fast);
+  --effect-transition-interaction-opacity-medium: opacity var(--effect-motion-medium);
+  --effect-transition-interaction-opacity-slow: opacity var(--effect-motion-slow);
+  --effect-transition-interaction-opacity-slower: opacity var(--effect-motion-slower);
+  --effect-transition-interaction-opacity-slowest: opacity var(--effect-motion-slowest);
+  
+  --effect-transition-interaction-border-color-instant: border-color var(--effect-motion-instant);
+  --effect-transition-interaction-border-color-fast: border-color var(--effect-motion-fast);
+  --effect-transition-interaction-border-color-medium: border-color var(--effect-motion-medium);
+  --effect-transition-interaction-border-color-slow: border-color var(--effect-motion-slow);
+  --effect-transition-interaction-border-color-slower: border-color var(--effect-motion-slower);
+  --effect-transition-interaction-border-color-slowest: border-color var(--effect-motion-slowest);
+  
+  --effect-transition-interaction-transform-instant: transform var(--effect-motion-instant);
+  --effect-transition-interaction-transform-fast: transform var(--effect-motion-fast);
+  --effect-transition-interaction-transform-medium: transform var(--effect-motion-medium);
+  --effect-transition-interaction-transform-slow: transform var(--effect-motion-slow);
+  --effect-transition-interaction-transform-slower: transform var(--effect-motion-slower);
+  --effect-transition-interaction-transform-slowest: transform var(--effect-motion-slowest);
+
+  /* Elevation - Inset (separate tokens for modular use) */
+  --effect-inset-depressed:
+    inset 0 1px 2px -0.5px var(--color-surface-shadow),
+    inset 0 2px 4px -2px var(--color-surface-shadow),
+    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
+  --effect-inset-flat:
+    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
+  --effect-inset-elevated:
+    inset 0 -4px 2px -4px var(--color-surface-shadow),
+    inset 0 4px 2px -4px var(--color-surface-highlight),
+    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
+  --effect-inset-floating:
+    inset 0 -4px 2px -4px var(--color-surface-shadow),
+    inset 0 4px 2px -4px var(--color-surface-highlight),
+    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
+
+  /* Elevation - Outset (separate tokens for modular use) */
+  --effect-outset-depressed:
+    0 -4px 2px -4px var(--color-surface-shadow),
+    0 4px 2px -4px var(--color-surface-highlight),
+    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
+  --effect-outset-flat:
+    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
+  --effect-outset-elevated:
+    0 1px 2px -0.5px var(--color-surface-shadow),
+    0 2px 4px -2px var(--color-surface-shadow),
+    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
+  --effect-outset-floating:
+    0 4px 8px -2px var(--color-surface-shadow),
+    0 8px 16px -4px var(--color-surface-shadow),
+    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
+
+  /* Elevation - Combined Surface Effects (combines inset + outset) */
+  --effect-surface-depressed:
+    var(--effect-inset-depressed),
+    var(--effect-outset-depressed);
+  --effect-surface-flat:
+    var(--effect-inset-flat),
+    var(--effect-outset-flat);
+  --effect-surface-elevated:
+    var(--effect-inset-elevated),
+    var(--effect-outset-elevated);
+  --effect-surface-floating:
+    var(--effect-inset-floating),
+    var(--effect-outset-floating);
+
+  /* Overlay/drawer: outset part (apply on panel); same strength as floating */
+  --effect-outset-overlay:
+    var(--effect-outset-floating);
+
+  /* Overlay/drawer: inset-only edge (apply on ::after overlay so fade doesn't crop them) */
+  --effect-inset-edge-left:
+    inset var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-highlight);
+  --effect-inset-edge-right:
+    inset calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-highlight);
+
+  /* Edge outset-only (spread part) - apply on main element; use with inset-edge on ::after overlay */
+  --effect-outset-edge-left:
+    calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-shadow);
+  --effect-outset-edge-right:
+    var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-shadow);
+
+  /* Surface overlay: combined (outset + inset). Prefer applying outset on panel, inset on ::after. */
+  --effect-surface-overlay-left:
+    var(--effect-outset-overlay),
+    var(--effect-inset-edge-left);
+  --effect-surface-overlay-right:
+    var(--effect-outset-overlay),
+    var(--effect-inset-edge-right);
+
+  /* Edge Borders (beveled: inset highlight + outset shadow) */
+  --effect-edge-top:
+    inset 0 var(--dimension-stroke-width-006) 0 0 var(--color-surface-highlight),
+    0 calc(-1 * var(--dimension-stroke-width-006)) 0 0 var(--color-surface-shadow);
+  --effect-edge-right:
+    inset calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-highlight),
+    var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-shadow);
+  --effect-edge-bottom:
+    inset 0 calc(-1 * var(--dimension-stroke-width-006)) 0 0 var(--color-surface-highlight),
+    0 var(--dimension-stroke-width-006) 0 0 var(--color-surface-shadow);
+  --effect-edge-left:
+    inset var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-highlight),
+    calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-shadow);
+
+  /* Focus Ring */
+  /* Creates: 2px invisible gap + 2px blue ring = 4px total spread */
+  /* First shadow: 2px transparent gap from element edge */
+  /* Second shadow: 4px blue ring (2px gap + 2px ring width) */
+  --effect-focus-ring:
+    0 0 0 var(--dimension-focus-ring-offset) transparent,
+    0 0 0 calc(var(--dimension-focus-ring-offset) + var(--dimension-focus-ring-width)) var(--color-foreground-medium-brand);
+}

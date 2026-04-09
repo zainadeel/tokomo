@@ -1,0 +1,187 @@
+/**
+ * Utility CSS Classes
+ * Reusable utility classes for common patterns across components
+ */
+
+/* ============================================
+   INTERACTION PATTERNS
+   Common hover/pressed overlay patterns for buttons
+   ============================================ */
+
+/**
+ * Button interaction base
+ * Apply to any interactive element that needs hover/pressed states
+ * Usage: class="buttonInteraction" on the button element
+ */
+.buttonInteraction {
+  position: relative;
+  overflow: hidden;
+}
+
+.buttonInteraction::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-background-shade);
+  opacity: 0;
+  transition: opacity var(--effect-motion-fast);
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.buttonInteraction:hover::before {
+  opacity: var(--opacity-interaction-hover, 0.08);
+}
+
+.buttonInteraction:active::before {
+  opacity: var(--opacity-interaction-pressed, 0.16);
+}
+
+.buttonInteraction:disabled::before {
+  opacity: 0;
+}
+
+/* ============================================
+   BUTTON PRESS ANIMATION
+   Scale-down effect on press
+   ============================================ */
+
+/**
+ * Button press scale effect
+ * Already exists in globals.css but documented here for reference
+ * Usage: class="buttonPress" on the button element
+ */
+
+/* ============================================
+   FOCUS STATES
+   Consistent focus ring styles
+   ============================================ */
+
+.focusRing {
+  outline: none;
+}
+
+.focusRing:focus-visible {
+  outline: var(--dimension-focus-ring-width) solid var(--color-foreground-medium-brand);
+  outline-offset: var(--dimension-focus-ring-offset);
+}
+
+/* ============================================
+   OVERLAY BACKGROUNDS
+   Consistent overlay backgrounds for hover/pressed states
+   ============================================ */
+
+/**
+ * Hover overlay - use for subtle hover feedback
+ * Add as a pseudo-element or separate div
+ */
+.hoverOverlay {
+  background-color: var(--color-background-shade);
+  opacity: var(--opacity-interaction-hover, 0.08);
+}
+
+/**
+ * Pressed overlay - use for active/pressed feedback
+ */
+.pressedOverlay {
+  background-color: var(--color-background-shade);
+  opacity: var(--opacity-interaction-pressed, 0.16);
+}
+
+/* ============================================
+   SELECTION STATES
+   ============================================ */
+
+.selected {
+  background-color: var(--color-background-secondary);
+}
+
+.selectedBold {
+  background-color: var(--color-background-translucent);
+}
+
+/* ============================================
+   TEXT UTILITIES
+   ============================================ */
+
+.textTruncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.textClamp2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.textClamp3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   LAYOUT UTILITIES
+   ============================================ */
+
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flexBetween {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flexStart {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flexEnd {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* ============================================
+   SCROLLBAR HIDING
+   ============================================ */
+
+.hideScrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.hideScrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* ============================================
+   TRANSITION UTILITIES
+   ============================================ */
+
+.transitionColors {
+  transition: color var(--effect-motion-fast), 
+              background-color var(--effect-motion-fast), 
+              border-color var(--effect-motion-fast), 
+              fill var(--effect-motion-fast), 
+              stroke var(--effect-motion-fast);
+}
+
+.transitionAll {
+  transition: all var(--effect-motion-medium);
+}
+
+.transitionTransform {
+  transition: transform var(--effect-motion-fast);
+}

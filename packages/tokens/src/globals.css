@@ -1,0 +1,131 @@
+/**
+ * Motive Design System — Global Styles
+ *
+ * Base styles that consuming apps should import alongside tokens.
+ * Includes font loading, color scheme, reduced-motion support,
+ * focus ring defaults, button press effects, and theme transitions.
+ *
+ * Usage:
+ *   @import '@motive/tokens';
+ *   @import '@motive/tokens/globals';
+ *   @import '@motive/tokens/reset';     // optional
+ *   @import '@motive/tokens/utilities'; // optional
+ */
+
+/* Inter font — design system typeface */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block');
+
+:root {
+  color-scheme: light;
+}
+
+/* Honor prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  color: var(--color-foreground-primary);
+}
+
+/* Global text selection styling */
+*::selection {
+  background-color: var(--color-background-faint-brand);
+  color: var(--color-foreground-bold-brand);
+}
+
+*::-moz-selection {
+  background-color: var(--color-background-faint-brand);
+  color: var(--color-foreground-bold-brand);
+}
+
+/* Disable text selection for buttons and interactive elements */
+button {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Reusable press effect for buttons — scales down to 99% on press */
+.buttonPress {
+  transition: transform var(--effect-motion-fast);
+}
+
+.buttonPress:active {
+  transform: scale(var(--dimension-scale-subtle));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buttonPress {
+    transition: none;
+  }
+
+  .buttonPress:active {
+    transform: none;
+  }
+}
+
+/* Remove default browser focus outlines */
+*:focus {
+  outline: none;
+}
+
+/* Suppress focus ring when focus came from a keyboard shortcut (not Tab) */
+[data-focus-from-shortcut]:focus,
+[data-focus-from-shortcut]:focus-visible {
+  outline: none !important;
+}
+
+/* Custom focus ring using outline with offset */
+/* Creates: 2px gap (outline-offset) + 2px ring (outline-width) */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--dimension-focus-ring-width) solid var(--color-foreground-medium-brand);
+  outline-offset: var(--dimension-focus-ring-offset);
+  transition: outline var(--effect-motion-fast);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    transition: none;
+  }
+}
+
+/* Disable color transitions during theme changes for instant updates */
+html.theme-changing,
+html.theme-changing *,
+html.theme-changing *::before,
+html.theme-changing *::after {
+  transition: none !important;
+  transition-duration: 0ms !important;
+  transition-delay: 0ms !important;
+}

@@ -1,0 +1,13 @@
+/**
+ * Light theme (default)
+ *
+ * Light theme tokens are included in colors.css by default under :root.
+ * This file exists for explicit theme switching use cases where you want
+ * to force light theme on a specific subtree:
+ *
+ *   <div data-theme="light"> ... </div>
+ */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+}

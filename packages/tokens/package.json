@@ -1,0 +1,49 @@
+{
+  "name": "@motive/tokens",
+  "version": "0.1.0",
+  "description": "Motive Design System tokens — colors, dimensions, typography, and effects as CSS custom properties",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.css",
+  "exports": {
+    ".": "./dist/index.css",
+    "./css": "./dist/index.css",
+    "./colors": "./dist/colors.css",
+    "./dimensions": "./dist/dimensions.css",
+    "./typography": "./dist/typography.css",
+    "./effects": "./dist/effects.css",
+    "./reset": "./dist/reset.css",
+    "./globals": "./dist/globals.css",
+    "./utilities": "./dist/utilities.css",
+    "./themes/light": "./dist/themes/light.css",
+    "./themes/dark": "./dist/themes/dark.css",
+    "./json": "./dist/tokens.json",
+    "./json/colors": "./dist/json/colors.json",
+    "./json/dimensions": "./dist/json/dimensions.json",
+    "./json/typography": "./dist/json/typography.json",
+    "./json/effects": "./dist/json/effects.json",
+    "./ts": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:colors": "node scripts/generate-color-tokens.mjs",
+    "build:json": "node scripts/generate-json-tokens.mjs",
+    "build:ts": "node scripts/generate-ts-constants.mjs",
+    "clean": "rm -rf dist",
+    "dev": "node scripts/build.mjs --watch"
+  },
+  "devDependencies": {
+    "chokidar": "^4.0.0"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

@@ -1,0 +1,21 @@
+node_modules
+dist
+*.local
+.turbo
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Build
+*.tsbuildinfo
+
+# Claude
+.claude/

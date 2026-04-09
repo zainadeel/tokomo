@@ -1,0 +1,12 @@
+/**
+ * Dark theme
+ *
+ * Dark theme overrides are included in colors.css under :root[data-theme="dark"].
+ * This file exists for documentation and explicit import purposes.
+ *
+ * To activate dark theme, set data-theme="dark" on the <html> element:
+ *   document.documentElement.setAttribute('data-theme', 'dark');
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}

@@ -138,69 +138,127 @@ const generate = () => {
   --effect-transition-interaction-transform-long-3:   transform var(--effect-motion-long-3);
 
   /* ─────────────────────────────────────────────────────────────────────────
-     HAND-AUTHORED — Elevation / shadow tokens.
+     HAND-AUTHORED — Elevation tokens. Source: Figma App Styles — Variables.
      Multi-layer box-shadows cannot be expressed as Figma number variables.
-     These must remain hand-authored permanently.
+
+     Three tokens per elevation level:
+       --effect-shadow-{name}    outset layers only  → apply via box-shadow on the main element
+       --effect-highlight-{name} inset layers only   → apply via box-shadow on an ::after overlay
+       --effect-elevation-{name} combined convenience → only safe when element has no overflow:clip
+
+     The shadow/highlight split exists because inset box-shadows are clipped by overflow:hidden.
+     Components that need overflow:clip (e.g. cards with rounded corners + clipped content)
+     must apply shadow on the root and highlight on a full-size ::after positioned inside.
      ───────────────────────────────────────────────────────────────────────── */
 
-  --effect-inset-depressed:
-    inset 0 1px 2px -0.5px var(--color-surface-shadow),
-    inset 0 2px 4px -2px var(--color-surface-shadow),
-    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
-  --effect-inset-flat:
-    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
-  --effect-inset-elevated:
-    inset 0 -4px 2px -4px var(--color-surface-shadow),
-    inset 0 4px 2px -4px var(--color-surface-highlight),
-    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
-  --effect-inset-floating:
-    inset 0 -4px 2px -4px var(--color-surface-shadow),
-    inset 0 4px 2px -4px var(--color-surface-highlight),
-    inset 0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
+  /* ── elevated-none ─────────────────────────────────────────────────────── */
+  --effect-shadow-elevated-none:    none;
+  --effect-highlight-elevated-none: none;
+  --effect-elevation-elevated-none: none;
 
-  --effect-outset-depressed:
-    0 -4px 2px -4px var(--color-surface-shadow),
-    0 4px 2px -4px var(--color-surface-highlight),
-    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-highlight);
-  --effect-outset-flat:
-    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
-  --effect-outset-elevated:
-    0 1px 2px -0.5px var(--color-surface-shadow),
-    0 2px 4px -2px var(--color-surface-shadow),
-    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
-  --effect-outset-floating:
-    0 4px 8px -2px var(--color-surface-shadow),
-    0 8px 16px -4px var(--color-surface-shadow),
-    0 0 0 var(--dimension-stroke-width-006) var(--color-surface-shadow);
+  /* ── elevated-sm ───────────────────────────────────────────────────────── */
+  --effect-shadow-elevated-sm:
+    0px 2px 4px -2px var(--color-surface-shadow),
+    0px 0px 0px 1px  var(--color-surface-shadow);
+  --effect-highlight-elevated-sm:
+    inset 0px 4px 2px -4px var(--color-surface-highlight),
+    inset 0px 0px 0px 1px  var(--color-surface-highlight);
+  --effect-elevation-elevated-sm:
+    var(--effect-shadow-elevated-sm),
+    var(--effect-highlight-elevated-sm);
 
-  --effect-surface-depressed: var(--effect-inset-depressed), var(--effect-outset-depressed);
-  --effect-surface-flat:      var(--effect-inset-flat),      var(--effect-outset-flat);
-  --effect-surface-elevated:  var(--effect-inset-elevated),  var(--effect-outset-elevated);
-  --effect-surface-floating:  var(--effect-inset-floating),  var(--effect-outset-floating);
+  /* ── elevated-md ───────────────────────────────────────────────────────── */
+  --effect-shadow-elevated-md:
+    0px 4px 8px -2px var(--color-surface-shadow),
+    0px 0px 0px 1px  var(--color-surface-shadow);
+  --effect-highlight-elevated-md:
+    inset 0px 4px 2px -4px var(--color-surface-highlight),
+    inset 0px 0px 0px 1px  var(--color-surface-highlight);
+  --effect-elevation-elevated-md:
+    var(--effect-shadow-elevated-md),
+    var(--effect-highlight-elevated-md);
 
-  --effect-outset-overlay: var(--effect-outset-floating);
+  /* ── elevated-floating ─────────────────────────────────────────────────── */
+  --effect-shadow-elevated-floating:
+    0px 8px 16px -4px var(--color-surface-shadow),
+    0px 0px 0px 1px   var(--color-surface-shadow);
+  --effect-highlight-elevated-floating:
+    inset 0px 4px 2px -4px var(--color-surface-highlight),
+    inset 0px 0px 0px 1px  var(--color-surface-highlight);
+  --effect-elevation-elevated-floating:
+    var(--effect-shadow-elevated-floating),
+    var(--effect-highlight-elevated-floating);
 
-  --effect-inset-edge-left:  inset var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-highlight);
-  --effect-inset-edge-right: inset calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-highlight);
-  --effect-outset-edge-left:  calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-shadow);
-  --effect-outset-edge-right: var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-shadow);
+  /* ── depressed-sm ──────────────────────────────────────────────────────── */
+  /* Note: outset contains both shadow (top) and highlight (bottom rim) for depressed */
+  --effect-shadow-depressed-sm:
+    0px -4px 2px -4px var(--color-surface-shadow),
+    0px  4px 2px -4px var(--color-surface-highlight),
+    0px  0px 0px  1px var(--color-surface-highlight);
+  --effect-highlight-depressed-sm:
+    inset 0px 2px 4px -2px var(--color-surface-shadow),
+    inset 0px 0px 0px 1px  var(--color-surface-shadow);
+  --effect-elevation-depressed-sm:
+    var(--effect-shadow-depressed-sm),
+    var(--effect-highlight-depressed-sm);
 
-  --effect-surface-overlay-left:  var(--effect-outset-overlay), var(--effect-inset-edge-left);
-  --effect-surface-overlay-right: var(--effect-outset-overlay), var(--effect-inset-edge-right);
+  /* ── depressed-md ──────────────────────────────────────────────────────── */
+  --effect-shadow-depressed-md:
+    0px -4px 2px -4px var(--color-surface-shadow),
+    0px  4px 2px -4px var(--color-surface-highlight),
+    0px  0px 0px  1px var(--color-surface-highlight);
+  --effect-highlight-depressed-md:
+    inset 0px 4px 8px -4px var(--color-surface-shadow),
+    inset 0px 0px 0px 1px  var(--color-surface-shadow);
+  --effect-elevation-depressed-md:
+    var(--effect-shadow-depressed-md),
+    var(--effect-highlight-depressed-md);
 
-  --effect-edge-top:
-    inset 0 var(--dimension-stroke-width-006) 0 0 var(--color-surface-highlight),
-    0 calc(-1 * var(--dimension-stroke-width-006)) 0 0 var(--color-surface-shadow);
-  --effect-edge-right:
-    inset calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-highlight),
-    var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-shadow);
-  --effect-edge-bottom:
-    inset 0 calc(-1 * var(--dimension-stroke-width-006)) 0 0 var(--color-surface-highlight),
-    0 var(--dimension-stroke-width-006) 0 0 var(--color-surface-shadow);
-  --effect-edge-left:
-    inset var(--dimension-stroke-width-006) 0 0 0 var(--color-surface-highlight),
-    calc(-1 * var(--dimension-stroke-width-006)) 0 0 0 var(--color-surface-shadow);
+  /* ── elevated-panel-top (shadow casts downward, attaches to bottom of viewport) ── */
+  --effect-shadow-elevated-panel-top:
+    0px 4px 8px 0px var(--color-surface-shadow),
+    0px 0px 0px 1px var(--color-surface-shadow);
+  --effect-highlight-elevated-panel-top:
+    inset 0px -4px 2px -4px var(--color-surface-highlight),
+    inset 0px -1px 0px 0px  var(--color-surface-highlight);
+  --effect-elevation-elevated-panel-top:
+    var(--effect-shadow-elevated-panel-top),
+    var(--effect-highlight-elevated-panel-top);
 
+  /* ── elevated-panel-right (shadow casts leftward, panel attached to right edge) ── */
+  --effect-shadow-elevated-panel-right:
+    -4px 0px 8px -2px var(--color-surface-shadow),
+    0px  0px 0px  1px var(--color-surface-shadow);
+  --effect-highlight-elevated-panel-right:
+    inset 4px 0px 2px -4px var(--color-surface-highlight),
+    inset 1px 0px 0px 0px  var(--color-surface-highlight);
+  --effect-elevation-elevated-panel-right:
+    var(--effect-shadow-elevated-panel-right),
+    var(--effect-highlight-elevated-panel-right);
+
+  /* ── elevated-panel-bottom (shadow casts upward, attaches to top of viewport) ── */
+  --effect-shadow-elevated-panel-bottom:
+    0px -4px 8px 0px var(--color-surface-shadow),
+    0px  0px 0px 1px var(--color-surface-shadow);
+  --effect-highlight-elevated-panel-bottom:
+    inset 0px 4px 2px -4px var(--color-surface-highlight),
+    inset 0px 1px 0px 0px  var(--color-surface-highlight);
+  --effect-elevation-elevated-panel-bottom:
+    var(--effect-shadow-elevated-panel-bottom),
+    var(--effect-highlight-elevated-panel-bottom);
+
+  /* ── elevated-panel-left (shadow casts rightward, panel attached to left edge) ── */
+  --effect-shadow-elevated-panel-left:
+    4px 0px 8px -2px var(--color-surface-shadow),
+    0px 0px 0px  1px var(--color-surface-shadow);
+  --effect-highlight-elevated-panel-left:
+    inset -4px 0px 2px -4px var(--color-surface-highlight),
+    inset -1px 0px 0px 0px  var(--color-surface-highlight);
+  --effect-elevation-elevated-panel-left:
+    var(--effect-shadow-elevated-panel-left),
+    var(--effect-highlight-elevated-panel-left);
+
+  /* ── focus ring ────────────────────────────────────────────────────────── */
   --effect-focus-ring:
     0 0 0 var(--dimension-space-025) transparent,
     0 0 0 calc(var(--dimension-space-025) + var(--dimension-stroke-width-025)) var(--color-foreground-medium-brand);`;

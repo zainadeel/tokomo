@@ -35,9 +35,18 @@ function build() {
   mkdirSync(path.join(DIST_DIR, 'themes'), { recursive: true });
   mkdirSync(path.join(DIST_DIR, 'json'), { recursive: true });
 
-  // Step 2: Generate colors.css from JSON token sources
+  // Step 2: Generate CSS files from JSON token sources
   console.log('  → Generating colors.css from Figma token JSON...');
   execSync('node scripts/generate-color-tokens.mjs', { cwd: PKG_ROOT, stdio: 'inherit' });
+
+  console.log('  → Generating dimensions.css from Figma token JSON...');
+  execSync('node scripts/generate-dimension-tokens.mjs', { cwd: PKG_ROOT, stdio: 'inherit' });
+
+  console.log('  → Generating typography.css from Figma token JSON...');
+  execSync('node scripts/generate-typography-tokens.mjs', { cwd: PKG_ROOT, stdio: 'inherit' });
+
+  console.log('  → Generating effects.css from Figma token JSON...');
+  execSync('node scripts/generate-effects-tokens.mjs', { cwd: PKG_ROOT, stdio: 'inherit' });
 
   // Step 3: Copy CSS files to dist
   console.log('  → Copying CSS token files to dist/...');

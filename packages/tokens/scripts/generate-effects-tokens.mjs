@@ -1,42 +1,77 @@
-/* AUTO-GENERATED + HAND-AUTHORED. See scripts/generate-effects-tokens.mjs */
-/* Generated section: from src/json/effects/effects.tokens.json            */
+/**
+ * Generate effects.css from Figma JSON source.
+ *
+ * Source: src/json/effects/effects.tokens.json
+ * Output: src/effects.css
+ *
+ * What this generates (from Figma):
+ *   --effect-animation-duration-*   (ms) — Figma naming: instant, short-1/2/3, medium-1/2/3, long-1/2/3
+ *   --effect-animation-delay-*      (ms) — same naming scale
+ *   --effect-animation-easing-*     — ease-in, ease-out, ease-in-out, ease-in-out-back
+ *   --effect-blur-*                 (px) — sm, md, lg
+ *
+ * ⚠ NAMING NOTE — Figma vs previous CSS:
+ *   Figma uses: instant, short-1, short-2, short-3, medium-1, medium-2, medium-3, long-1, long-2, long-3
+ *   Old CSS used: instant, fast(100ms), medium(200ms), slow(300ms), slower(500ms), slowest(1000ms)
+ *   The Figma naming is richer and more precise. Old aliases are preserved in the hand-authored
+ *   section below so existing code doesn't break. Map them to the new tokens.
+ *
+ * ⚠ EASING NOTE — Figma vs previous CSS:
+ *   Figma has: ease-in, ease-out, ease-in-out, ease-in-out-back (4 curves)
+ *   Old CSS had: easing-cubic, easing-spring (2 curves)
+ *   Old aliases preserved below. ease-in-out-back ≈ spring.
+ *
+ * What stays HAND-AUTHORED (not representable as Figma variables):
+ *   --effect-motion-*               (shorthand: duration + easing combined)
+ *   --effect-transition-*           (property-specific transition shorthands)
+ *   --effect-inset-*, outset-*, surface-*, edge-*, overlay-*  (box-shadow tokens)
+ *   --effect-focus-ring             (composite box-shadow)
+ */
 
-:root {
-  /* Blur */
-  --effect-blur-sm: 8px;
-  --effect-blur-md: 16px;
-  --effect-blur-lg: 32px;
+import { readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-  /* Animation durations */
-  --effect-animation-duration-instant: 0ms;
-  --effect-animation-duration-short-1: 50ms;
-  --effect-animation-duration-short-2: 100ms;
-  --effect-animation-duration-short-3: 200ms;
-  --effect-animation-duration-medium-1: 300ms;
-  --effect-animation-duration-medium-2: 400ms;
-  --effect-animation-duration-medium-3: 500ms;
-  --effect-animation-duration-long-1: 750ms;
-  --effect-animation-duration-long-2: 1000ms;
-  --effect-animation-duration-long-3: 2000ms;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PKG_ROOT = path.resolve(__dirname, '..');
 
-  /* Animation delays */
-  --effect-animation-delay-instant: 0ms;
-  --effect-animation-delay-short-1: 200ms;
-  --effect-animation-delay-short-2: 300ms;
-  --effect-animation-delay-short-3: 400ms;
-  --effect-animation-delay-medium-1: 500ms;
-  --effect-animation-delay-medium-2: 750ms;
-  --effect-animation-delay-medium-3: 1000ms;
-  --effect-animation-delay-long-1: 2000ms;
-  --effect-animation-delay-long-2: 4000ms;
-  --effect-animation-delay-long-3: 6000ms;
+const SOURCE = path.join(PKG_ROOT, 'src/json/effects/effects.tokens.json');
+const OUTPUT  = path.join(PKG_ROOT, 'src/effects.css');
 
-  /* Animation easing curves */
-  --effect-animation-easing-ease-in: cubic-bezier(0.47,0,0.75,0.72);
-  --effect-animation-easing-ease-out: cubic-bezier(0.17,0.84,0.44,1);
-  --effect-animation-easing-ease-in-out: cubic-bezier(0.77,0,0.18,1);
-  --effect-animation-easing-ease-in-out-back: cubic-bezier(0.22, 0.61, 0.01, 1.03);
+const generate = () => {
+  const json = JSON.parse(readFileSync(SOURCE, 'utf8'));
+  const lines = [];
 
+  // ── blur ──────────────────────────────────────────────────────────────────
+  lines.push('  /* Blur */');
+  for (const [key, token] of Object.entries(json.blur)) {
+    lines.push(`  --effect-blur-${key}: ${token.$value}px;`);
+  }
+  lines.push('');
+
+  // ── animation duration ────────────────────────────────────────────────────
+  lines.push('  /* Animation durations */');
+  for (const [key, token] of Object.entries(json.animation.duration)) {
+    lines.push(`  --effect-animation-duration-${key}: ${token.$value}ms;`);
+  }
+  lines.push('');
+
+  // ── animation delay ───────────────────────────────────────────────────────
+  lines.push('  /* Animation delays */');
+  for (const [key, token] of Object.entries(json.animation.delay)) {
+    lines.push(`  --effect-animation-delay-${key}: ${token.$value}ms;`);
+  }
+  lines.push('');
+
+  // ── easing ────────────────────────────────────────────────────────────────
+  lines.push('  /* Animation easing curves */');
+  for (const [key, token] of Object.entries(json.animation.easing)) {
+    lines.push(`  --effect-animation-easing-${key}: ${token.$value};`);
+  }
+
+  // ── hand-authored section ─────────────────────────────────────────────────
+  const handAuthored = `
 
   /* ─────────────────────────────────────────────────────────────────────────
      BACKWARD-COMPATIBLE ALIASES — map old naming to new Figma tokens.
@@ -180,5 +215,23 @@
 
   --effect-focus-ring:
     0 0 0 var(--dimension-focus-ring-offset) transparent,
-    0 0 0 calc(var(--dimension-focus-ring-offset) + var(--dimension-focus-ring-width)) var(--color-foreground-medium-brand);
-}
+    0 0 0 calc(var(--dimension-focus-ring-offset) + var(--dimension-focus-ring-width)) var(--color-foreground-medium-brand);`;
+
+  const output = [
+    '/* AUTO-GENERATED + HAND-AUTHORED. See scripts/generate-effects-tokens.mjs */',
+    '/* Generated section: from src/json/effects/effects.tokens.json            */',
+    '',
+    ':root {',
+    ...lines,
+    handAuthored,
+    '}',
+    '',
+  ].join('\n');
+
+  writeFileSync(OUTPUT, output, 'utf8');
+
+  const generated = lines.filter(l => l.includes('--effect-')).length;
+  console.log(`    effects: ${generated} tokens generated → src/effects.css`);
+};
+
+generate();

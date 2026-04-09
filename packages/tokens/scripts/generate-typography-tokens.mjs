@@ -1,46 +1,80 @@
-/* AUTO-GENERATED + HAND-AUTHORED. See scripts/generate-typography-tokens.mjs */
-/* Generated section: from src/json/typography/typography.tokens.json         */
+/**
+ * Generate typography.css from Figma JSON source.
+ *
+ * Source: src/json/typography/typography.tokens.json
+ * Output: src/typography.css
+ *
+ * What this generates (from Figma):
+ *   --typography-weight-*           (font weights, unitless numbers)
+ *   --typography-fontsize-*         (px)
+ *   --typography-lineheight-*       (px)
+ *   --typography-letterspacing-*    (px, float-noise rounded to 2dp)
+ *   --typography-paragraphspacing-* (px)
+ *
+ * What stays HAND-AUTHORED:
+ *   Text style classes (.text-display-medium, .text-body-large, etc.)
+ *   These are composite styles that combine multiple tokens — they live in CSS,
+ *   not in Figma variables. They must be maintained manually.
+ *
+ * ⚠ DISCREPANCIES to resolve in Figma:
+ *   line-height-2xl: Figma=48px, current CSS=44px  → update CSS or update Figma
+ *   line-height-3xl: Figma=64px, current CSS=56px  → update CSS or update Figma
+ */
 
-:root {
-  /* Font weights */
-  --typography-weight-regular: 400;
-  --typography-weight-medium: 500;
-  --typography-weight-semibold: 600;
-  --typography-weight-bold: 700;
+import { readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-  /* Font sizes */
-  --typography-fontsize-xs: 9px;
-  --typography-fontsize-sm: 12px;
-  --typography-fontsize-md: 14px;
-  --typography-fontsize-lg: 18px;
-  --typography-fontsize-xl: 24px;
-  --typography-fontsize-2xl: 32px;
-  --typography-fontsize-3xl: 44px;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PKG_ROOT = path.resolve(__dirname, '..');
 
-  /* Line heights */
-  --typography-lineheight-xs: 12px;
-  --typography-lineheight-sm: 16px;
-  --typography-lineheight-md: 20px;
-  --typography-lineheight-lg: 24px;
-  --typography-lineheight-xl: 32px;
-  --typography-lineheight-2xl: 48px;
-  --typography-lineheight-3xl: 64px;
+const SOURCE = path.join(PKG_ROOT, 'src/json/typography/typography.tokens.json');
+const OUTPUT  = path.join(PKG_ROOT, 'src/typography.css');
 
-  /* Letter spacing */
-  --typography-letterspacing-none: 0px;
-  --typography-letterspacing-positive: 0.3px;
-  --typography-letterspacing-negative-half: -0.15px;
-  --typography-letterspacing-negative: -0.3px;
-  --typography-letterspacing-negative-double: -0.6px;
+const roundTo2dp = value => Math.round(value * 100) / 100;
 
-  /* Paragraph spacing */
-  --typography-paragraphspacing-none: 0px;
-  --typography-paragraphspacing-sm: 4px;
-  --typography-paragraphspacing-md: 8px;
-  --typography-paragraphspacing-lg: 12px;
-}
+const generate = () => {
+  const json = JSON.parse(readFileSync(SOURCE, 'utf8'));
+  const lines = [];
 
+  // ── font weight (unitless number) ─────────────────────────────────────────
+  lines.push('  /* Font weights */');
+  for (const [key, token] of Object.entries(json.weight)) {
+    lines.push(`  --typography-weight-${key}: ${token.$value};`);
+  }
+  lines.push('');
 
+  // ── font size ─────────────────────────────────────────────────────────────
+  lines.push('  /* Font sizes */');
+  for (const [key, token] of Object.entries(json['font-size'])) {
+    lines.push(`  --typography-fontsize-${key}: ${roundTo2dp(token.$value)}px;`);
+  }
+  lines.push('');
+
+  // ── line height ───────────────────────────────────────────────────────────
+  lines.push('  /* Line heights */');
+  for (const [key, token] of Object.entries(json['line-height'])) {
+    lines.push(`  --typography-lineheight-${key}: ${roundTo2dp(token.$value)}px;`);
+  }
+  lines.push('');
+
+  // ── letter spacing (has float noise from Figma) ───────────────────────────
+  lines.push('  /* Letter spacing */');
+  for (const [key, token] of Object.entries(json['letter-spacing'])) {
+    const value = roundTo2dp(token.$value);
+    lines.push(`  --typography-letterspacing-${key}: ${value}px;`);
+  }
+  lines.push('');
+
+  // ── paragraph spacing ─────────────────────────────────────────────────────
+  lines.push('  /* Paragraph spacing */');
+  for (const [key, token] of Object.entries(json['paragraph-spacing'])) {
+    lines.push(`  --typography-paragraphspacing-${key}: ${roundTo2dp(token.$value)}px;`);
+  }
+
+  // ── hand-authored: text style classes ─────────────────────────────────────
+  const textStyles = `
 /* ─────────────────────────────────────────────────────────────────────────────
    HAND-AUTHORED — Text style classes.
    These compose multiple typography tokens into reusable CSS classes.
@@ -152,4 +186,24 @@
   font-weight: var(--typography-weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--typography-letterspacing-positive);
-}
+}`;
+
+  const output = [
+    '/* AUTO-GENERATED + HAND-AUTHORED. See scripts/generate-typography-tokens.mjs */',
+    '/* Generated section: from src/json/typography/typography.tokens.json         */',
+    '',
+    ':root {',
+    ...lines,
+    '}',
+    '',
+    textStyles,
+    '',
+  ].join('\n');
+
+  writeFileSync(OUTPUT, output, 'utf8');
+
+  const generated = lines.filter(l => l.includes('--typography-')).length;
+  console.log(`    typography: ${generated} tokens generated → src/typography.css`);
+};
+
+generate();

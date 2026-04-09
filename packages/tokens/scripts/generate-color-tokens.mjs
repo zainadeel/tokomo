@@ -26,6 +26,14 @@ const sanitizeSegment = (value) =>
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-');
 
+const formatAlpha = alpha => {
+  // Round to 2 decimal places so near-zero values like 0.0001 come out as 0,
+  // and float noise like 0.15000000596046448 comes out as 0.15.
+  const rounded = Math.round(alpha * 100) / 100;
+  // Drop trailing zeros — 0.50 → 0.5, 0.20 → 0.2, 0.00 → 0
+  return String(rounded);
+};
+
 const tokenToCssColor = (tokenValue) => {
   const alpha = typeof tokenValue.alpha === 'number' ? tokenValue.alpha : 1;
   const components = Array.isArray(tokenValue.components) ? tokenValue.components : null;
@@ -38,7 +46,7 @@ const tokenToCssColor = (tokenValue) => {
     const blue = Math.round(b * 255);
 
     if (alpha < 0.9999) {
-      return `rgb(${red} ${green} ${blue} / ${alpha.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')})`;
+      return `rgb(${red} ${green} ${blue} / ${formatAlpha(alpha)})`;
     }
 
     return `rgb(${red} ${green} ${blue})`;

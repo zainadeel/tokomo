@@ -2,6 +2,25 @@
   "name": "@tokomo/tokens",
   "version": "0.1.0",
   "description": "TokoMo design tokens — colors, dimensions, typography, and effects as CSS custom properties, JSON, and TypeScript constants",
+  "keywords": [
+    "design-tokens",
+    "css-variables",
+    "css-custom-properties",
+    "design-system",
+    "figma",
+    "tokens",
+    "colors",
+    "typography",
+    "spacing",
+    "theming",
+    "dark-mode"
+  ],
+  "homepage": "https://github.com/zainadeel/tokomo#readme",
+  "bugs": "https://github.com/zainadeel/tokomo/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zainadeel/tokomo.git"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.css",
@@ -39,6 +58,9 @@
     "build:ts": "node scripts/generate-ts-constants.mjs",
     "clean": "rm -rf dist",
     "dev": "node scripts/build.mjs --watch"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "chokidar": "^4.0.0"

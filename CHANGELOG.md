@@ -7,6 +7,18 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.3.0] — 2026-04-15
+
+### Added
+
+- **Inverted color tokens** — new `--color-inverted-*` category (30 CSS custom properties per theme) for inverted-UI surfaces such as tooltips and dark overlays on light themes. Covers `background`, `divider`, `foreground/*` (primary/secondary/tertiary/quaternary/neutral/brand/AI/negative/warning/caution/positive/walkthrough/guide), `border/*`, and `interaction/*` (hover/pressed/focus) tokens.
+
+### Removed
+
+- **`--color-always-dark-foreground-quinary`** — token dropped from Figma source. Replace usages with `--color-always-dark-foreground-neutral`.
+
+---
+
 ## [0.2.0] — 2026-04-15
 
 ### Added

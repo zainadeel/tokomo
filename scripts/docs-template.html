@@ -50,7 +50,7 @@
       top: 0;
       z-index: 20;
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: auto auto 1fr;
       align-items: center;
       gap: 16px;
       height: 48px;
@@ -81,7 +81,7 @@
       font-size: 12px;
       line-height: 16px;
       font-family: inherit;
-      text-align: center;
+      text-align: left;
       outline: none;
       -webkit-appearance: none;
       appearance: none;
@@ -158,6 +158,8 @@
       flex-shrink: 0;
     }
     .sub-btn.active { color: var(--fg); }
+    /* While searching, tabs are bypassed — hide the sub-toolbar entirely. */
+    .sub-toolbar.searching { display: none; }
 
     /* ── Content ──────────────────────────────────────────────────────── */
     #content {
@@ -170,6 +172,21 @@
       grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
       gap: 2px;
     }
+    /* The extra left padding (on top of the base 12px) indents both the
+       category headers and the swatches by the same 8px — so the card's hover
+       fills flush with the swatch. #content.color-grid beats #content alone. */
+    #content.color-grid { padding-left: 20px; }
+    /* Category header spans the full grid row, forcing a line break. */
+    .color-group-header {
+      grid-column: 1 / -1;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      padding: 20px 8px 6px 0;
+    }
+    .color-group-header:first-child { padding-top: 8px; }
 
     .color-card {
       display: flex;
@@ -180,6 +197,12 @@
       user-select: none;
       border-radius: 0;
       position: relative;
+    }
+    /* Zero-height full-row element used to force a line break between dark
+       and light shade rows within the same hue family. */
+    .color-row-break {
+      grid-column: 1 / -1;
+      height: 0;
     }
     .color-card:hover,
     .color-card:focus-visible {
@@ -309,8 +332,8 @@
     }
 
     .dim-radius-box {
-      width: 24px;
-      height: 24px;
+      width: 40px;
+      height: 40px;
       border: 1px solid var(--fg);
       flex-shrink: 0;
     }
@@ -640,15 +663,18 @@ function updateSearchPlaceholder() {
 
 function getFilteredTokens() {
   const data = TOKEN_DATA[section] || [];
+  // When searching, bypass the group tab filter — search is top-level.
+  const effectiveGroup = query ? 'all' : group;
   return data.filter(t => {
-    if (group !== 'all' && t.group !== group) return false;
+    if (effectiveGroup !== 'all' && t.group !== effectiveGroup) return false;
     if (query && !t.name.toLowerCase().includes(query) && !t.label.toLowerCase().includes(query)) return false;
     return true;
   });
 }
 
 function updateCount(n, total) {
-  if (query || group !== 'all') {
+  // Only relevant during active search — tabs already tell you how many on the tab.
+  if (query) {
     searchCount.textContent = `${n}/${total}`;
     searchCount.classList.add('visible');
   } else {
@@ -660,6 +686,8 @@ function render() {
   const all = TOKEN_DATA[section] || [];
   const filtered = getFilteredTokens();
   updateCount(filtered.length, all.length);
+  // Search bypasses the group tabs — reflect that visually in the sub-toolbar.
+  subToolbar.classList.toggle('searching', !!query);
 
   if (filtered.length === 0) {
     contentEl.innerHTML = `<div class="empty-state"><p>No tokens match &ldquo;${escHtml(query)}&rdquo;</p><small>Try a different search</small></div>`;
@@ -678,8 +706,33 @@ function render() {
 
 function renderColors(tokens) {
   const frag = document.createDocumentFragment();
+  let lastCategory = null;
+  let lastShade = null;
+  let lastSubgroup = null;
 
   for (const t of tokens) {
+    if (t.category && t.category !== lastCategory) {
+      const h = document.createElement('div');
+      h.className = 'color-group-header';
+      h.textContent = humanizeColorCategory(t.category);
+      frag.appendChild(h);
+      lastCategory = t.category;
+      lastShade = null;
+      lastSubgroup = null;
+    } else if (
+      (t.shade && lastShade && t.shade !== lastShade) ||
+      (t.subgroup && lastSubgroup && t.subgroup !== lastSubgroup)
+    ) {
+      // Same category, but a shade (dark → light) or data-palette step count
+      // (e.g. diverging 5 → 7 → 9) flipped — force a line break so the next
+      // sub-row starts cleanly under the previous one.
+      const br = document.createElement('div');
+      br.className = 'color-row-break';
+      frag.appendChild(br);
+    }
+    if (t.shade)    lastShade = t.shade;
+    if (t.subgroup) lastSubgroup = t.subgroup;
+
     const card = document.createElement('div');
     card.className = 'color-card';
     card.setAttribute('tabindex', '0');
@@ -698,6 +751,10 @@ function renderColors(tokens) {
   contentEl.appendChild(frag);
 }
 
+function humanizeColorCategory(cat) {
+  return cat.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
 // ── Dimensions ────────────────────────────────────────────────────────────────
 
 function renderDimensions(tokens) {
@@ -710,7 +767,9 @@ function renderDimensions(tokens) {
   }
 
   const frag = document.createDocumentFragment();
-  const showHeaders = group === 'all';
+  // Show group headers when nothing narrows the view to a single group —
+  // i.e. on the "all" tab, or whenever a search is active (which bypasses tabs).
+  const showHeaders = group === 'all' || !!query;
   let lastGroup = null;
 
   for (const t of tokens) {
@@ -749,13 +808,19 @@ function dimVisual(t, maxPx) {
     case 'offset': {
       if (px == null) return '';
       if (px === 0) return `<div class="dim-bar-track"><div class="dim-bar-fill" style="width:1px;opacity:0.2"></div></div>`;
-      const w = Math.max(1, Math.round((Math.abs(px) / maxPx) * 152));
+      // Pure pixel-per-pixel bars — a 4px value shows a 4px bar, a 64px value
+      // a 64px bar — clipped only at the 160px track edge. Scaling by the
+      // group max made tiny values look identical to medium ones.
+      const w = Math.max(1, Math.min(Math.abs(px), 160));
       const cls = px < 0 ? 'dim-bar-neg' : 'dim-bar-fill';
       return `<div class="dim-bar-track"><div class="${cls}" style="width:${w}px"></div></div>`;
     }
     case 'radius': {
-      const rad = px != null && px !== 9999 ? `${Math.min(px, 12)}px` : '50%';
-      return `<div class="dim-radius-box" style="border-radius:${rad}"></div>`;
+      // Show the real radius on a larger sample box so 8/12/16px tokens read
+      // as visibly different from 2/4px. "half" (9999px) stays a pill.
+      if (px === 9999) return `<div class="dim-radius-box" style="border-radius:9999px"></div>`;
+      const rad = px != null ? Math.min(px, 20) : 0;
+      return `<div class="dim-radius-box" style="border-radius:${rad}px"></div>`;
     }
     case 'stroke': {
       if (px == null) return '';
@@ -764,15 +829,19 @@ function dimVisual(t, maxPx) {
     }
     case 'size':
     case 'iconography': {
+      // Show the actual pixel size (up to 64px — the top of the scale) so
+      // e.g. size-800 (64px) renders as a 64px box instead of a capped 40px
+      // square that looks identical to size-500.
       if (px == null) return '';
-      const s = Math.min(px, 40);
+      const s = Math.min(px, 64);
       return `<div class="dim-size-box" style="width:${s}px;height:${s}px"></div>`;
     }
-    case 'layout': {
-      if (px == null) return '<div class="dim-layout-bar" style="width:80px"></div>';
-      const w = Math.max(4, Math.round((Math.min(px, 800) / 800) * 152));
-      return `<div class="dim-layout-bar" style="width:${w}px"></div>`;
-    }
+    case 'layout':
+      // Layout widths (400–800px panel/card/modal widths, 100%, etc.) can't be
+      // faithfully previewed at this grid's scale — the old bar compressed
+      // them all into a ~150px stub, which was misleading. Show just the
+      // numeric value in the existing value column.
+      return '';
     case 'z-index':
     case 'scale':
       return `<div class="dim-zindex-pill">${escHtml(t.value)}</div>`;
@@ -794,7 +863,9 @@ function formatDimValue(t) {
 
 function renderTypography(tokens) {
   const frag = document.createDocumentFragment();
-  const showHeaders = group === 'all';
+  // Show group headers when nothing narrows the view to a single group —
+  // i.e. on the "all" tab, or whenever a search is active (which bypasses tabs).
+  const showHeaders = group === 'all' || !!query;
   let lastGroup = null;
 
   for (const t of tokens) {
@@ -900,7 +971,9 @@ function renderEffects(tokens) {
   const maxDuration = Math.max(...tokens.filter(t => t.group === 'duration').map(t => t.numeric || 0), 1);
 
   const frag = document.createDocumentFragment();
-  const showHeaders = group === 'all';
+  // Show group headers when nothing narrows the view to a single group —
+  // i.e. on the "all" tab, or whenever a search is active (which bypasses tabs).
+  const showHeaders = group === 'all' || !!query;
   let lastGroup = null;
 
   for (const t of tokens) {

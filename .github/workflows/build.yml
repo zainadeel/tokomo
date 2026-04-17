@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify dist artifacts
+        run: |
+          for f in \
+            dist/index.css \
+            dist/colors.css \
+            dist/dimensions.css \
+            dist/typography.css \
+            dist/effects.css \
+            dist/reset.css \
+            dist/globals.css \
+            dist/utilities.css \
+            dist/tokens.json \
+            dist/index.mjs \
+            dist/index.cjs \
+            dist/index.d.ts; do
+            if [ ! -f "$f" ]; then
+              echo "❌ Missing expected output: $f"
+              exit 1
+            fi
+          done
+          echo "✅ All expected dist files present."
+
+      - name: Verify src/ was not mutated by build
+        run: |
+          if [ -n "$(git status --porcelain src/)" ]; then
+            echo "❌ Build mutated src/ — this should never happen:"
+            git diff src/
+            exit 1
+          fi
+          echo "✅ src/ is clean."

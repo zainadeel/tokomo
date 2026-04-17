@@ -6,6 +6,13 @@ updates:
       interval: monthly
     labels:
       - dependencies
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: npm
     directory: /
@@ -13,3 +20,28 @@ updates:
       interval: monthly
     labels:
       - dependencies
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+          - "vite-plugin-*"
+      storybook:
+        patterns:
+          - "storybook"
+          - "@storybook/*"
+      types:
+        patterns:
+          - "@types/*"
+        exclude-patterns:
+          - "@types/react"
+          - "@types/react-dom"

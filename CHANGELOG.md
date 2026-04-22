@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.4.3](https://github.com/zainadeel/tokomo/compare/v0.4.2...v0.4.3) (2026-04-22)
+
+
+### Fixed
+
+* **docs:** restructure elevation section with atoms and composed styles ([#16](https://github.com/zainadeel/tokomo/issues/16)) ([f17da68](https://github.com/zainadeel/tokomo/commit/f17da68d12c25f5f505bd73c8b29830b15cbc36e))
+
 ## [0.4.2](https://github.com/zainadeel/tokomo/compare/v0.4.1...v0.4.2) (2026-04-22)
 
 

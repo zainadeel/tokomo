@@ -16,9 +16,11 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - name: Run release-please
         id: release
+        uses: googleapis/release-please-action@v4
         with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
@@ -29,18 +31,25 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
+      id-token: write  # required for npm OIDC trusted publisher
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.release-please.outputs.tag_name }}
 
-      - uses: actions/setup-node@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
+          cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Upgrade npm for OIDC auth
+      - name: Upgrade npm to support OIDC trusted publishing
+        # npm Trusted Publisher (OIDC to registry) requires npm >= 11.5.1.
+        # Node 20 ships with npm 10.x, which signs provenance but cannot
+        # complete the OIDC-authenticated registry PUT — it fails with a
+        # misleading 404. Upgrade to latest npm before publishing.
         run: npm install -g npm@latest
 
       - name: Install dependencies
@@ -49,5 +58,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Publish
+      - name: Publish to npm
         run: npm publish --provenance --access public

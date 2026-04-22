@@ -7,6 +7,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.4.1](https://github.com/zainadeel/tokomo/compare/v0.4.0...v0.4.1) (2026-04-22)
+
+
+### Fixed
+
+* cluster background intensity tokens in docs site ([#12](https://github.com/zainadeel/tokomo/issues/12)) ([af86e4b](https://github.com/zainadeel/tokomo/commit/af86e4bdda71248a2e1538ff63e8e5e44754adff))
+* cluster foreground intensity tokens in docs site ([#10](https://github.com/zainadeel/tokomo/issues/10)) ([85fe997](https://github.com/zainadeel/tokomo/commit/85fe9978564a0de1c766e6b72d41455a01ea87e4))
+
 ## [0.4.0](https://github.com/zainadeel/tokomo/compare/v0.3.0...v0.4.0) (2026-04-17)
 
 

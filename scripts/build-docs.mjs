@@ -251,6 +251,29 @@ rawColors.forEach((t, i) => {
     semanticCategoryFirstSeen.set(t.category, i);
   }
 });
+// Foreground intensity tiers (strong/bold/medium/faint) render contiguously in
+// strong → bold → medium → faint order, anchored at the earliest-seen sibling.
+// Without this override, `foreground-strong` drifts to the end of the semantic
+// section because its CSS var names sort after `foreground-on-*` and
+// `foreground-primary/secondary/tertiary/quaternary`.
+const FOREGROUND_INTENSITY_ORDER = [
+  'foreground-strong',
+  'foreground-bold',
+  'foreground-medium',
+  'foreground-faint',
+];
+const fgIntensityAnchor = Math.min(
+  ...FOREGROUND_INTENSITY_ORDER
+    .map(cat => semanticCategoryFirstSeen.get(cat))
+    .filter(v => v != null)
+);
+if (Number.isFinite(fgIntensityAnchor)) {
+  FOREGROUND_INTENSITY_ORDER.forEach((cat, i) => {
+    if (semanticCategoryFirstSeen.has(cat)) {
+      semanticCategoryFirstSeen.set(cat, fgIntensityAnchor + i * 0.001);
+    }
+  });
+}
 // Within a category, sort primary → secondary → tertiary → quaternary first,
 // then fall back to source order for everything else (focus/hover/pressed,
 // intent qualifiers like -ai/-brand/-negative, etc.).

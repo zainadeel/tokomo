@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.0](https://github.com/zainadeel/tokomo/compare/v0.4.3...v1.0.0) (2026-04-23)
+
+
+### Chores
+
+* release v1.0.0 ([#20](https://github.com/zainadeel/tokomo/issues/20)) ([aaf0c8f](https://github.com/zainadeel/tokomo/commit/aaf0c8fa7fab0e9d705ed9eada33cd5a4be2c27a))
+
 ## [0.4.3](https://github.com/zainadeel/tokomo/compare/v0.4.2...v0.4.3) (2026-04-22)
 
 

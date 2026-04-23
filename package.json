@@ -1,6 +1,6 @@
 {
   "name": "@ds-mo/tokens",
-  "version": "0.4.3",
+  "version": "1.0.0",
   "description": "TokoMo design tokens — colors, dimensions, typography, and effects as CSS custom properties, JSON, and TypeScript constants",
   "keywords": [
     "design-tokens",

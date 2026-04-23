@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.1](https://github.com/zainadeel/tokomo/compare/v1.0.0...v1.0.1) (2026-04-23)
+
+
+### Fixed
+
+* add npm version badge to readme ([#22](https://github.com/zainadeel/tokomo/issues/22)) ([c967cab](https://github.com/zainadeel/tokomo/commit/c967cab42ff463249aae08b9953d0586247b8cc9))
+
 ## [1.0.0](https://github.com/zainadeel/tokomo/compare/v0.4.3...v1.0.0) (2026-04-23)
 
 

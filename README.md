@@ -7,6 +7,10 @@ Part of the design system trilogy:
 
 Figma-first: tokens are exported from Figma variables and built into CSS via generator scripts. Drop in new JSON, run the build, everything updates.
 
+<!-- x-release-please-start-version -->
+**Current version: 0.4.3**
+<!-- x-release-please-end-version -->
+
 ## Install
 
 ```bash

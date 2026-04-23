@@ -3,6 +3,7 @@
     ".": {
       "release-type": "node",
       "package-name": "@ds-mo/tokens",
+      "extra-files": ["README.md"],
       "changelog-path": "CHANGELOG.md",
       "include-v-in-tag": true,
       "include-component-in-tag": false,

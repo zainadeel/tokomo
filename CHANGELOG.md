@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.1.1](https://github.com/zainadeel/tokomo/compare/v2.1.0...v2.1.1) (2026-04-27)
+
+
+### Fixed
+
+* clean up cross-links between docs and color tool ([#30](https://github.com/zainadeel/tokomo/issues/30)) ([4e2ef57](https://github.com/zainadeel/tokomo/commit/4e2ef57eff96aff092bc9f59bd11e1d3290f9ade))
+
 ## [2.1.0](https://github.com/zainadeel/tokomo/compare/v2.0.1...v2.1.0) (2026-04-27)
 
 

@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.1.0](https://github.com/zainadeel/tokomo/compare/v2.0.1...v2.1.0) (2026-04-27)
+
+
+### Added
+
+* add visual core color tool ([#28](https://github.com/zainadeel/tokomo/issues/28)) ([d976b83](https://github.com/zainadeel/tokomo/commit/d976b831225dbdd7739b5e5f4cca61ad8cb87e7e))
+
 ## [2.0.1](https://github.com/zainadeel/tokomo/compare/v2.0.0...v2.0.1) (2026-04-27)
 
 

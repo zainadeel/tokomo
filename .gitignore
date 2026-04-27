@@ -21,5 +21,8 @@ dist
 docs/*
 !docs/guidelines/
 
+# Generated copy of source tokens for the visual color tool
+tools/color-system/tokens.json
+
 # Claude
 .claude/

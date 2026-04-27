@@ -59,10 +59,12 @@
     "build": "node scripts/build.mjs",
     "build:colors": "node scripts/generate-color-tokens.mjs",
     "build:json": "node scripts/generate-json-tokens.mjs",
-    "build:docs": "node scripts/build-docs.mjs",
+    "build:docs": "node scripts/build-docs.mjs && node scripts/copy-tool-assets.mjs --to-docs",
     "build:ts": "node scripts/generate-ts-constants.mjs",
     "clean": "rm -rf dist",
-    "dev": "node scripts/build.mjs --watch"
+    "dev": "node scripts/build.mjs --watch",
+    "tool:colors": "node scripts/copy-tool-assets.mjs && npx --yes serve tools/color-system -p 4040 -L",
+    "preview:docs": "npm run build && npm run build:docs && npx --yes serve docs -p 4040 -L"
   },
   "engines": {
     "node": ">=25.9.0"

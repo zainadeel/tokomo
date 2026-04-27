@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Color tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #000000;
+    --fg-muted: rgb(0 0 0 / 0.5);
+    --fg-faint: rgb(0 0 0 / 0.3);
+    --divider: rgb(0 0 0 / 0.1);
+    --mono: 'JetBrains Mono', ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --bg: #161616;
+    --fg: #ffffff;
+    --fg-muted: rgb(255 255 255 / 0.5);
+    --fg-faint: rgb(255 255 255 / 0.3);
+    --divider: rgb(255 255 255 / 0.1);
+    color-scheme: dark;
+  }
+  * , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    min-height: 100dvh;
+  }
+
+  /* ── Toolbar ─────────────────────────────────────────────────────── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 16px;
+    height: 48px; padding: 0 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--divider);
+  }
+  .logo { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .toolbar .spacer { flex: 1; }
+  .vdivider { width: 1px; height: 12px; background: var(--divider); flex-shrink: 0; }
+
+  /* Text-toggle buttons (theme tabs, reset, export) */
+  .toggle-btn {
+    background: none; border: none; padding: 0; cursor: pointer;
+    font: inherit; color: var(--fg-muted); line-height: 1; white-space: nowrap;
+  }
+  .toggle-btn:hover { color: var(--fg); }
+  .toggle-btn.active { color: var(--fg); font-weight: 500; }
+  .toggle-btn.is-clean { color: var(--fg-faint); pointer-events: none; }
+
+  .tabs { display: flex; align-items: center; gap: 12px; }
+
+  .checkbox-row { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-muted); font-size: 12px; cursor: pointer; }
+  .checkbox-row input[type="checkbox"] { accent-color: var(--fg); }
+  .checkbox-row:has(input:checked) { color: var(--fg); }
+
+
+  /* ── Canvas — sits in theme bg ──────────────────────────────────── */
+  .canvas { padding: 24px 20px 64px; min-height: calc(100dvh - 48px); }
+  .canvas[data-theme="light"] { background: #ffffff; --canvas-text: #000000; --canvas-muted: rgb(0 0 0 / 0.5); --canvas-faint: rgb(0 0 0 / 0.3); --canvas-divider: rgb(0 0 0 / 0.1); }
+  .canvas[data-theme="dark"]  { background: #161616; --canvas-text: #ffffff; --canvas-muted: rgb(255 255 255 / 0.5); --canvas-faint: rgb(255 255 255 / 0.3); --canvas-divider: rgb(255 255 255 / 0.1); }
+
+  /* ── Legend ─────────────────────────────────────────────────────── */
+  .legend { display: grid; grid-template-columns: 1fr 4fr; gap: 4px; padding: 0 0 12px; }
+  .legend > div:not(.legend-cards),
+  .legend-cards > div {
+    color: var(--canvas-text);
+    font-size: 12px; font-weight: 500; text-transform: capitalize;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .legend-cards, .cards-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+
+  .lock-btn {
+    background: none; border: none; padding: 0;
+    color: var(--canvas-muted);
+    font: 500 12px 'Inter', system-ui, sans-serif;
+    cursor: pointer; line-height: 1;
+  }
+  .lock-btn:hover { color: var(--canvas-text); }
+  .lock-btn.active { color: var(--canvas-text); }
+
+  /* ── Hue rows ───────────────────────────────────────────────────── */
+  .hue-row { display: grid; grid-template-columns: 1fr 4fr; gap: 4px; padding: 8px 0; align-items: start; }
+  .hue-label {
+    color: var(--canvas-text); font-size: 12px; font-weight: 500;
+    text-transform: capitalize;
+    /* Vertically aligns with the single C/L/slider row below each swatch
+       (swatch height 64px + 8px gap = 72px). */
+    padding-top: 72px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .hue-label .hue-name-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .hue-label .hue-input { display: flex; align-items: center; gap: 4px; color: var(--canvas-muted); font-weight: 500; letter-spacing: 0.06em; text-transform: none; font-size: 9px; font-family: var(--mono); }
+  .hue-label .hue-input input {
+    width: 52px; background: transparent;
+    color: var(--canvas-text);
+    border: none;
+    padding: 1px 2px;
+    font: 500 9px var(--mono);
+    letter-spacing: 0.06em;
+    border-radius: 0;
+    text-align: left;
+    transition: box-shadow 0.1s, background 0.1s;
+  }
+  .hue-label .hue-input input:hover,
+  .hue-label .hue-input input:focus {
+    outline: none;
+    background: var(--canvas-divider);
+    box-shadow: 0 0 0 2px var(--canvas-divider);
+  }
+
+  /* ── Swatch ─────────────────────────────────────────────────────── */
+  .tone-cell { display: flex; flex-direction: column; gap: 8px; }
+  .swatch {
+    height: 64px;
+    position: relative;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 4px;
+    cursor: default;
+  }
+  .swatch .compare-btn {
+    position: absolute; top: 4px; right: 4px;
+    background: rgb(0 0 0 / 0.5); color: #fff;
+    border: none; padding: 2px 5px;
+    font: 600 9px var(--mono); letter-spacing: 0.06em;
+    cursor: pointer; line-height: 1.2;
+    border-radius: 0;
+  }
+  .swatch .compare-btn:hover { background: rgb(0 0 0 / 0.75); }
+  .swatch .compare-btn.active { background: #fff; color: #000; }
+
+  .swatch .gamut-tag,
+  .swatch .contrast-tag {
+    font: 600 9px var(--mono); letter-spacing: 0.06em;
+    padding: 1px 4px;
+    background: rgb(0 0 0 / 0.55); color: #fff;
+    border-radius: 0;
+    line-height: 1.2;
+  }
+  .swatch .gamut-tag.warn { background: #FFCC33; color: #000; }
+  .swatch .gamut-tag.bad  { background: #FF4D4D; color: #fff; }
+  .swatch .contrast-tag.fail { background: #FF4D4D; color: #fff; }
+
+  /* ── Controls under each swatch ─────────────────────────────────── */
+  .controls {
+    color: var(--canvas-text);
+    font: 500 9px var(--mono);
+    letter-spacing: 0.06em;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .ctrl-row { display: flex; align-items: center; gap: 4px; min-width: 0; }
+  .ctrl-row label { color: var(--canvas-muted); flex: none; }
+  .ctrl-row input[type="number"] {
+    width: 52px; flex: none; background: transparent;
+    color: var(--canvas-text);
+    border: none;
+    padding: 1px 2px;
+    font: 500 9px var(--mono);
+    letter-spacing: 0.06em;
+    border-radius: 0;
+    text-align: left;
+    transition: box-shadow 0.1s, background 0.1s;
+  }
+  .ctrl-row input[type="number"]:hover,
+  .ctrl-row input[type="number"]:focus {
+    outline: none;
+    background: var(--canvas-divider);
+    box-shadow: 0 0 0 2px var(--canvas-divider);
+  }
+  .ctrl-row input[type="range"] { flex: 1; min-width: 0; }
+  .ctrl-row input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%; height: 14px;
+    background: transparent;
+    cursor: pointer;
+    margin: 0;
+  }
+  .ctrl-row input[type="range"]::-webkit-slider-runnable-track {
+    height: 1px; background: var(--canvas-divider); border: none;
+  }
+  .ctrl-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 10px; height: 10px;
+    background: var(--canvas-text);
+    border: none; border-radius: 0;
+    margin-top: -4.5px;
+  }
+  .ctrl-row input[type="range"]::-moz-range-track {
+    height: 1px; background: var(--canvas-divider); border: none;
+  }
+  .ctrl-row input[type="range"]::-moz-range-thumb {
+    width: 10px; height: 10px;
+    background: var(--canvas-text);
+    border: none; border-radius: 0;
+  }
+  .ctrl-row input[type="range"]::-moz-range-progress {
+    background: var(--canvas-divider);
+  }
+  .ctrl-row input[type="range"]:focus { outline: none; }
+  .ctrl-row .num { text-align: right; color: var(--canvas-text); }
+
+
+</style>
+</head>
+<body>
+<header class="toolbar">
+  <span class="logo">Color tool</span>
+  <span class="spacer"></span>
+  <div class="tabs" id="theme-tabs">
+    <button class="toggle-btn active" data-theme="light">Light</button>
+    <button class="toggle-btn" data-theme="dark">Dark</button>
+  </div>
+  <span class="vdivider"></span>
+  <button class="toggle-btn" id="reset-btn" title="Revert all edits to source token values">Reset</button>
+  <button class="toggle-btn" id="export-btn">Export CSV</button>
+  <span class="vdivider"></span>
+  <a class="toggle-btn" id="back-to-browser" href="../" target="_blank" rel="noopener" style="text-decoration: none;">Token browser ↗</a>
+</header>
+
+<div class="canvas" id="canvas" data-theme="light">
+  <div class="legend">
+    <div><button class="lock-btn active" id="couple-toggle" type="button">Contrast-Link</button></div>
+    <div class="legend-cards">
+      <div>Faint <button class="lock-btn" data-lock="faint" title="Link all faint L sliders" aria-pressed="false">L-Link</button></div>
+      <div>Medium <button class="lock-btn" data-lock="medium" title="Link all medium L sliders" aria-pressed="false">L-Link</button></div>
+      <div>Bold <button class="lock-btn" data-lock="bold" title="Link all bold L sliders" aria-pressed="false">L-Link</button></div>
+      <div>Strong <button class="lock-btn" data-lock="strong" title="Link all strong L sliders" aria-pressed="false">L-Link</button></div>
+    </div>
+  </div>
+  <div id="hue-rows"></div>
+</div>
+
+<script type="module">
+  import {
+    loadTokens, tonesToCsv, gamutBadge,
+    oklchToHex, contrastRatioP3, HUE_ORDER,
+  } from "./color-tool.mjs";
+  import { solveLForContrast, relativeLuminanceFromOklch, contrastFromY } from "./oklch-utils.mjs";
+
+  const TONE_ORDER = ["faint", "medium", "bold", "strong"];
+  const COUPLE = { faint: "bold", medium: "strong" };
+  const TARGET_CONTRAST = 4.5;
+  const FAINT_FLOOR = 1.2;
+
+  // Background luminance per theme
+  const BG = {
+    light: { hex: "#FFFFFF", y: 1.0 },
+    dark:  { hex: "#161616", y: relativeLuminanceFromOklch(0.179, 0, 0) },
+  };
+
+  const state = {
+    tones: [],
+    original: [],
+    theme: "light",
+    couple: { light: true, dark: true },
+    locks: {
+      light: { faint: false, medium: false, bold: false, strong: false },
+      dark:  { faint: false, medium: false, bold: false, strong: false },
+    },
+    compareActive: {}, // keyed by tone.id
+  };
+
+  // One-off comparisons against legacy brand colors.
+  const COMPARE_OVERRIDES = [
+    { theme: "light", hueName: "blue", role: "bold", hex: "#0073E7", label: "vs old" },
+    { theme: "light", hueName: "blue", role: "medium", hex: "#00B4FF", label: "vs old" },
+  ];
+  const findCompareOverride = (t) =>
+    COMPARE_OVERRIDES.find(o => o.theme === t.theme && o.hueName === t.hueName && o.role === t.role);
+
+  const $ = (sel) => document.querySelector(sel);
+  const fmt = (n, d = 2) => Number(n).toFixed(d);
+
+  function findTone(theme, hueName, role) {
+    return state.tones.find(t => t.theme === theme && t.hueName === hueName && t.role === role);
+  }
+
+  function huesForTheme(theme) {
+    const seen = new Set();
+    const list = [];
+    for (const t of state.tones) {
+      if (t.theme !== theme) continue;
+      if (!seen.has(t.hueName)) { seen.add(t.hueName); list.push(t.hueName); }
+    }
+    const order = [...HUE_ORDER.map(h => h.split("-")[0]), "grey"];
+    return list.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  }
+
+  // Returns the contrast figure to display on each swatch and whether it passes.
+  function contrastInfo(tone) {
+    if (tone.role === "faint") {
+      const bg = BG[tone.theme];
+      const ty = relativeLuminanceFromOklch(tone.l, tone.c, tone.h);
+      const r = contrastFromY(ty, bg.y);
+      return { ratio: r, label: `${r.toFixed(2)} vs bg`, pass: r >= FAINT_FLOOR };
+    }
+    if (tone.role === "bold") {
+      const faint = findTone(tone.theme, tone.hueName, "faint");
+      if (!faint) return null;
+      const r = contrastRatioP3(tone, faint);
+      return { ratio: r, label: `${r.toFixed(2)} vs faint`, pass: r >= TARGET_CONTRAST };
+    }
+    if (tone.role === "strong") {
+      const medium = findTone(tone.theme, tone.hueName, "medium");
+      if (!medium) return null;
+      const r = contrastRatioP3(tone, medium);
+      return { ratio: r, label: `${r.toFixed(2)} vs med`, pass: r >= TARGET_CONTRAST };
+    }
+    if (tone.role === "medium") {
+      const strong = findTone(tone.theme, tone.hueName, "strong");
+      if (!strong) return null;
+      const r = contrastRatioP3(tone, strong);
+      return { ratio: r, label: `${r.toFixed(2)} vs strong`, pass: r >= TARGET_CONTRAST };
+    }
+    return null;
+  }
+
+  function applyCoupling(changedTone) {
+    if (!state.couple[changedTone.theme]) return;
+    const dependentRole = COUPLE[changedTone.role];
+    if (!dependentRole) return;
+    const dep = findTone(changedTone.theme, changedTone.hueName, dependentRole);
+    if (!dep) return;
+    const newL = solveLForContrast({ target: dep, anchor: changedTone, targetContrast: TARGET_CONTRAST });
+    dep.l = newL;
+  }
+
+  // Map of tone.id → { swatch, contrastTag, gamutTag, lSlider, lInput, cInput }
+  const cellRefs = new Map();
+
+  function updateCell(tone, { skipSliderSync = false } = {}) {
+    const refs = cellRefs.get(tone.id);
+    if (!refs) return;
+    const cssColor = `oklch(${tone.l} ${tone.c} ${tone.h})`;
+    const override = findCompareOverride(tone);
+    if (override && state.compareActive[tone.id]) {
+      refs.swatch.style.background = `linear-gradient(to right, ${cssColor} 0 50%, ${override.hex} 50% 100%)`;
+    } else {
+      refs.swatch.style.background = cssColor;
+    }
+    if (!skipSliderSync) refs.lSlider.value = tone.l;
+    if (refs.lInput && document.activeElement !== refs.lInput) refs.lInput.value = fmt(tone.l);
+    if (refs.cInput && document.activeElement !== refs.cInput) refs.cInput.value = fmt(tone.c);
+    const info = contrastInfo(tone);
+    if (info) {
+      refs.contrastTag.textContent = info.label;
+      refs.contrastTag.classList.toggle("fail", !info.pass);
+      refs.contrastTag.style.display = "";
+    } else {
+      refs.contrastTag.style.display = "none";
+    }
+    const badge = gamutBadge(tone);
+    if (badge.level === "ok") {
+      refs.gamutTag.style.display = "none";
+    } else {
+      refs.gamutTag.textContent = badge.label;
+      refs.gamutTag.className = `gamut-tag ${badge.level}`;
+      refs.gamutTag.style.display = "";
+    }
+  }
+
+  function updateRowSiblings(theme, hueName, primaryRole) {
+    // After changing one tone, refresh display of the others (their contrast figures
+    // can change when their anchor changed, e.g. medium's "vs strong" label).
+    for (const role of TONE_ORDER) {
+      if (role === primaryRole) continue;
+      const t = findTone(theme, hueName, role);
+      if (t) updateCell(t);
+    }
+  }
+
+  function buildRows() {
+    const container = $("#hue-rows");
+    container.innerHTML = "";
+    cellRefs.clear();
+    const hues = huesForTheme(state.theme);
+
+    for (const hueName of hues) {
+      const row = document.createElement("div");
+      row.className = "hue-row";
+      const refTone = findTone(state.theme, hueName, "bold") || findTone(state.theme, hueName, "faint");
+      const rowH = refTone ? refTone.h : 0;
+      const isGrey = hueName === "grey";
+
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "hue-label";
+      labelDiv.innerHTML = `
+        <div class="hue-name-row">
+          <span>${hueName}</span>
+          ${isGrey ? "" : `
+            <label class="hue-input">
+              H
+              <input type="number" min="0" max="360" step="1" value="${fmt(rowH, 0)}" data-row-hue />
+            </label>
+          `}
+        </div>
+      `;
+      row.appendChild(labelDiv);
+
+      const cardsRow = document.createElement("div");
+      cardsRow.className = "cards-row";
+      row.appendChild(cardsRow);
+
+      const hueInput = labelDiv.querySelector("[data-row-hue]");
+      if (hueInput) {
+        hueInput.addEventListener("input", (e) => {
+          const newH = Number(e.target.value);
+          for (const role of TONE_ORDER) {
+            const t = findTone(state.theme, hueName, role);
+            if (t) t.h = newH;
+          }
+          const faint = findTone(state.theme, hueName, "faint");
+          const medium = findTone(state.theme, hueName, "medium");
+          if (faint) applyCoupling(faint);
+          if (medium) applyCoupling(medium);
+          for (const role of TONE_ORDER) {
+            const t = findTone(state.theme, hueName, role);
+            if (t) updateCell(t);
+          }
+          renderSummary();
+          updateResetState();
+        });
+      }
+
+      for (const role of TONE_ORDER) {
+        const t = findTone(state.theme, hueName, role);
+        const cell = document.createElement("div");
+        cell.className = "tone-cell";
+        if (!t) { cardsRow.appendChild(cell); continue; }
+
+        const ov = findCompareOverride(t);
+        cell.innerHTML = `
+          <div class="swatch">
+            ${ov ? `<button class="compare-btn" data-compare-toggle title="Compare against legacy ${ov.hex}">${ov.label}</button>` : ""}
+            <span class="contrast-tag"></span>
+            <span class="gamut-tag"></span>
+          </div>
+          <div class="controls">
+            <div class="ctrl-row">
+              <label>C</label>
+              <input type="number" min="0" max="0.4" step="0.01" data-field="c" />
+              <label>L</label>
+              <input type="number" min="0" max="1" step="0.01" data-field="l-num" />
+              <input type="range" min="0" max="1" step="0.01" data-field="l" />
+            </div>
+          </div>
+        `;
+
+        const refs = {
+          swatch: cell.querySelector(".swatch"),
+          contrastTag: cell.querySelector(".contrast-tag"),
+          gamutTag: cell.querySelector(".gamut-tag"),
+          lSlider: cell.querySelector('input[data-field="l"]'),
+          lInput: cell.querySelector('input[data-field="l-num"]'),
+          cInput: cell.querySelector('input[data-field="c"]'),
+        };
+        cellRefs.set(t.id, refs);
+
+        const handleLChange = (newL, fromSlider) => {
+          if (Number.isNaN(newL)) return;
+          newL = Math.max(0, Math.min(1, newL));
+          const delta = newL - t.l;
+          t.l = newL;
+
+          if (state.locks[state.theme][role] && delta !== 0) {
+            for (const other of state.tones) {
+              if (other === t) continue;
+              if (other.theme !== state.theme || other.role !== role) continue;
+              other.l = Math.max(0, Math.min(1, other.l + delta));
+              applyCoupling(other);
+              updateCell(other);
+              const depRole = COUPLE[role];
+              if (depRole) {
+                const dep = findTone(other.theme, other.hueName, depRole);
+                if (dep) updateCell(dep);
+              }
+            }
+          }
+
+          applyCoupling(t);
+          updateCell(t, { skipSliderSync: fromSlider });
+          updateRowSiblings(state.theme, hueName, role);
+          renderSummary();
+          updateResetState();
+        };
+
+        refs.lSlider.addEventListener("input", (e) => handleLChange(Number(e.target.value), true));
+        refs.lInput.addEventListener("input", (e) => handleLChange(Number(e.target.value), false));
+        const compareBtn = cell.querySelector("[data-compare-toggle]");
+        if (compareBtn) {
+          compareBtn.classList.toggle("active", !!state.compareActive[t.id]);
+          compareBtn.addEventListener("click", () => {
+            state.compareActive[t.id] = !state.compareActive[t.id];
+            compareBtn.classList.toggle("active", !!state.compareActive[t.id]);
+            updateCell(t, { skipSliderSync: true });
+          });
+        }
+
+        refs.cInput.addEventListener("input", (e) => {
+          t.c = Number(e.target.value);
+          applyCoupling(t);
+          updateCell(t);
+          updateRowSiblings(state.theme, hueName, role);
+          renderSummary();
+          updateResetState();
+        });
+
+        updateCell(t);
+        cardsRow.appendChild(cell);
+      }
+      container.appendChild(row);
+    }
+  }
+
+  function renderSummary() {}
+
+  function updateResetState() {
+    const dirty = state.tones.some((t, i) => {
+      const o = state.original[i];
+      return !o || t.l !== o.l || t.c !== o.c || t.h !== o.h;
+    });
+    $("#reset-btn").classList.toggle("is-clean", !dirty);
+  }
+
+  function render() {
+    document.documentElement.dataset.theme = state.theme;
+    $("#canvas").dataset.theme = state.theme;
+    buildRows();
+    updateResetState();
+  }
+
+  function syncTopControls() {
+    document.querySelectorAll(".lock-btn[data-lock]").forEach(b => {
+      b.classList.toggle("active", state.locks[state.theme][b.dataset.lock]);
+    });
+    $("#couple-toggle").classList.toggle("active", state.couple[state.theme]);
+  }
+
+  $("#theme-tabs").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-theme]");
+    if (!btn) return;
+    state.theme = btn.dataset.theme;
+    document.querySelectorAll("#theme-tabs button").forEach(b => b.classList.toggle("active", b === btn));
+    syncTopControls();
+    render();
+  });
+
+  $("#couple-toggle").addEventListener("click", (e) => {
+    const next = !state.couple[state.theme];
+    state.couple[state.theme] = next;
+    e.currentTarget.classList.toggle("active", next);
+  });
+
+  document.querySelectorAll(".lock-btn[data-lock]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const role = btn.dataset.lock;
+      const next = !state.locks[state.theme][role];
+      state.locks[state.theme][role] = next;
+      btn.classList.toggle("active", next);
+      btn.setAttribute("aria-pressed", String(next));
+    });
+  });
+
+  $("#reset-btn").onclick = () => {
+    state.tones = JSON.parse(JSON.stringify(state.original));
+    render();
+  };
+
+  $("#export-btn").onclick = () => {
+    const csv = tonesToCsv(state.tones);
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tokomo-colors-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  (async () => {
+    try {
+      const tones = await loadTokens();
+      state.tones = tones;
+      state.original = JSON.parse(JSON.stringify(tones));
+      render();
+    } catch (err) {
+      console.error(err);
+    }
+  })();
+</script>
+</body>
+</html>

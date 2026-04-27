@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.1](https://github.com/zainadeel/tokomo/compare/v2.0.0...v2.0.1) (2026-04-27)
+
+
+### Documentation
+
+* add color, elevation, and typography usage guidelines ([#26](https://github.com/zainadeel/tokomo/issues/26)) ([8987b1a](https://github.com/zainadeel/tokomo/commit/8987b1aba29bbf6e0bef2478e472b96b41242370))
+
 ## [2.0.0](https://github.com/zainadeel/tokomo/compare/v1.0.1...v2.0.0) (2026-04-23)
 
 

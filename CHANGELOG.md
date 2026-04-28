@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.2.0](https://github.com/zainadeel/tokomo/compare/v2.1.1...v2.2.0) (2026-04-28)
+
+
+### Added
+
+* add C-Link and bidirectional contrast coupling to color tool ([#32](https://github.com/zainadeel/tokomo/issues/32)) ([c7a8e8a](https://github.com/zainadeel/tokomo/commit/c7a8e8ab732bf111b836ed562a2bf81265491eb1))
+
 ## [2.1.1](https://github.com/zainadeel/tokomo/compare/v2.1.0...v2.1.1) (2026-04-27)
 
 

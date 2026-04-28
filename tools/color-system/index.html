@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TokoMo — Color tool</title>
+<title>TokoMo — Color Tool</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -230,10 +230,10 @@
   <div class="legend">
     <div><button class="lock-btn active" id="couple-toggle" type="button">Contrast-Link</button></div>
     <div class="legend-cards">
-      <div>Faint <button class="lock-btn" data-lock="faint" title="Link all faint L sliders" aria-pressed="false">L-Link</button></div>
-      <div>Medium <button class="lock-btn" data-lock="medium" title="Link all medium L sliders" aria-pressed="false">L-Link</button></div>
-      <div>Bold <button class="lock-btn" data-lock="bold" title="Link all bold L sliders" aria-pressed="false">L-Link</button></div>
-      <div>Strong <button class="lock-btn" data-lock="strong" title="Link all strong L sliders" aria-pressed="false">L-Link</button></div>
+      <div>Faint <button class="lock-btn" data-lock="faint" title="Link all faint L sliders" aria-pressed="false">L-Link</button> <button class="lock-btn" data-clock="faint" title="Link all faint C sliders" aria-pressed="false">C-Link</button></div>
+      <div>Medium <button class="lock-btn" data-lock="medium" title="Link all medium L sliders" aria-pressed="false">L-Link</button> <button class="lock-btn" data-clock="medium" title="Link all medium C sliders" aria-pressed="false">C-Link</button></div>
+      <div>Bold <button class="lock-btn" data-lock="bold" title="Link all bold L sliders" aria-pressed="false">L-Link</button> <button class="lock-btn" data-clock="bold" title="Link all bold C sliders" aria-pressed="false">C-Link</button></div>
+      <div>Strong <button class="lock-btn" data-lock="strong" title="Link all strong L sliders" aria-pressed="false">L-Link</button> <button class="lock-btn" data-clock="strong" title="Link all strong C sliders" aria-pressed="false">C-Link</button></div>
     </div>
   </div>
   <div id="hue-rows"></div>
@@ -247,7 +247,7 @@
   import { solveLForContrast, relativeLuminanceFromOklch, contrastFromY } from "./oklch-utils.mjs";
 
   const TONE_ORDER = ["faint", "medium", "bold", "strong"];
-  const COUPLE = { faint: "bold", medium: "strong" };
+  const COUPLE = { faint: "bold", medium: "strong", bold: "faint", strong: "medium" };
   const TARGET_CONTRAST = 4.5;
   const FAINT_FLOOR = 1.2;
 
@@ -263,6 +263,10 @@
     theme: "light",
     couple: { light: true, dark: true },
     locks: {
+      light: { faint: false, medium: false, bold: false, strong: false },
+      dark:  { faint: false, medium: false, bold: false, strong: false },
+    },
+    clocks: {
       light: { faint: false, medium: false, bold: false, strong: false },
       dark:  { faint: false, medium: false, bold: false, strong: false },
     },
@@ -506,7 +510,21 @@
         }
 
         refs.cInput.addEventListener("input", (e) => {
-          t.c = Number(e.target.value);
+          const newC = Number(e.target.value);
+          const delta = newC - t.c;
+          t.c = newC;
+
+          if (state.clocks[state.theme][role] && delta !== 0) {
+            for (const other of state.tones) {
+              if (other === t) continue;
+              if (other.theme !== state.theme || other.role !== role) continue;
+              other.c = Math.max(0, Math.min(0.4, other.c + delta));
+              applyCoupling(other);
+              updateCell(other);
+              updateRowSiblings(state.theme, other.hueName, role);
+            }
+          }
+
           applyCoupling(t);
           updateCell(t);
           updateRowSiblings(state.theme, hueName, role);
@@ -542,6 +560,9 @@
     document.querySelectorAll(".lock-btn[data-lock]").forEach(b => {
       b.classList.toggle("active", state.locks[state.theme][b.dataset.lock]);
     });
+    document.querySelectorAll(".lock-btn[data-clock]").forEach(b => {
+      b.classList.toggle("active", state.clocks[state.theme][b.dataset.clock]);
+    });
     $("#couple-toggle").classList.toggle("active", state.couple[state.theme]);
   }
 
@@ -565,6 +586,16 @@
       const role = btn.dataset.lock;
       const next = !state.locks[state.theme][role];
       state.locks[state.theme][role] = next;
+      btn.classList.toggle("active", next);
+      btn.setAttribute("aria-pressed", String(next));
+    });
+  });
+
+  document.querySelectorAll(".lock-btn[data-clock]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const role = btn.dataset.clock;
+      const next = !state.clocks[state.theme][role];
+      state.clocks[state.theme][role] = next;
       btn.classList.toggle("active", next);
       btn.setAttribute("aria-pressed", String(next));
     });

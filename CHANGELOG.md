@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.3.1](https://github.com/zainadeel/tokomo/compare/v2.3.0...v2.3.1) (2026-04-28)
+
+
+### Fixed
+
+* **dimensions:** correct string-typed tokens to number in offset and z-index ([#36](https://github.com/zainadeel/tokomo/issues/36)) ([de867ef](https://github.com/zainadeel/tokomo/commit/de867ef251d589a5513459d3a5d0f2a025601cb0))
+
 ## [2.3.0](https://github.com/zainadeel/tokomo/compare/v2.2.0...v2.3.0) (2026-04-28)
 
 

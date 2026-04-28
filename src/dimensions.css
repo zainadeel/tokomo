@@ -98,6 +98,7 @@
   --dimension-modal-width-sm: 400px;
   --dimension-modal-width-md: 600px;
   --dimension-modal-width-lg: 800px;
+  --dimension-modal-width-fill: 100%;
 
   /* Form widths */
   --dimension-form-width-sm: 400px;
@@ -136,6 +137,7 @@
   --dimension-offset-175: calc(var(--dimension-space-base) * 7 / 4);
   --dimension-offset-200: calc(var(--dimension-space-base) * 2);
   --dimension-offset-250: calc(var(--dimension-space-base) * 5 / 2);
+  --dimension-offset-base: var(--dimension-space-base);
   --dimension-offset-000: 0;
   --dimension-offset-025: calc(var(--dimension-space-base) / 4);
   --dimension-offset-050: calc(var(--dimension-space-base) / 2);

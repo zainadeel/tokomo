@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.3.0](https://github.com/zainadeel/tokomo/compare/v2.2.0...v2.3.0) (2026-04-28)
+
+
+### Added
+
+* **dimensions:** add offset base and modal-width fill tokens ([#34](https://github.com/zainadeel/tokomo/issues/34)) ([3cf1e5b](https://github.com/zainadeel/tokomo/commit/3cf1e5b54848cac32a1ecc9c9fc1fae00796bd2b))
+
 ## [2.2.0](https://github.com/zainadeel/tokomo/compare/v2.1.1...v2.2.0) (2026-04-28)
 
 

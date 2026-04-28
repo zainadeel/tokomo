@@ -866,6 +866,18 @@
         ],
         "com.figma.isOverride": true
       }
+    },
+    "fill": {
+      "$type": "string",
+      "$value": "100%",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:PLACEHOLDER",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.type": "string",
+        "com.figma.isOverride": true
+      }
     }
   },
   "width-form": {
@@ -1100,6 +1112,16 @@
     }
   },
   "offset": {
+    "base": {
+      "$type": "number",
+      "$value": 8,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:PLACEHOLDER",
+        "com.figma.hiddenFromPublishing": true,
+        "com.figma.scopes": ["GAP"],
+        "com.figma.isOverride": true
+      }
+    },
     "000": {
       "$type": "number",
       "$value": 0,

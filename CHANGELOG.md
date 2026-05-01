@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.5.0](https://github.com/zainadeel/tokomo/compare/v2.4.0...v2.5.0) (2026-05-01)
+
+
+### Added
+
+* **colors:** add navigation sub-theme, shimmer, and interaction.active tokens ([#42](https://github.com/zainadeel/tokomo/issues/42)) ([62edfc6](https://github.com/zainadeel/tokomo/commit/62edfc6ade2aa7f85d01dbb4858100509ee41b2b))
+
 ## [2.4.0](https://github.com/zainadeel/tokomo/compare/v2.3.1...v2.4.0) (2026-04-29)
 
 

@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.5.1](https://github.com/zainadeel/tokomo/compare/v2.5.0...v2.5.1) (2026-05-04)
+
+
+### Fixed
+
+* **dimensions:** update size-icon values from mobile Figma export ([#45](https://github.com/zainadeel/tokomo/issues/45)) ([61eb2a5](https://github.com/zainadeel/tokomo/commit/61eb2a5872517560e8f99038e8ed0e12d3b768f6))
+
 ## [2.5.0](https://github.com/zainadeel/tokomo/compare/v2.4.0...v2.5.0) (2026-05-01)
 
 

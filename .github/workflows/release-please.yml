@@ -3,6 +3,15 @@ name: Release Please
 on:
   push:
     branches: [main]
+  # Recovery path: re-run only the publish step against an existing tag,
+  # e.g. if release-please created the tag + GH Release but errored before
+  # the publish job could run. Skips the release-please job entirely.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to publish to npm (e.g. v1.2.3). Recovery only — skips release-please.'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -12,6 +21,7 @@ jobs:
   release-please:
     name: Open / update release PR
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -27,7 +37,16 @@ jobs:
   publish:
     name: Publish to npm (OIDC)
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    # Run when:
+    #  - push: release-please created a release this run, OR
+    #  - workflow_dispatch: operator is recovering a previously-tagged release.
+    # `always()` is required so this job still evaluates when release-please was
+    # skipped (workflow_dispatch path) instead of inheriting its skipped state.
+    if: |
+      always() && (
+        (github.event_name == 'push' && needs.release-please.outputs.release_created) ||
+        github.event_name == 'workflow_dispatch'
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,7 +55,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+          ref: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v6

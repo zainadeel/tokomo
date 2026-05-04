@@ -722,9 +722,9 @@
   "size-icon": {
     "xs": {
       "$type": "number",
-      "$value": 15,
+      "$value": 12,
       "$extensions": {
-        "com.figma.variableId": "VariableID:18545:23",
+        "com.figma.variableId": "VariableID:18533:67",
         "com.figma.scopes": [
           "WIDTH_HEIGHT"
         ],
@@ -733,9 +733,9 @@
     },
     "sm": {
       "$type": "number",
-      "$value": 18,
+      "$value": 16,
       "$extensions": {
-        "com.figma.variableId": "VariableID:18545:22",
+        "com.figma.variableId": "VariableID:18533:66",
         "com.figma.scopes": [
           "WIDTH_HEIGHT"
         ],
@@ -744,9 +744,9 @@
     },
     "md": {
       "$type": "number",
-      "$value": 24,
+      "$value": 20,
       "$extensions": {
-        "com.figma.variableId": "VariableID:18545:20",
+        "com.figma.variableId": "VariableID:18533:65",
         "com.figma.scopes": [
           "WIDTH_HEIGHT"
         ],
@@ -755,9 +755,9 @@
     },
     "lg": {
       "$type": "number",
-      "$value": 30,
+      "$value": 24,
       "$extensions": {
-        "com.figma.variableId": "VariableID:18545:19",
+        "com.figma.variableId": "VariableID:18533:64",
         "com.figma.scopes": [
           "WIDTH_HEIGHT"
         ],
@@ -766,9 +766,9 @@
     },
     "xl": {
       "$type": "number",
-      "$value": 36,
+      "$value": 32,
       "$extensions": {
-        "com.figma.variableId": "VariableID:18545:21",
+        "com.figma.variableId": "VariableID:18533:62",
         "com.figma.scopes": [
           "WIDTH_HEIGHT"
         ],
@@ -777,9 +777,9 @@
     },
     "2xl": {
       "$type": "number",
-      "$value": 42,
+      "$value": 48,
       "$extensions": {
-        "com.figma.variableId": "VariableID:18545:18",
+        "com.figma.variableId": "VariableID:18533:61",
         "com.figma.scopes": [
           "WIDTH_HEIGHT"
         ],
@@ -788,9 +788,9 @@
     },
     "3xl": {
       "$type": "number",
-      "$value": 48,
+      "$value": 64,
       "$extensions": {
-        "com.figma.variableId": "VariableID:18545:17",
+        "com.figma.variableId": "VariableID:18533:63",
         "com.figma.scopes": [
           "WIDTH_HEIGHT"
         ],

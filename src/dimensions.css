@@ -81,13 +81,13 @@
   --dimension-size-050: calc(var(--dimension-size-base) / 2);
 
   /* Iconography — semantic icon size aliases, calc() relative to --dimension-size-base */
-  --dimension-iconography-xs: calc(var(--dimension-size-base) * 15 / 8);
-  --dimension-iconography-sm: calc(var(--dimension-size-base) * 9 / 4);
-  --dimension-iconography-md: calc(var(--dimension-size-base) * 3);
-  --dimension-iconography-lg: calc(var(--dimension-size-base) * 15 / 4);
-  --dimension-iconography-xl: calc(var(--dimension-size-base) * 9 / 2);
-  --dimension-iconography-2xl: calc(var(--dimension-size-base) * 21 / 4);
-  --dimension-iconography-3xl: calc(var(--dimension-size-base) * 6);
+  --dimension-iconography-xs: calc(var(--dimension-size-base) * 3 / 2);
+  --dimension-iconography-sm: calc(var(--dimension-size-base) * 2);
+  --dimension-iconography-md: calc(var(--dimension-size-base) * 5 / 2);
+  --dimension-iconography-lg: calc(var(--dimension-size-base) * 3);
+  --dimension-iconography-xl: calc(var(--dimension-size-base) * 4);
+  --dimension-iconography-2xl: calc(var(--dimension-size-base) * 6);
+  --dimension-iconography-3xl: calc(var(--dimension-size-base) * 8);
 
   /* Card widths */
   --dimension-card-width-sm: 400px;

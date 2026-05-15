@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.6.0](https://github.com/zainadeel/tokomo/compare/v2.5.1...v2.6.0) (2026-05-15)
+
+
+### Added
+
+* **colors, dimensions:** update semantic color and dimension tokens from Figma ([#49](https://github.com/zainadeel/tokomo/issues/49)) ([0a7d9b0](https://github.com/zainadeel/tokomo/commit/0a7d9b0a02a67214a7129f0e772a3a48a09e394c))
+
 ## [2.5.1](https://github.com/zainadeel/tokomo/compare/v2.5.0...v2.5.1) (2026-05-04)
 
 

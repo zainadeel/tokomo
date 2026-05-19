@@ -20,7 +20,6 @@
   --dimension-space-400: calc(var(--dimension-space-base) * 4);
   --dimension-space-600: calc(var(--dimension-space-base) * 6);
   --dimension-space-800: calc(var(--dimension-space-base) * 8);
-  --dimension-space-base: var(--dimension-space-base);
   --dimension-space-000: 0;
   --dimension-space-012: calc(var(--dimension-space-base) / 8);
   --dimension-space-025: calc(var(--dimension-space-base) / 4);
@@ -48,11 +47,9 @@
   --dimension-radius-175: calc(var(--dimension-radius-base) * 7 / 4);
   --dimension-radius-200: calc(var(--dimension-radius-base) * 2);
   --dimension-radius-250: calc(var(--dimension-radius-base) * 5 / 2);
-  --dimension-radius-275: calc(var(--dimension-radius-base) * 11 / 4);
   --dimension-radius-300: calc(var(--dimension-radius-base) * 3);
   --dimension-radius-400: calc(var(--dimension-radius-base) * 4);
   --dimension-radius-600: calc(var(--dimension-radius-base) * 6);
-  --dimension-radius-base: var(--dimension-radius-base);
   --dimension-radius-000: 0;
   --dimension-radius-012: calc(var(--dimension-radius-base) / 8);
   --dimension-radius-025: calc(var(--dimension-radius-base) / 4);
@@ -62,7 +59,6 @@
   --dimension-radius-half: 9999px;
 
   /* Stroke widths — calc() relative to --dimension-stroke-width-base */
-  --dimension-stroke-width-base: var(--dimension-stroke-width-base);
   --dimension-stroke-width-012: calc(var(--dimension-stroke-width-base) / 8);
   --dimension-stroke-width-015: calc(var(--dimension-stroke-width-base) * 5 / 32);
   --dimension-stroke-width-018: calc(var(--dimension-stroke-width-base) * 3 / 16);
@@ -80,7 +76,6 @@
   --dimension-size-500: calc(var(--dimension-size-base) * 5);
   --dimension-size-600: calc(var(--dimension-size-base) * 6);
   --dimension-size-800: calc(var(--dimension-size-base) * 8);
-  --dimension-size-base: var(--dimension-size-base);
   --dimension-size-000: 0;
   --dimension-size-050: calc(var(--dimension-size-base) / 2);
 

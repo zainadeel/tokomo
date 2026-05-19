@@ -8929,7 +8929,7 @@
       }
     }
   },
-  "category": {
+  "color-intent": {
     "grey": {
       "strong": {
         "background": {
@@ -14018,7 +14018,7 @@
           0,
           0
         ],
-        "alpha": 0.10000000149011612,
+        "alpha": 0.15000000596046448,
         "hex": "#000000"
       },
       "$extensions": {
@@ -14030,8 +14030,8 @@
           "EFFECT_COLOR"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:a56e27b90245bf43ae7a6692763276ba72e90929/-1:-1",
-          "targetVariableName": "black/10",
+          "targetVariableId": "VariableID:0d917808298a9db63a89b1f054076bafabe264ce/-1:-1",
+          "targetVariableName": "black/15",
           "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
           "targetVariableSetName": "colors-reference"
         }

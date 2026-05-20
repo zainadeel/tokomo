@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.7.1](https://github.com/zainadeel/tokomo/compare/v2.7.0...v2.7.1) (2026-05-20)
+
+
+### Fixed
+
+* **colors:** remove duplicate magenta color-intent tokens ([#53](https://github.com/zainadeel/tokomo/issues/53)) ([0305d04](https://github.com/zainadeel/tokomo/commit/0305d04baee6d37ff39920485a2255ee65a5b867))
+
 ## [2.7.0](https://github.com/zainadeel/tokomo/compare/v2.6.0...v2.7.0) (2026-05-19)
 
 

@@ -39,6 +39,7 @@
     "./themes/light": "./dist/themes/light.css",
     "./themes/dark": "./dist/themes/dark.css",
     "./json": "./dist/tokens.json",
+    "./json/index": "./dist/tokens-index.json",
     "./json/colors": "./dist/json/colors.json",
     "./json/dimensions": "./dist/json/dimensions.json",
     "./json/typography": "./dist/json/typography.json",

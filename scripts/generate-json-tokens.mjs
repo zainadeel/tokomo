@@ -2,11 +2,12 @@
  * Generates machine-readable JSON token files from the CSS source files.
  *
  * Output:
- *   dist/tokens.json          — all tokens in one file
- *   dist/json/colors.json     — color tokens only
- *   dist/json/dimensions.json — dimension tokens only
- *   dist/json/typography.json — typography tokens only
- *   dist/json/effects.json    — effect tokens only
+ *   dist/tokens.json              — all tokens in one file (flat, keyed by CSS var name)
+ *   dist/json/colors.json         — color tokens only
+ *   dist/json/dimensions.json     — dimension tokens only
+ *   dist/json/typography.json     — typography tokens only
+ *   dist/json/effects.json        — effect tokens only
+ *   dist/tokens-index.json        — all tokens grouped by semantic subcategory
  *
  * Format (W3C Design Tokens Community Group compatible):
  *   { "token-name": { "$type": "color|dimension|...", "$value": "..." } }
@@ -101,3 +102,43 @@ writeFileSync(path.join(DIST_DIR, 'tokens.json'), JSON.stringify(allTokens, null
 
 const totalCount = Object.keys(allTokens).length;
 console.log(`    total: ${totalCount} tokens → dist/tokens.json`);
+
+// Generate tokens-index.json — one layer of nesting: top-level category → subcategory → tokens.
+// Colors split by source file (reference / semantic / data); others are flat.
+// Longer prefixes must come first so they take priority over the generic --color- fallback.
+const INDEX_RULES = [
+  [['colors', 'reference'], '--color-reference-'],
+  [['colors', 'data'],      '--color-data-'],
+  [['colors', 'semantic'],  '--color-'],
+  [['dimensions'],          '--dimension-'],
+  [['typography'],          '--typography-'],
+  [['effects'],             '--effect-'],
+];
+
+const indexGroups = {};
+
+for (const [tokenName, token] of Object.entries(allTokens)) {
+  const match = INDEX_RULES.find(([, prefix]) => tokenName.startsWith(prefix));
+  if (!match) continue;
+  const [keyPath] = match;
+  let node = indexGroups;
+  for (const key of keyPath.slice(0, -1)) {
+    if (!node[key]) node[key] = {};
+    node = node[key];
+  }
+  const leaf = keyPath[keyPath.length - 1];
+  if (!node[leaf]) node[leaf] = {};
+  node[leaf][tokenName] = token;
+}
+
+const tokensIndex = {
+  _meta: {
+    description: 'Tokens grouped by category and subcategory. Single Read, no grep needed.',
+    categories: Object.keys(indexGroups).sort(),
+  },
+  ...indexGroups,
+};
+
+writeFileSync(path.join(DIST_DIR, 'tokens-index.json'), JSON.stringify(tokensIndex, null, 2), 'utf8');
+const topLevelCount = Object.keys(indexGroups).length;
+console.log(`    index: ${topLevelCount} categories → dist/tokens-index.json`);

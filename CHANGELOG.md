@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.8.0](https://github.com/zainadeel/tokomo/compare/v2.7.1...v2.8.0) (2026-05-22)
+
+
+### Added
+
+* **build:** add tokens-index.json grouped by category ([#55](https://github.com/zainadeel/tokomo/issues/55)) ([c43c5f9](https://github.com/zainadeel/tokomo/commit/c43c5f91e01b1b3e9fec48ccdef128b6aa3b251c))
+
 ## [2.7.1](https://github.com/zainadeel/tokomo/compare/v2.7.0...v2.7.1) (2026-05-20)
 
 

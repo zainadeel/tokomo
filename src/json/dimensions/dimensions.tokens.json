@@ -564,6 +564,16 @@
           "WIDTH_HEIGHT"
         ]
       }
+    },
+    "075": {
+      "$type": "number",
+      "$value": 6,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:20281:6",
+        "com.figma.scopes": [
+          "WIDTH_HEIGHT"
+        ]
+      }
     }
   },
   "size-icon": {

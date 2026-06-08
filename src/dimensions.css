@@ -78,6 +78,7 @@
   --dimension-size-800: calc(var(--dimension-size-base) * 8);
   --dimension-size-000: 0;
   --dimension-size-050: calc(var(--dimension-size-base) / 2);
+  --dimension-size-075: calc(var(--dimension-size-base) * 3 / 4);
 
   /* Iconography — semantic icon size aliases, calc() relative to --dimension-size-base */
   --dimension-iconography-xs: calc(var(--dimension-size-base) * 3 / 2);

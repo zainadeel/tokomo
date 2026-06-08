@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.9.0](https://github.com/zainadeel/tokomo/compare/v2.8.0...v2.9.0) (2026-06-08)
+
+
+### Added
+
+* **dimensions:** add size-075 token (6px) ([#57](https://github.com/zainadeel/tokomo/issues/57)) ([0c119c2](https://github.com/zainadeel/tokomo/commit/0c119c2f3c1bf52e577d44e2c6ee5f3915ada8f7))
+
 ## [2.8.0](https://github.com/zainadeel/tokomo/compare/v2.7.1...v2.8.0) (2026-05-22)
 
 

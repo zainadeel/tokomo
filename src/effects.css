@@ -135,10 +135,10 @@
   /* ── elevated-sm ───────────────────────────────────────────────────────── */
   --effect-shadow-elevated-sm:
     0px 2px 4px -2px var(--color-elevation-shadow),
-    0px 0px 0px 1px  var(--color-elevation-shadow);
+    0px 0px 0px 0.5px  var(--color-elevation-shadow);
   --effect-highlight-elevated-sm:
     inset 0px 4px 2px -4px var(--color-elevation-highlight),
-    inset 0px 0px 0px 1px  var(--color-elevation-highlight);
+    inset 0px 0px 0px 0.5px  var(--color-elevation-highlight);
   --effect-elevation-elevated-sm:
     var(--effect-shadow-elevated-sm),
     var(--effect-highlight-elevated-sm);
@@ -146,10 +146,10 @@
   /* ── elevated-md ───────────────────────────────────────────────────────── */
   --effect-shadow-elevated-md:
     0px 4px 8px -2px var(--color-elevation-shadow),
-    0px 0px 0px 1px  var(--color-elevation-shadow);
+    0px 0px 0px 0.5px  var(--color-elevation-shadow);
   --effect-highlight-elevated-md:
     inset 0px 4px 2px -4px var(--color-elevation-highlight),
-    inset 0px 0px 0px 1px  var(--color-elevation-highlight);
+    inset 0px 0px 0px 0.5px  var(--color-elevation-highlight);
   --effect-elevation-elevated-md:
     var(--effect-shadow-elevated-md),
     var(--effect-highlight-elevated-md);
@@ -157,10 +157,10 @@
   /* ── elevated-floating ─────────────────────────────────────────────────── */
   --effect-shadow-elevated-floating:
     0px 8px 16px -4px var(--color-elevation-shadow),
-    0px 0px 0px 1px   var(--color-elevation-shadow);
+    0px 0px 0px 0.5px   var(--color-elevation-shadow);
   --effect-highlight-elevated-floating:
     inset 0px 4px 2px -4px var(--color-elevation-highlight),
-    inset 0px 0px 0px 1px  var(--color-elevation-highlight);
+    inset 0px 0px 0px 0.5px  var(--color-elevation-highlight);
   --effect-elevation-elevated-floating:
     var(--effect-shadow-elevated-floating),
     var(--effect-highlight-elevated-floating);
@@ -170,10 +170,10 @@
   --effect-shadow-depressed-sm:
     0px -4px 2px -4px var(--color-elevation-shadow),
     0px  4px 2px -4px var(--color-elevation-highlight),
-    0px  0px 0px  1px var(--color-elevation-highlight);
+    0px  0px 0px  0.5px var(--color-elevation-highlight);
   --effect-highlight-depressed-sm:
     inset 0px 2px 4px -2px var(--color-elevation-shadow),
-    inset 0px 0px 0px 1px  var(--color-elevation-shadow);
+    inset 0px 0px 0px 0.5px  var(--color-elevation-shadow);
   --effect-elevation-depressed-sm:
     var(--effect-shadow-depressed-sm),
     var(--effect-highlight-depressed-sm);
@@ -182,10 +182,10 @@
   --effect-shadow-depressed-md:
     0px -4px 2px -4px var(--color-elevation-shadow),
     0px  4px 2px -4px var(--color-elevation-highlight),
-    0px  0px 0px  1px var(--color-elevation-highlight);
+    0px  0px 0px  0.5px var(--color-elevation-highlight);
   --effect-highlight-depressed-md:
     inset 0px 4px 8px -4px var(--color-elevation-shadow),
-    inset 0px 0px 0px 1px  var(--color-elevation-shadow);
+    inset 0px 0px 0px 0.5px  var(--color-elevation-shadow);
   --effect-elevation-depressed-md:
     var(--effect-shadow-depressed-md),
     var(--effect-highlight-depressed-md);
@@ -193,10 +193,10 @@
   /* ── elevated-panel-top (shadow casts downward, attaches to bottom of viewport) ── */
   --effect-shadow-elevated-panel-top:
     0px 4px 8px 0px var(--color-elevation-shadow),
-    0px 0px 0px 1px var(--color-elevation-shadow);
+    0px 0px 0px 0.5px var(--color-elevation-shadow);
   --effect-highlight-elevated-panel-top:
     inset 0px -4px 2px -4px var(--color-elevation-highlight),
-    inset 0px -1px 0px 0px  var(--color-elevation-highlight);
+    inset 0px -0.5px 0px 0px  var(--color-elevation-highlight);
   --effect-elevation-elevated-panel-top:
     var(--effect-shadow-elevated-panel-top),
     var(--effect-highlight-elevated-panel-top);
@@ -204,10 +204,10 @@
   /* ── elevated-panel-right (shadow casts leftward, panel attached to right edge) ── */
   --effect-shadow-elevated-panel-right:
     -4px 0px 8px -2px var(--color-elevation-shadow),
-    0px  0px 0px  1px var(--color-elevation-shadow);
+    0px  0px 0px  0.5px var(--color-elevation-shadow);
   --effect-highlight-elevated-panel-right:
     inset 4px 0px 2px -4px var(--color-elevation-highlight),
-    inset 1px 0px 0px 0px  var(--color-elevation-highlight);
+    inset 0.5px 0px 0px 0px  var(--color-elevation-highlight);
   --effect-elevation-elevated-panel-right:
     var(--effect-shadow-elevated-panel-right),
     var(--effect-highlight-elevated-panel-right);
@@ -215,10 +215,10 @@
   /* ── elevated-panel-bottom (shadow casts upward, attaches to top of viewport) ── */
   --effect-shadow-elevated-panel-bottom:
     0px -4px 8px 0px var(--color-elevation-shadow),
-    0px  0px 0px 1px var(--color-elevation-shadow);
+    0px  0px 0px 0.5px var(--color-elevation-shadow);
   --effect-highlight-elevated-panel-bottom:
     inset 0px 4px 2px -4px var(--color-elevation-highlight),
-    inset 0px 1px 0px 0px  var(--color-elevation-highlight);
+    inset 0px 0.5px 0px 0px  var(--color-elevation-highlight);
   --effect-elevation-elevated-panel-bottom:
     var(--effect-shadow-elevated-panel-bottom),
     var(--effect-highlight-elevated-panel-bottom);
@@ -226,10 +226,10 @@
   /* ── elevated-panel-left (shadow casts rightward, panel attached to left edge) ── */
   --effect-shadow-elevated-panel-left:
     4px 0px 8px -2px var(--color-elevation-shadow),
-    0px 0px 0px  1px var(--color-elevation-shadow);
+    0px 0px 0px  0.5px var(--color-elevation-shadow);
   --effect-highlight-elevated-panel-left:
     inset -4px 0px 2px -4px var(--color-elevation-highlight),
-    inset -1px 0px 0px 0px  var(--color-elevation-highlight);
+    inset -0.5px 0px 0px 0px  var(--color-elevation-highlight);
   --effect-elevation-elevated-panel-left:
     var(--effect-shadow-elevated-panel-left),
     var(--effect-highlight-elevated-panel-left);

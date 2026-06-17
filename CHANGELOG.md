@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.9.1](https://github.com/zainadeel/tokomo/compare/v2.9.0...v2.9.1) (2026-06-17)
+
+
+### Fixed
+
+* **effects:** reduce elevation border rings to 0.5px ([#60](https://github.com/zainadeel/tokomo/issues/60)) ([fb4211d](https://github.com/zainadeel/tokomo/commit/fb4211d5bcd5e1b2bda60fd22b7090f069466669))
+
 ## [2.9.0](https://github.com/zainadeel/tokomo/compare/v2.8.0...v2.9.0) (2026-06-08)
 
 

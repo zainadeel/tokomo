@@ -7,7 +7,7 @@
  * What this generates (from Figma):
  *   --effect-animation-duration-*   (ms) — instant, short-1/2/3, medium-1/2/3, long-1/2/3
  *   --effect-animation-delay-*      (ms) — instant, short-1/2/3, medium-1/2/3, long-1/2/3
- *   --effect-animation-easing-*     — ease-in, ease-out, ease-in-out, ease-in-out-back
+ *   --effect-animation-easing-*     — linear, ease-in, ease-out, ease-in-out, ease-in-out-back
  *   --effect-blur-*                 (px) — sm, md, lg
  *
  * What stays HAND-AUTHORED (not representable as Figma variables):

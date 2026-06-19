@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.10.0](https://github.com/zainadeel/tokomo/compare/v2.9.1...v2.10.0) (2026-06-19)
+
+
+### Added
+
+* **effects:** add linear easing token ([#62](https://github.com/zainadeel/tokomo/issues/62)) ([c64d688](https://github.com/zainadeel/tokomo/commit/c64d68837645b108609ab8f75c469bfa9bc75000))
+
 ## [2.9.1](https://github.com/zainadeel/tokomo/compare/v2.9.0...v2.9.1) (2026-06-17)
 
 

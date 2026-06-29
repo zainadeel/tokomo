@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.11.0](https://github.com/zainadeel/tokomo/compare/v2.10.0...v2.11.0) (2026-06-29)
+
+
+### Added
+
+* **effects:** adopt figma duration and easing variable types ([#64](https://github.com/zainadeel/tokomo/issues/64)) ([2df3e4a](https://github.com/zainadeel/tokomo/commit/2df3e4a2e541b0f406eff4032be7dbe880d877fb))
+
 ## [2.10.0](https://github.com/zainadeel/tokomo/compare/v2.9.1...v2.10.0) (2026-06-19)
 
 

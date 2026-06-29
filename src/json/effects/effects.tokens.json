@@ -2,187 +2,317 @@
   "animation": {
     "duration": {
       "instant": {
-        "$type": "number",
-        "$value": 0,
+        "$type": "duration",
+        "$value": {
+          "value": 0,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18445:15"
+          "com.figma.variableId": "VariableID:19139:7",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "short-1": {
-        "$type": "number",
-        "$value": 50,
+        "$type": "duration",
+        "$value": {
+          "value": 50,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18445:14"
+          "com.figma.variableId": "VariableID:19140:25",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "short-2": {
-        "$type": "number",
-        "$value": 100,
+        "$type": "duration",
+        "$value": {
+          "value": 100,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18637:8"
+          "com.figma.variableId": "VariableID:19140:26",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "short-3": {
-        "$type": "number",
-        "$value": 200,
+        "$type": "duration",
+        "$value": {
+          "value": 200,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18445:13"
+          "com.figma.variableId": "VariableID:19140:27",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "medium-1": {
-        "$type": "number",
-        "$value": 300,
+        "$type": "duration",
+        "$value": {
+          "value": 300,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18445:16"
+          "com.figma.variableId": "VariableID:19140:28",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "medium-2": {
-        "$type": "number",
-        "$value": 400,
+        "$type": "duration",
+        "$value": {
+          "value": 400,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18645:10"
+          "com.figma.variableId": "VariableID:19140:29",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "medium-3": {
-        "$type": "number",
-        "$value": 500,
+        "$type": "duration",
+        "$value": {
+          "value": 500,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18445:17"
+          "com.figma.variableId": "VariableID:19140:30",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "long-1": {
-        "$type": "number",
-        "$value": 750,
+        "$type": "duration",
+        "$value": {
+          "value": 750,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18445:18"
+          "com.figma.variableId": "VariableID:19140:31",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "long-2": {
-        "$type": "number",
-        "$value": 1000,
+        "$type": "duration",
+        "$value": {
+          "value": 1000,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18645:11"
+          "com.figma.variableId": "VariableID:19140:32",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "long-3": {
-        "$type": "number",
-        "$value": 2000,
+        "$type": "duration",
+        "$value": {
+          "value": 2000,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18637:6"
+          "com.figma.variableId": "VariableID:19140:33",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       }
     },
     "delay": {
       "instant": {
-        "$type": "number",
-        "$value": 0,
+        "$type": "duration",
+        "$value": {
+          "value": 0,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:107"
+          "com.figma.variableId": "VariableID:19140:13",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "short-1": {
-        "$type": "number",
-        "$value": 200,
+        "$type": "duration",
+        "$value": {
+          "value": 200,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:109"
+          "com.figma.variableId": "VariableID:19140:12",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "short-2": {
-        "$type": "number",
-        "$value": 300,
+        "$type": "duration",
+        "$value": {
+          "value": 300,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18637:7"
+          "com.figma.variableId": "VariableID:19140:14",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "short-3": {
-        "$type": "number",
-        "$value": 400,
+        "$type": "duration",
+        "$value": {
+          "value": 400,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18653:14"
+          "com.figma.variableId": "VariableID:19140:16",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "medium-1": {
-        "$type": "number",
-        "$value": 500,
+        "$type": "duration",
+        "$value": {
+          "value": 500,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18637:9"
+          "com.figma.variableId": "VariableID:19140:17",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "medium-2": {
-        "$type": "number",
-        "$value": 750,
+        "$type": "duration",
+        "$value": {
+          "value": 750,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:108"
+          "com.figma.variableId": "VariableID:19140:18",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "medium-3": {
-        "$type": "number",
-        "$value": 1000,
+        "$type": "duration",
+        "$value": {
+          "value": 1000,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18645:12"
+          "com.figma.variableId": "VariableID:19140:19",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "long-1": {
-        "$type": "number",
-        "$value": 2000,
+        "$type": "duration",
+        "$value": {
+          "value": 2000,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:105"
+          "com.figma.variableId": "VariableID:19140:21",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "long-2": {
-        "$type": "number",
-        "$value": 4000,
+        "$type": "duration",
+        "$value": {
+          "value": 4000,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:106"
+          "com.figma.variableId": "VariableID:19140:22",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "long-3": {
-        "$type": "number",
-        "$value": 6000,
+        "$type": "duration",
+        "$value": {
+          "value": 6000,
+          "unit": "ms"
+        },
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:104"
+          "com.figma.variableId": "VariableID:19140:23",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       }
     },
     "easing": {
       "linear": {
-        "$type": "string",
-        "$value": "cubic-bezier(0,0,1,1)",
+        "$type": "easing",
+        "$value": "cubic-bezier(0, 0, 1, 1)",
         "$extensions": {
-          "com.figma.variableId": "VariableID:19124:6",
-          "com.figma.type": "string"
+          "com.figma.variableId": "VariableID:19139:6",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "ease-in": {
-        "$type": "string",
-        "$value": "cubic-bezier(0.47,0,0.75,0.72)",
+        "$type": "easing",
+        "$value": "cubic-bezier(0.47, 0, 0.75, 0.72)",
         "$extensions": {
-          "com.figma.variableId": "VariableID:18647:13",
-          "com.figma.type": "string"
+          "com.figma.variableId": "VariableID:19140:8",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "ease-out": {
-        "$type": "string",
-        "$value": "cubic-bezier(0.17,0.84,0.44,1)",
+        "$type": "easing",
+        "$value": "cubic-bezier(0.17, 0.84, 0.44, 1)",
         "$extensions": {
-          "com.figma.variableId": "VariableID:18647:14",
-          "com.figma.type": "string"
+          "com.figma.variableId": "VariableID:19140:9",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "ease-in-out": {
-        "$type": "string",
-        "$value": "cubic-bezier(0.77,0,0.18,1)",
+        "$type": "easing",
+        "$value": "cubic-bezier(0.77, 0, 0.18, 1)",
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:116",
-          "com.figma.type": "string"
+          "com.figma.variableId": "VariableID:19140:10",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       },
       "ease-in-out-back": {
-        "$type": "string",
+        "$type": "easing",
         "$value": "cubic-bezier(0.22, 0.61, 0.01, 1.03)",
         "$extensions": {
-          "com.figma.variableId": "VariableID:18459:117",
-          "com.figma.type": "string"
+          "com.figma.variableId": "VariableID:19140:11",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
         }
       }
     }

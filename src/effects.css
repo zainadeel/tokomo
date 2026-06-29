@@ -32,10 +32,10 @@
   --effect-animation-delay-long-3: 6000ms;
 
   /* Animation easing curves */
-  --effect-animation-easing-linear: cubic-bezier(0,0,1,1);
-  --effect-animation-easing-ease-in: cubic-bezier(0.47,0,0.75,0.72);
-  --effect-animation-easing-ease-out: cubic-bezier(0.17,0.84,0.44,1);
-  --effect-animation-easing-ease-in-out: cubic-bezier(0.77,0,0.18,1);
+  --effect-animation-easing-linear: cubic-bezier(0, 0, 1, 1);
+  --effect-animation-easing-ease-in: cubic-bezier(0.47, 0, 0.75, 0.72);
+  --effect-animation-easing-ease-out: cubic-bezier(0.17, 0.84, 0.44, 1);
+  --effect-animation-easing-ease-in-out: cubic-bezier(0.77, 0, 0.18, 1);
   --effect-animation-easing-ease-in-out-back: cubic-bezier(0.22, 0.61, 0.01, 1.03);
 
 

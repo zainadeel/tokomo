@@ -28,6 +28,15 @@ const PKG_ROOT = path.resolve(__dirname, '..');
 const SOURCE = path.join(PKG_ROOT, 'src/json/effects/effects.tokens.json');
 const OUTPUT  = path.join(PKG_ROOT, 'src/effects.css');
 
+/** Resolve duration tokens — supports Figma `duration` type ({ value, unit }) and legacy plain numbers. */
+const resolveDuration = (token) => {
+  const v = token.$value;
+  if (v != null && typeof v === 'object' && 'value' in v) {
+    return `${v.value}${v.unit ?? 'ms'}`;
+  }
+  return `${v}ms`;
+};
+
 const generate = () => {
   const json = JSON.parse(readFileSync(SOURCE, 'utf8'));
   const lines = [];
@@ -42,14 +51,14 @@ const generate = () => {
   // ── animation duration ────────────────────────────────────────────────────
   lines.push('  /* Animation durations */');
   for (const [key, token] of Object.entries(json.animation.duration)) {
-    lines.push(`  --effect-animation-duration-${key}: ${token.$value}ms;`);
+    lines.push(`  --effect-animation-duration-${key}: ${resolveDuration(token)};`);
   }
   lines.push('');
 
   // ── animation delay ───────────────────────────────────────────────────────
   lines.push('  /* Animation delays */');
   for (const [key, token] of Object.entries(json.animation.delay)) {
-    lines.push(`  --effect-animation-delay-${key}: ${token.$value}ms;`);
+    lines.push(`  --effect-animation-delay-${key}: ${resolveDuration(token)};`);
   }
   lines.push('');
 

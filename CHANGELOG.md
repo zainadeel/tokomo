@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.12.0](https://github.com/zainadeel/tokomo/compare/v2.11.3...v2.12.0) (2026-07-03)
+
+
+### Added
+
+* **docs:** add package favicon with system dark mode ([#74](https://github.com/zainadeel/tokomo/issues/74)) ([88e3f35](https://github.com/zainadeel/tokomo/commit/88e3f354bafcdc804235627680b84b2a06a898b2))
+
 ## [2.11.3](https://github.com/zainadeel/tokomo/compare/v2.11.2...v2.11.3) (2026-07-03)
 
 

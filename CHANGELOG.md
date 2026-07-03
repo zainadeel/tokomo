@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.11.1](https://github.com/zainadeel/tokomo/compare/v2.11.0...v2.11.1) (2026-07-03)
+
+
+### Fixed
+
+* **ci:** deploy token browser to Pages only after successful npm publish ([#67](https://github.com/zainadeel/tokomo/issues/67)) ([b3ad236](https://github.com/zainadeel/tokomo/commit/b3ad236638681f0baca03c1bcb31c87f58299ac9))
+
 ## [2.11.0](https://github.com/zainadeel/tokomo/compare/v2.10.0...v2.11.0) (2026-06-29)
 
 

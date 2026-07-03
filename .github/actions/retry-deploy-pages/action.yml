@@ -12,7 +12,7 @@ runs:
   steps:
     - name: Promote artifact to GitHub Pages (retry)
       id: deploy
-      uses: Wandalen/wretry.action/main@v3.6.1
+      uses: Wandalen/wretry.action@v3.8.0
       with:
         action: actions/deploy-pages@v5
         attempt_limit: 3

@@ -86,7 +86,9 @@ If the text is functioning as a title, use a title style rather than trying to f
 
 ## 6. Underline Styles
 
-Underline treatments are available for body, title, and caption styles when the text needs to communicate a specific interactive meaning.
+> **Not shipped in `@ds-mo/tokens` typography utilities today.** The classes in `src/typography.css` are body/title/caption size + emphasis only — no underline utilities exist yet. The guidance below is reserved for when link/reveal underline tokens are added.
+
+Underline treatments are intended for body, title, and caption styles when text needs to communicate a specific interactive meaning.
 
 Use a solid underline to indicate that the text is a hyperlink or tappable link.
 

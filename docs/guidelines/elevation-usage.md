@@ -4,15 +4,17 @@
 
 This document explains how elevation styles should be used in product UI.
 
+**CSS variables** use the prefix `--effect-elevation-{name}` (see `src/effects.css`). TokoMo also exposes split `--effect-shadow-*` and `--effect-highlight-*` tokens when you need overflow-safe clipping.
+
 ## 2. Quick Decision Rule
 
 Use this rule first:
 
-1. if the surface touches most of its container edges, use a panel elevation,
-2. if the surface has breathing room on all four sides, use `flat` or `elevated`,
-3. if the surface has breathing room on all four sides and is meant to visually float above other content, use `floating`,
-4. if the surface should feel inset or embedded, use `depressed`,
-5. if elevation is intentionally turned off, use `none`.
+1. if the surface touches most of its container edges, use a **panel** elevation,
+2. if the surface has breathing room on all four sides, use `elevated-sm` or `elevated-md`,
+3. if the surface has breathing room on all four sides and is meant to visually float above other content, use `elevated-floating`,
+4. if the surface should feel inset or embedded, use `depressed-sm` or `depressed-md`,
+5. if elevation is intentionally turned off, use `elevated-none`.
 
 In practice, panel elevations are for surfaces that touch at least three sides of the container they live in, or otherwise read as edge-attached.
 
@@ -22,7 +24,7 @@ Panel elevations are for surfaces that are attached to the boundary of the area 
 
 These styles are directional. The panel direction should match the side of the container that the panel is attached to.
 
-This makes them the right choice for anchored surfaces such as:
+Typical use cases:
 
 1. app headers,
 2. bottom bars,
@@ -31,81 +33,59 @@ This makes them the right choice for anchored surfaces such as:
 
 Use the panel direction that matches the aligned edge of the surface:
 
-1. `elevation-panel-top` for a top header or top app bar,
-2. `elevation-panel-bottom` for a bottom bar or footer surface,
-3. `elevation-panel-left` for a left-side drawer,
-4. `elevation-panel-right` for a right-side drawer.
+| Token suffix | CSS variable | Use for |
+| --- | --- | --- |
+| `elevated-panel-top` | `--effect-elevation-elevated-panel-top` | top header / app bar |
+| `elevated-panel-bottom` | `--effect-elevation-elevated-panel-bottom` | bottom bar / footer |
+| `elevated-panel-left` | `--effect-elevation-elevated-panel-left` | left drawer |
+| `elevated-panel-right` | `--effect-elevation-elevated-panel-right` | right drawer |
 
-Do not use panel elevations on floating cards or standalone containers. They are intentionally asymmetric and will look wrong when the surface is expected to have clearance on every side.
+Do not use panel elevations on floating cards or standalone containers.
 
 ## 4. Non-Panel Elevations
 
-`elevation-flat`, `elevation-elevated`, and `elevation-floating` are for surfaces that do not touch surrounding boundaries on any of their four sides.
+`elevated-sm`, `elevated-md`, and `elevated-floating` are for surfaces that do not touch surrounding boundaries on all four sides.
 
-These styles should be used for elements that sit with visible space around them, such as:
+Typical use cases: cards, free-standing containers, inset UI with clearance on all sides.
 
-1. cards,
-2. free-standing containers,
-3. inset UI elements that sit inside a surface with visible clearance all around.
+| Token suffix | CSS variable | Lift |
+| --- | --- | --- |
+| `elevated-sm` | `--effect-elevation-elevated-sm` | lightest raised |
+| `elevated-md` | `--effect-elevation-elevated-md` | standard raised |
+| `elevated-floating` | `--effect-elevation-elevated-floating` | floats above content (FAB, menus, modals) |
 
-The difference between them is amount of lift:
-
-1. `elevation-flat` is the lightest raised treatment,
-2. `elevation-elevated` is the standard raised treatment,
-3. `elevation-floating` is for elements that are visually floating above other elements and may have content pass underneath them.
-
-`elevation-floating` is primarily for genuinely floating UI such as:
-
-1. FAB buttons,
-2. popups,
-3. dropdown menus,
-4. modals,
-5. other overlay-like elements that sit above surrounding content.
-
-Do not use `floating` just because an element needs more lift than `elevated`. If the surface is not actually meant to read as floating above other content, `flat` or `elevated` is usually the better choice.
-
-All three assume the element has separation from nearby boundaries. If the element is attached to an edge, a panel elevation is usually the better fit.
+Do not use `elevated-floating` just because an element needs more lift than `elevated-md`.
 
 ## 5. Depressed Elevation
 
-`elevation-depressed` is for elements that should appear embedded within a surrounding surface rather than raised above it.
+`depressed-sm` and `depressed-md` are for elements that should appear embedded within a surrounding surface.
 
-The most common example is an input field, but the style can be used anywhere the intent is to show that something is inset into the surface.
+| Token suffix | CSS variable |
+| --- | --- |
+| `depressed-sm` | `--effect-elevation-depressed-sm` |
+| `depressed-md` | `--effect-elevation-depressed-md` |
 
-Typical use cases are:
-
-1. text inputs,
-2. embedded fields,
-3. inset control regions,
-4. other surfaces that are meant to read as carved into their parent surface.
-
-Like the non-panel raised elevations, `depressed` should generally only be used when the element has visible clearance on all four sides. It is not intended for edge-attached surfaces.
+Typical use cases: text inputs, embedded fields, inset control regions.
 
 ## 6. None
 
-`elevation-none` is for cases where elevation is still part of the component model, but the visual result should be no elevation treatment.
-
-Use it when:
-
-1. a component supports elevation variants but should currently render flat,
-2. you want to explicitly choose no elevation instead of leaving the elevation state undefined,
-3. you need a zero-elevation option that still fits into the same naming system as the other elevation styles.
+`elevated-none` (`--effect-elevation-elevated-none`) is for cases where elevation is part of the component model but the visual result should be flat.
 
 ## 7. Anti-Patterns
 
 Avoid these patterns:
 
 1. using a panel elevation on a card that has open space on all four sides,
-2. using `flat`, `elevated`, `floating`, or `depressed` on a surface that is attached to a container edge,
-3. choosing a panel direction that does not match the side the panel is aligned to,
-4. using `depressed` for elements that are meant to read as raised above the surface,
-5. using `floating` on a normal card or container that is not meant to visually hover above other content,
-6. leaving elevation unspecified when the component API is expected to choose between named elevation styles.
+2. using `elevated-sm` / `elevated-md` / `elevated-floating` / `depressed-*` on a surface attached to a container edge,
+3. choosing a panel direction that does not match the aligned edge,
+4. using `depressed-*` for elements meant to read as raised,
+5. using `elevated-floating` on a normal card that is not meant to hover above other content,
+6. leaving elevation unspecified when the component API expects a named elevation style.
 
 ## 8. Practical Summary
 
-If the surface is attached to the boundary of its container, use a panel elevation.
+If the surface is attached to the boundary of its container, use a panel elevation (`elevated-panel-*`).
 
-If the surface has clearance on all four sides, use `flat` or `elevated` for standard raised surfaces, `floating` for elements that visually hover above other content, and `depressed` for surfaces that should read as inset.
+If the surface has clearance on all four sides, use `elevated-sm` or `elevated-md` for raised surfaces, `elevated-floating` for overlays, and `depressed-sm` / `depressed-md` for inset surfaces.
 
-If the component still needs an elevation value but should render with no visual lift, use `none`.
+If the component needs an elevation value but should render flat, use `elevated-none`.

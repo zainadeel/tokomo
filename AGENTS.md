@@ -67,13 +67,13 @@ src/
   colors.css           # Color token CSS (generated from JSON sources)
   dimensions.css       # Spacing/sizing token CSS
   typography.css       # Font family/size/weight/line-height token CSS
-  effects.css          # Shadow/blur/border-radius token CSS
-  globals.css          # Global/semantic tokens (references other categories)
+  effects.css          # Animation, motion, blur, shadow, elevation tokens
+  globals.css          # App base styles (Inter import, focus rings, reduced-motion)
   reset.css            # CSS reset
   utilities.css        # Utility classes
   themes/
-    light.css          # Light theme token overrides
-    dark.css           # Dark theme token overrides
+    light.css          # `color-scheme: light` only
+    dark.css           # `color-scheme: dark` only
   index.css            # Combined barrel import
   json/
     colors/
@@ -127,10 +127,10 @@ No separate test/lint commands — validation is done by the Build workflow on e
 ## Build pipeline (what `npm run build` does)
 
 1. **Clean** — nuke `dist/`, recreate subdirs (`dist/themes/`, `dist/json/`)
-2. **Generate CSS** — each `generate-*-tokens.mjs` script reads the corresponding `src/json/*.json` (Figma export) and produces a `dist/*.css` file
-3. **Copy static CSS** — `src/*.css` files that are not generated (themes, reset, utilities, globals, index) are copied verbatim to `dist/`
-4. **Generate JSON** (`generate-json-tokens.mjs`) — merges per-category sources into `dist/tokens.json` + per-category `dist/json/*.json`
-5. **Generate TypeScript** (`generate-ts-constants.mjs`) — emits `dist/index.mjs`, `dist/index.cjs`, `dist/index.d.ts` with named constants for every token name
+2. **Generate CSS** — each `generate-*-tokens.mjs` reads `src/json/**` and writes **`src/*.css`** (committed source)
+3. **Copy to dist** — `scripts/build.mjs` copies `src/*.css` and `src/themes/` into `dist/`
+4. **Generate JSON** (`generate-json-tokens.mjs`) — parses **`src/*.css`** custom properties → `dist/tokens.json`, `dist/json/*.json`, `dist/tokens-index.json`
+5. **Generate TypeScript** (`generate-ts-constants.mjs`) — emits `dist/index.mjs`, `dist/index.cjs`, `dist/index.d.ts`
 
 ---
 
@@ -142,7 +142,7 @@ Light/dark theming is **CSS-only** — no JavaScript. Consuming apps toggle the 
 <html data-theme="dark">
 ```
 
-All token values are defined as CSS custom properties. Theme files override them for the relevant mode.
+All token values are defined as CSS custom properties. **Color** light/dark values live in `src/colors.css` under `:root` and `:root[data-theme="dark"]`. `src/themes/light.css` and `dark.css` only set `color-scheme` for native form controls.
 
 ---
 
@@ -187,7 +187,9 @@ Subject must **start with a lowercase letter** (workflow enforced). Scope is opt
 **Version-bumping types** (trigger a release PR via release-please):
 - `feat:` → minor bump
 - `fix:` / `perf:` → patch bump
-- `feat!:` or `BREAKING CHANGE:` footer → major bump (pre-1.0: bump minor instead)
+- `feat!:` or `BREAKING CHANGE:` footer → major bump
+
+Breaking token renames require a **major** semver bump (`@ds-mo/tokens` is post-2.0).
 - `ci:` / `chore:` / `build:` / `test:` / `style:` / `docs:` / `refactor:` → **do not trigger a release** (most hidden in changelog; `docs` is visible)
 
 See `release-please-config.json` for the type → changelog section mapping.
@@ -200,7 +202,7 @@ See `release-please-config.json` for the type → changelog section mapping.
 
 ## Versioning
 
-Pre-1.0: breaking token renames ship as **minor** bumps. Once we hit `1.0.0`, renames go behind majors.
+Breaking token renames require a **major** semver bump.
 
 Current version lives in three places — keep them in sync for releases not driven by release-please:
 - `package.json` `"version"`

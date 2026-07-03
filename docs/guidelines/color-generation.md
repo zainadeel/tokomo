@@ -4,7 +4,7 @@
 
 This document explains how the core color should be understood and maintained in this repository. It adapts the working color-generation specification to the token structure that exists here:
 
-1. reference colors live in `tokens/colors/reference/hex.tokens.json`,
+1. reference colors live in `src/json/colors/reference/color.reference.tokens.json`,
 2. data and semantic colors consume those reference colors by alias,
 3. the exported token JSON files are the shipped source of truth.
 
@@ -14,11 +14,11 @@ If this document and the token JSON files ever disagree, the token JSON files wi
 
 The repository-level color is defined by these files:
 
-1. `tokens/colors/reference/hex.tokens.json`
-2. `tokens/colors/data/light.tokens.json`
-3. `tokens/colors/data/dark.tokens.json`
-4. `tokens/colors/semantic/light.tokens.json`
-5. `tokens/colors/semantic/dark.tokens.json`
+1. `src/json/colors/reference/color.reference.tokens.json`
+2. `src/json/colors/data/color.data.light.tokens.json`
+3. `src/json/colors/data/color.data.dark.tokens.json`
+4. `src/json/colors/semantic/color.semantic.light.tokens.json`
+5. `src/json/colors/semantic/color.semantic.dark.tokens.json`
 6. `tools/color-system/oklch-utils.js`
 7. `tools/color-system/run-color-generation-workflow.js`
 
@@ -38,7 +38,7 @@ Generation rules in this document apply primarily to the reference layer. Data a
 
 ### 3.2 Reference File Shape
 
-The top-level structure of `tokens/colors/reference/hex.tokens.json` is:
+The top-level structure of `src/json/colors/reference/color.reference.tokens.json` is:
 
 1. `black`
 2. `white`

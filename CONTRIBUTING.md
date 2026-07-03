@@ -5,10 +5,10 @@ Thanks for helping. This is a Figma-first token package — the source of truth 
 ## How it works
 
 ```
-Figma variables → JSON export → generator scripts → CSS → dist
+Figma variables → JSON export → generator scripts → src/*.css → dist/
 ```
 
-The `src/json/` directories hold raw Figma variable exports. Generator scripts in `scripts/` read them and produce CSS. The build compiles everything into `dist/`.
+The `src/json/` directories hold raw Figma variable exports. Generator scripts write **`src/*.css`** (committed). `scripts/build.mjs` copies those files into `dist/` and emits JSON + TypeScript artifacts.
 
 ## Adding or updating tokens from Figma
 
@@ -72,7 +72,7 @@ This package uses [release-please](https://github.com/googleapis/release-please)
 |---|---|
 | `feat:` | minor |
 | `fix:` / `perf:` | patch |
-| `feat!:` / `BREAKING CHANGE:` | major (minor pre-1.0) |
+| `feat!:` / `BREAKING CHANGE:` | major |
 | `ci:` / `chore:` / `build:` / `test:` / `style:` / `docs:` / `refactor:` | no release |
 
 On merge of the release PR, the `publish` job publishes to npm with `--provenance` via OIDC Trusted Publisher — no `npm publish` by hand.

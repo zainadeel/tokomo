@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.11.2](https://github.com/zainadeel/tokomo/compare/v2.11.1...v2.11.2) (2026-07-03)
+
+
+### Documentation
+
+* fix token paths, elevation names, and build pipeline ([#70](https://github.com/zainadeel/tokomo/issues/70)) ([4c54629](https://github.com/zainadeel/tokomo/commit/4c546295caf1edb695b0f9c9328fe2a739db3f28))
+
 ## [2.11.1](https://github.com/zainadeel/tokomo/compare/v2.11.0...v2.11.1) (2026-07-03)
 
 

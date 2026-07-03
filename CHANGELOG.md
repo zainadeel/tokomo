@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.12.1](https://github.com/zainadeel/tokomo/compare/v2.12.0...v2.12.1) (2026-07-03)
+
+
+### Fixed
+
+* **docs:** use vector SVG favicon instead of pixel trace ([#76](https://github.com/zainadeel/tokomo/issues/76)) ([936ac3f](https://github.com/zainadeel/tokomo/commit/936ac3ff6627fdf747e0997c60ccf247ef9ea989))
+
 ## [2.12.0](https://github.com/zainadeel/tokomo/compare/v2.11.3...v2.12.0) (2026-07-03)
 
 

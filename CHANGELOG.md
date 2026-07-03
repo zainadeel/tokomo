@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.11.3](https://github.com/zainadeel/tokomo/compare/v2.11.2...v2.11.3) (2026-07-03)
+
+
+### Fixed
+
+* **ci:** use valid wretry.action tag for Pages deploy ([#72](https://github.com/zainadeel/tokomo/issues/72)) ([12563bd](https://github.com/zainadeel/tokomo/commit/12563bd13789fbc1c0e2f8d250fa03450e6ea8d2))
+
 ## [2.11.2](https://github.com/zainadeel/tokomo/compare/v2.11.1...v2.11.2) (2026-07-03)
 
 

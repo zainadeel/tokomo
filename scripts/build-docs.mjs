@@ -20,6 +20,9 @@ const root = join(__dirname, '..');
 const distDir = join(root, 'dist');
 const docsDir = join(root, 'docs');
 
+const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+const packageLabel = `${pkg.name} v${pkg.version}`;
+
 mkdirSync(docsDir, { recursive: true });
 
 // ── Read dist CSS files ─────────────────────────────────────────────────────
@@ -518,6 +521,7 @@ const TOKEN_DATA_JS =
 // ── Generate HTML ─────────────────────────────────────────────────────────────
 
 let html = readFileSync(join(__dirname, 'docs-template.html'), 'utf8');
+html = html.replaceAll('@@PACKAGE_LABEL@@', packageLabel);
 html = html.replace('/* @@TOKEN_CSS@@ */',  TOKEN_CSS);
 html = html.replace('/* @@TOKEN_DATA@@ */', TOKEN_DATA_JS);
 

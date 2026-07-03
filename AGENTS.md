@@ -261,7 +261,7 @@ Must be done manually by the package owner once:
 | `pr-title.yml` | PR opened/edited | Enforce conventional-commit PR titles (lowercase subject) |
 | `codeql.yml` | Push/PR to main, weekly Sunday | GitHub CodeQL JS/TS security scan |
 | `release-please.yml` | Push to main | Open release PR on feat/fix; publish to npm via OIDC when release PR merges |
-| `deploy.yml` | Push to main, manual | Build + deploy token browser to GitHub Pages |
+| `deploy.yml` | After successful npm publish (release-please), manual | Build + deploy token browser to GitHub Pages |
 | `dependabot.yml` | Monthly | Bump github-actions + npm devDependencies |
 
 ---

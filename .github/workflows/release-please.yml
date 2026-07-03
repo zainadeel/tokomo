@@ -79,3 +79,15 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --provenance --access public
+
+  deploy-pages:
+    name: Deploy token browser to GitHub Pages
+    needs: publish
+    if: success()
+    uses: ./.github/workflows/deploy.yml
+    with:
+      ref: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

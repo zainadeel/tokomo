@@ -1,0 +1,19 @@
+name: Deploy Pages with retry
+description: |
+  Wraps actions/deploy-pages@v5 with retries for transient GitHub Pages API
+  failures (e.g. "Deployment failed, try again later."). Only the promote step
+  is retried — build and upload steps are unchanged.
+outputs:
+  page_url:
+    description: Deployed site URL
+    value: ${{ steps.deploy.outputs.page_url }}
+runs:
+  using: composite
+  steps:
+    - name: Promote artifact to GitHub Pages (retry)
+      id: deploy
+      uses: Wandalen/wretry.action/main@v3.6.1
+      with:
+        action: actions/deploy-pages@v5
+        attempt_limit: 3
+        attempt_delay: 45000

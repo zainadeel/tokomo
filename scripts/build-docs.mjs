@@ -129,14 +129,20 @@ function getColorCategory(name) {
   //   diverging-X-Y-S-N   → "data-diverging-X-Y"   (step count S rendered as a sub-row)
   //   sequence-X-S-N      → "data-sequence-X"      (step count S rendered as a sub-row)
   //   win-loss-*          → "data-win-loss"
-  //   misc-N              → "data-misc"
+  //   misc-*              → "data-misc"
+  //   intent-*            → "data-intent"
+  //   status-device-*      → "data-status-device"  (multi-word suffixes like powered-off)
+  //   score-safety-*      → "data-score-safety"
   if (name.startsWith('--color-data-')) {
     const rest = name.slice('--color-data-'.length);
-    if (rest.startsWith('category-'))  return 'data-category';
-    if (rest.startsWith('diverging-')) return rest.replace(/-\d+-\d+$/, '').replace(/^/, 'data-');
-    if (rest.startsWith('sequence-'))  return rest.replace(/-\d+-\d+$/, '').replace(/^/, 'data-');
-    if (rest.startsWith('win-loss-'))  return 'data-win-loss';
-    if (rest.startsWith('misc-'))      return 'data-misc';
+    if (rest.startsWith('category-'))      return 'data-category';
+    if (rest.startsWith('diverging-'))     return rest.replace(/-\d+-\d+$/, '').replace(/^/, 'data-');
+    if (rest.startsWith('sequence-'))      return rest.replace(/-\d+-\d+$/, '').replace(/^/, 'data-');
+    if (rest.startsWith('win-loss-'))      return 'data-win-loss';
+    if (rest.startsWith('misc-'))          return 'data-misc';
+    if (rest.startsWith('intent-'))        return 'data-intent';
+    if (rest.startsWith('status-device-')) return 'data-status-device';
+    if (rest.startsWith('score-safety-'))  return 'data-score-safety';
   }
 
   const parts = name.replace(/^--color-/, '').split('-');
@@ -295,7 +301,8 @@ const semanticTokens = rawColors
   )
   .map(({ t }) => t);
 
-// Data order: Category → Diverging → Sequence → Win Loss → Misc.
+// Data order: Category → Diverging → Sequence → Win Loss → Misc → Intent →
+// Status Device → Score Safety.
 // Within Diverging/Sequence, sort by step count (5 before 7 before 9, etc.)
 // then by token index — so a line break can be inserted between step-count
 // sub-rows in the render step.
@@ -305,6 +312,9 @@ const DATA_CATEGORY_ORDER = [
   'data-sequence-blue',
   'data-win-loss',
   'data-misc',
+  'data-intent',
+  'data-status-device',
+  'data-score-safety',
 ];
 function dataCategoryRank(cat) {
   const i = DATA_CATEGORY_ORDER.indexOf(cat);
@@ -320,6 +330,7 @@ const dataTokens = rawColors
     (dataCategoryRank(a.category) - dataCategoryRank(b.category))
     || ((a.subgroup ? parseInt(a.subgroup, 10) : 0) - (b.subgroup ? parseInt(b.subgroup, 10) : 0))
     || (dataTokenIndex(a.name) - dataTokenIndex(b.name))
+    || a.name.localeCompare(b.name)
   );
 
 const colors = [...referenceTokens, ...semanticTokens, ...dataTokens]

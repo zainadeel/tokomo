@@ -13,6 +13,7 @@
  *   --dimension-size-*               calc() expressions relative to --dimension-size-base
  *   --dimension-iconography-*        calc() expressions relative to --dimension-size-base
  *   --dimension-{card,modal,form,table-column,menu,tooltip,panel}-width-*   absolute px
+ *   --dimension-{card,modal}-height-*   absolute px (or % for fill)
  *   --dimension-offset-*             calc() expressions relative to --dimension-space-base
  *   --dimension-scale-*              unitless multipliers (passthrough)
  *   --dimension-z-index-*            unitless layering values (passthrough)
@@ -109,8 +110,10 @@ const generate = () => {
   lines.push('');
 
   // ── space ─────────────────────────────────────────────────────────────────
+  // Skip Figma `base` keys — those are emitted as aliases of --dimension-base above.
   lines.push('  /* Spacing — calc() relative to --dimension-space-base */');
   for (const [key, token] of Object.entries(json.space)) {
+    if (key === 'base') continue;
     lines.push(`  --dimension-space-${key}: ${toCalcExpr(token.$value, '--dimension-space-base')};`);
   }
   lines.push('');
@@ -118,6 +121,7 @@ const generate = () => {
   // ── radius ────────────────────────────────────────────────────────────────
   lines.push('  /* Radius — calc() relative to --dimension-radius-base */');
   for (const [key, token] of Object.entries(json.radius)) {
+    if (key === 'base') continue;
     lines.push(`  --dimension-radius-${key}: ${toCalcExpr(token.$value, '--dimension-radius-base')};`);
   }
   lines.push('');
@@ -125,6 +129,7 @@ const generate = () => {
   // ── stroke width ──────────────────────────────────────────────────────────
   lines.push('  /* Stroke widths — calc() relative to --dimension-stroke-width-base */');
   for (const [key, token] of Object.entries(json['width-stroke'])) {
+    if (key === 'base') continue;
     lines.push(`  --dimension-stroke-width-${key}: ${toCalcExpr(token.$value, '--dimension-stroke-width-base')};`);
   }
   lines.push('');
@@ -132,6 +137,7 @@ const generate = () => {
   // ── size ──────────────────────────────────────────────────────────────────
   lines.push('  /* Size — element width/height, calc() relative to --dimension-size-base */');
   for (const [key, token] of Object.entries(json.size)) {
+    if (key === 'base') continue;
     lines.push(`  --dimension-size-${key}: ${toCalcExpr(token.$value, '--dimension-size-base')};`);
   }
   lines.push('');
@@ -143,8 +149,8 @@ const generate = () => {
   }
   lines.push('');
 
-  // ── component widths (absolute px — not derived from base grid) ───────────
-  const widthGroups = [
+  // ── component widths/heights (absolute px — not derived from base grid) ───
+  const layoutGroups = [
     ['width-card',         'card-width',         'Card widths'],
     ['width-modal',        'modal-width',         'Modal widths'],
     ['width-form',         'form-width',          'Form widths'],
@@ -152,9 +158,11 @@ const generate = () => {
     ['width-menu',         'menu-width',          'Menu widths'],
     ['width-tooltip',      'tooltip-width',       'Tooltip widths'],
     ['width-panel',        'panel-width',         'Panel widths'],
+    ['height-card',        'card-height',         'Card heights'],
+    ['height-modal',       'modal-height',        'Modal heights'],
   ];
 
-  for (const [jsonKey, cssPrefix, comment] of widthGroups) {
+  for (const [jsonKey, cssPrefix, comment] of layoutGroups) {
     lines.push(`  /* ${comment} */`);
     for (const [key, token] of Object.entries(json[jsonKey])) {
       const isString = token.$type === 'string';

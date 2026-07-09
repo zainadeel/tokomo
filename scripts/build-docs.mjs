@@ -353,6 +353,8 @@ const DIM_GROUPS = [
   ['--dimension-menu-width-',         'layout'],
   ['--dimension-tooltip-width-',      'layout'],
   ['--dimension-panel-width-',        'layout'],
+  ['--dimension-card-height-',        'layout'],
+  ['--dimension-modal-height-',       'layout'],
   ['--dimension-offset-',             'offset'],
   ['--dimension-scale-',              'scale'],
   ['--dimension-z-index-',            'z-index'],
@@ -371,11 +373,11 @@ function getSizeRank(name) {
   const last = name.split('-').pop();
   return SIZE_RANK[last] ?? 50;
 }
-// "card" in "--dimension-card-width-sm" etc. — used to keep subtypes together
-// (all card widths, then form, then menu, …) while preserving source-file
-// order of the first subtype occurrence.
+// "card" in "--dimension-card-width-sm" / "--dimension-card-height-sm" etc. —
+// used to keep subtypes together (all card widths, then form, then menu, …)
+// while preserving source-file order of the first subtype occurrence.
 function getLayoutSubtype(name) {
-  const m = name.match(/^--dimension-([a-z-]+?)-width-/);
+  const m = name.match(/^--dimension-([a-z-]+?)-(?:width|height)-/);
   return m ? m[1] : '';
 }
 

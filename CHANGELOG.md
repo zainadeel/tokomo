@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.13.2](https://github.com/zainadeel/tokomo/compare/v2.13.1...v2.13.2) (2026-07-09)
+
+
+### Documentation
+
+* group data status-device colors under one section ([#82](https://github.com/zainadeel/tokomo/issues/82)) ([ac1353f](https://github.com/zainadeel/tokomo/commit/ac1353ff948db28dc379797b06cd89370f283353))
+
 ## [2.13.1](https://github.com/zainadeel/tokomo/compare/v2.13.0...v2.13.1) (2026-07-09)
 
 

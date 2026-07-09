@@ -139,6 +139,19 @@
   --dimension-panel-width-2xl: 800px;
   --dimension-panel-width-fill: 100%;
 
+  /* Card heights */
+  --dimension-card-height-xs: 300px;
+  --dimension-card-height-sm: 400px;
+  --dimension-card-height-md: 500px;
+  --dimension-card-height-lg: 600px;
+
+  /* Modal heights */
+  --dimension-modal-height-xs: 300px;
+  --dimension-modal-height-sm: 400px;
+  --dimension-modal-height-md: 500px;
+  --dimension-modal-height-lg: 600px;
+  --dimension-modal-height-fill: 100%;
+
   /* Offset — for transforms and background-position, calc() relative to --dimension-space-base */
   --dimension-offset-100: var(--dimension-space-base);
   --dimension-offset-125: calc(var(--dimension-space-base) * 5 / 4);

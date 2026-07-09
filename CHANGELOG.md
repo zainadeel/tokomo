@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.14.0](https://github.com/zainadeel/tokomo/compare/v2.13.2...v2.14.0) (2026-07-09)
+
+
+### Added
+
+* **dimensions:** add card and modal height tokens ([#84](https://github.com/zainadeel/tokomo/issues/84)) ([b3f6428](https://github.com/zainadeel/tokomo/commit/b3f64285ae0856a694ee22c1a9c90beb8b96f4f0))
+
 ## [2.13.2](https://github.com/zainadeel/tokomo/compare/v2.13.1...v2.13.2) (2026-07-09)
 
 

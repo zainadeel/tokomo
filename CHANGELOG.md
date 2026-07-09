@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.13.0](https://github.com/zainadeel/tokomo/compare/v2.12.1...v2.13.0) (2026-07-09)
+
+
+### Added
+
+* **colors:** sync data color tokens from Figma export ([#78](https://github.com/zainadeel/tokomo/issues/78)) ([e29f8ac](https://github.com/zainadeel/tokomo/commit/e29f8acd1ef38c77d84529840698c80c688d44f7))
+
 ## [2.12.1](https://github.com/zainadeel/tokomo/compare/v2.12.0...v2.12.1) (2026-07-03)
 
 

@@ -276,7 +276,7 @@ Must be done manually by the package owner once:
 - **Do not `git push` to `main`** — always branch + PR.
 - **Do not delete a token from `src/json/` without explicit user confirmation** — even if a Figma re-export omits it; it might be a Figma filter accident.
 - **Do not commit `NPM_TOKEN` or any npm auth** — publishing uses OIDC, no secrets required.
-- **Do not skip `npm install -g npm@latest`** in the publish job — Node 20 ships with npm 10.x which cannot complete OIDC auth; Trusted Publisher requires npm ≥ 11.5.1.
+- **Do not skip the npm upgrade step** in the publish job — Node 20 ships with npm 10.x which cannot complete OIDC auth; Trusted Publisher requires npm ≥ 11.5.1. Pin `npm@^11.5.1` (not `@latest` — npm 12+ requires Node 22+).
 
 ---
 

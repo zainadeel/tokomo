@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.13.1](https://github.com/zainadeel/tokomo/compare/v2.13.0...v2.13.1) (2026-07-09)
+
+
+### Fixed
+
+* **ci:** pin npm 11.x for OIDC publish on Node 20 ([#80](https://github.com/zainadeel/tokomo/issues/80)) ([b727ce4](https://github.com/zainadeel/tokomo/commit/b727ce4000ef3b5ce101b7fb9a71893cee658ed0))
+
 ## [2.13.0](https://github.com/zainadeel/tokomo/compare/v2.12.1...v2.13.0) (2026-07-09)
 
 

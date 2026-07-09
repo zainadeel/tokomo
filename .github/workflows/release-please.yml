@@ -68,8 +68,8 @@ jobs:
         # npm Trusted Publisher (OIDC to registry) requires npm >= 11.5.1.
         # Node 20 ships with npm 10.x, which signs provenance but cannot
         # complete the OIDC-authenticated registry PUT — it fails with a
-        # misleading 404. Upgrade to latest npm before publishing.
-        run: npm install -g npm@latest
+        # misleading 404. Pin npm 11.x — npm 12+ requires Node 22+.
+        run: npm install -g npm@^11.5.1
 
       - name: Install dependencies
         run: npm ci

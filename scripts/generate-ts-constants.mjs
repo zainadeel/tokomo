@@ -4,7 +4,7 @@
  * Output: dist/index.mjs, dist/index.cjs, dist/index.d.ts
  *
  * Usage in consuming apps:
- *   import { colorBackgroundPrimary, dimensionSpaceBase } from '@tokomo/tokens/ts';
+ *   import { colorBackgroundPrimary, dimensionSpaceBase } from '@ds-mo/tokens/ts';
  *   // colorBackgroundPrimary === '--color-background-primary'
  *
  * This enables type-safe token references in JavaScript/TypeScript code

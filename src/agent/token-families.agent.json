@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0.0",
+  "kind": "tokens",
+  "entries": [
+    {
+      "id": "token-family:color.background",
+      "status": "stable",
+      "summary": "Semantic fills for page, component, interaction, and contrast surfaces.",
+      "tokenPatterns": ["--color-background-*"],
+      "useWhen": ["Setting the fill of a page, panel, control, selected state, or semantic surface."],
+      "avoidWhen": ["Coloring text, icons, borders, or data marks.", "A reference palette value appears visually similar."],
+      "constraints": ["Pair content with a foreground token intended for the resulting surface contrast.", "Use semantic tokens in product UI; reference colors are foundation inputs only."]
+    },
+    {
+      "id": "token-family:dimension.space",
+      "status": "stable",
+      "summary": "Spacing scale for gaps, padding, margins, and layout separation.",
+      "tokenPatterns": ["--dimension-space-*"],
+      "useWhen": ["Separating or padding layout elements on the design-system spacing grid."],
+      "avoidWhen": ["Sizing controls, icons, strokes, or semantic component dimensions."],
+      "constraints": ["Prefer the smallest scale step that preserves the intended hierarchy.", "Use component-specific dimension tokens when one exists."]
+    },
+    {
+      "id": "token-family:typography.text",
+      "status": "stable",
+      "summary": "Font, size, weight, line-height, and text recipe tokens.",
+      "tokenPatterns": ["--typography-*"],
+      "useWhen": ["Implementing typography through a documented ds-text recipe or component-owned text style."],
+      "avoidWhen": ["Inventing a one-off type scale or using viewport width to scale text."],
+      "constraints": ["Prefer ds-text variants over assembling individual font tokens in application code."]
+    },
+    {
+      "id": "token-family:effect.motion",
+      "status": "stable",
+      "summary": "Combined interaction duration and easing recipes.",
+      "tokenPatterns": ["--effect-motion-*"],
+      "useWhen": ["Defining a CSS transition that needs both a system duration and easing curve."],
+      "avoidWhen": ["JavaScript needs a numeric duration; use an animation-duration token and resolve it at runtime."],
+      "constraints": ["Use short motion for direct interactions and medium motion for larger structural changes.", "Respect the global reduced-motion behavior."]
+    }
+  ]
+}

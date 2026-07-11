@@ -40,6 +40,17 @@ function parseCssCustomProperties(cssContent) {
   return properties;
 }
 
+function parseCssBlocks(cssContent) {
+  const blocks = [];
+  const regex = /([^{}]+)\{([^{}]*)\}/g;
+  const source = cssContent.replace(/\/\*[\s\S]*?\*\//g, '');
+  let match;
+  while ((match = regex.exec(source)) !== null) {
+    blocks.push({ selector: match[1].trim(), properties: parseCssCustomProperties(match[2]) });
+  }
+  return blocks;
+}
+
 /**
  * Infer the token $type from the variable name and value.
  */
@@ -58,6 +69,7 @@ function toDesignTokens(properties) {
   const tokens = {};
 
   for (const { name, value } of properties) {
+    if (tokens[name]) throw new Error(`Duplicate token declaration: ${name}`);
     tokens[name] = {
       $type: inferType(name, value),
       $value: value,
@@ -65,6 +77,25 @@ function toDesignTokens(properties) {
   }
 
   return tokens;
+}
+
+function generateColorTokens() {
+  const css = readFileSync(path.join(SRC_DIR, 'colors.css'), 'utf8');
+  const blocks = parseCssBlocks(css);
+  const lightBlock = blocks.find(block => block.selector === ':root');
+  const darkBlock = blocks.find(block => block.selector.includes('[data-theme="dark"]'));
+  if (!lightBlock || !darkBlock) throw new Error('colors.css must contain :root light and data-theme="dark" blocks.');
+
+  const light = toDesignTokens(lightBlock.properties);
+  const dark = toDesignTokens(darkBlock.properties);
+  for (const [name, darkToken] of Object.entries(dark)) {
+    const lightToken = light[name];
+    if (!lightToken) throw new Error(`Dark mode token has no light-mode counterpart: ${name}`);
+    lightToken.$extensions = {
+      'ds-mo': { modes: { light: lightToken.$value, dark: darkToken.$value } },
+    };
+  }
+  return { tokens: light, modes: { light, dark } };
 }
 
 function generateForFile(filename) {
@@ -87,11 +118,20 @@ mkdirSync(path.join(DIST_DIR, 'json'), { recursive: true });
 const allTokens = {};
 
 for (const [category, filename] of Object.entries(categories)) {
-  const tokens = generateForFile(filename);
+  const colorResult = category === 'colors' ? generateColorTokens() : null;
+  const tokens = colorResult?.tokens ?? generateForFile(filename);
   Object.assign(allTokens, tokens);
 
   const outputPath = path.join(DIST_DIR, 'json', `${category}.json`);
   writeFileSync(outputPath, JSON.stringify(tokens, null, 2), 'utf8');
+
+  if (colorResult) {
+    writeFileSync(
+      path.join(DIST_DIR, 'json', 'colors.modes.json'),
+      JSON.stringify(colorResult.modes, null, 2),
+      'utf8',
+    );
+  }
 
   const count = Object.keys(tokens).length;
   console.log(`    ${category}: ${count} tokens → dist/json/${category}.json`);

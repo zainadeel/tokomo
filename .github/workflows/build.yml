@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24.15.0'
           cache: 'npm'
 
       - name: Install dependencies
@@ -21,6 +21,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Test
+        run: npm test
 
       - name: Verify dist artifacts
         run: |
@@ -34,6 +37,11 @@ jobs:
             dist/globals.css \
             dist/utilities.css \
             dist/tokens.json \
+            dist/tokens-index.json \
+            dist/json/colors.modes.json \
+            dist/agent.json \
+            dist/agent.mjs \
+            dist/agent.d.ts \
             dist/index.mjs \
             dist/index.cjs \
             dist/index.d.ts; do

@@ -41,9 +41,16 @@
     "./json": "./dist/tokens.json",
     "./json/index": "./dist/tokens-index.json",
     "./json/colors": "./dist/json/colors.json",
+    "./json/colors/modes": "./dist/json/colors.modes.json",
     "./json/dimensions": "./dist/json/dimensions.json",
     "./json/typography": "./dist/json/typography.json",
     "./json/effects": "./dist/json/effects.json",
+    "./agent": {
+      "import": "./dist/agent.mjs",
+      "types": "./dist/agent.d.ts",
+      "default": "./dist/agent.json"
+    },
+    "./agent.json": "./dist/agent.json",
     "./ts": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
@@ -60,15 +67,17 @@
     "build": "node scripts/build.mjs",
     "build:colors": "node scripts/generate-color-tokens.mjs",
     "build:json": "node scripts/generate-json-tokens.mjs",
+    "build:agent": "node scripts/generate-json-tokens.mjs && node scripts/generate-agent-manifest.mjs",
     "build:docs": "node scripts/build-docs.mjs && node scripts/copy-tool-assets.mjs --to-docs",
     "build:ts": "node scripts/generate-ts-constants.mjs",
+    "test": "node --test tests/*.test.mjs",
     "clean": "rm -rf dist",
     "dev": "node scripts/build.mjs --watch",
     "tool:colors": "node scripts/copy-tool-assets.mjs && npx --yes serve tools/color-system -p 4040 -L",
     "preview:docs": "npm run build && npm run build:docs && npx --yes serve docs -p 4040 -L"
   },
   "engines": {
-    "node": ">=25.9.0"
+    "node": "^24.15.0 || >=26.0.0"
   },
   "devDependencies": {
     "chokidar": "^5.0.0"

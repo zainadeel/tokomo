@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.15.0](https://github.com/zainadeel/tokomo/compare/v2.14.0...v2.15.0) (2026-07-11)
+
+
+### Added
+
+* add mode-aware token agent contract ([#86](https://github.com/zainadeel/tokomo/issues/86)) ([a772448](https://github.com/zainadeel/tokomo/commit/a7724487c226604a307e72def741c52d02f7fc02))
+
 ## [2.14.0](https://github.com/zainadeel/tokomo/compare/v2.13.2...v2.14.0) (2026-07-09)
 
 

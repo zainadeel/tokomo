@@ -1,10 +1,11 @@
 /**
- * Build script for @tokomo/tokens
+ * Build script for @ds-mo/tokens
  *
  * 1. Generates colors.css from JSON token sources (Figma export)
  * 2. Copies all CSS token files to dist/
  * 3. Generates tokens.json (machine-readable format for tooling)
- * 4. Generates TypeScript constants for token names
+ * 4. Generates agent token-family guidance
+ * 5. Generates TypeScript constants for token names
  */
 import { cpSync, mkdirSync, existsSync, rmSync } from 'node:fs';
 import path from 'node:path';
@@ -27,7 +28,7 @@ function clean() {
 
 function build() {
   const startTime = Date.now();
-  console.log('\n🔨 Building @tokomo/tokens...\n');
+  console.log('\n🔨 Building @ds-mo/tokens...\n');
 
   // Step 1: Clean dist
   clean();
@@ -85,12 +86,16 @@ function build() {
   console.log('  → Generating JSON token files...');
   execSync('node scripts/generate-json-tokens.mjs', { cwd: PKG_ROOT, stdio: 'inherit' });
 
-  // Step 5: Generate TypeScript constants
+  // Step 5: Generate agent token-family guidance
+  console.log('  → Generating agent manifest...');
+  execSync('node scripts/generate-agent-manifest.mjs', { cwd: PKG_ROOT, stdio: 'inherit' });
+
+  // Step 6: Generate TypeScript constants
   console.log('  → Generating TypeScript constants...');
   execSync('node scripts/generate-ts-constants.mjs', { cwd: PKG_ROOT, stdio: 'inherit' });
 
   const elapsed = Date.now() - startTime;
-  console.log(`\n✅ @tokomo/tokens built in ${elapsed}ms\n`);
+  console.log(`\n✅ @ds-mo/tokens built in ${elapsed}ms\n`);
 }
 
 build();

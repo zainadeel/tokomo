@@ -12,7 +12,8 @@ TokoMo is an npm package (`@ds-mo/tokens`) that ships **design tokens** as:
 
 - CSS custom properties (the primary deliverable — one file per category + a combined index)
 - Light/dark theme files (`dist/themes/light.css`, `dist/themes/dark.css`)
-- A machine-readable JSON blob (`dist/tokens.json` + per-category JSON files)
+- Machine-readable JSON (`dist/tokens.json`, per-category files, and mode-aware `dist/json/colors.modes.json`)
+- Agent selection guidance (`dist/agent.json`, exported as `@ds-mo/tokens/agent`)
 - TypeScript constants for all token names (`dist/index.mjs` / `.cjs` / `.d.ts`)
 - Reset and global utility CSS
 
@@ -114,8 +115,10 @@ release-please-config.json      # Release Please config (node, changelog section
 
 ```bash
 npm run build          # Full build — CSS + JSON + TypeScript
+npm run test           # Validate light/dark mode preservation in generated JSON
 npm run build:colors   # Color tokens only (fast iteration)
 npm run build:docs     # Rebuild docs/index.html (GH Pages browser)
+npm run build:agent    # Validate and generate token-family agent guidance
 npm run dev            # Watch mode — rebuilds on src changes
 npm run clean          # Remove dist/
 ```
@@ -129,7 +132,7 @@ No separate test/lint commands — validation is done by the Build workflow on e
 1. **Clean** — nuke `dist/`, recreate subdirs (`dist/themes/`, `dist/json/`)
 2. **Generate CSS** — each `generate-*-tokens.mjs` reads `src/json/**` and writes **`src/*.css`** (committed source)
 3. **Copy to dist** — `scripts/build.mjs` copies `src/*.css` and `src/themes/` into `dist/`
-4. **Generate JSON** (`generate-json-tokens.mjs`) — parses **`src/*.css`** custom properties → `dist/tokens.json`, `dist/json/*.json`, `dist/tokens-index.json`
+4. **Generate JSON** (`generate-json-tokens.mjs`) — parses **`src/*.css`** custom properties → flat default-light tokens plus explicit light/dark color modes in `dist/json/colors.modes.json`
 5. **Generate TypeScript** (`generate-ts-constants.mjs`) — emits `dist/index.mjs`, `dist/index.cjs`, `dist/index.d.ts`
 
 ---
@@ -169,6 +172,10 @@ All token values are defined as CSS custom properties. **Color** light/dark valu
 4. Update `scripts/generate-json-tokens.mjs` to include the new category in the merged output.
 5. Update `package.json` `exports` with the new `dist/<category>.css` entry.
 6. Update `src/index.css` to `@import` the new category.
+
+Agent guidance belongs in `src/agent/token-families.agent.json`. Document token
+families and selection constraints rather than duplicating every generated token.
+Every token pattern must match at least one token emitted by the build.
 
 ---
 
@@ -276,7 +283,7 @@ Must be done manually by the package owner once:
 - **Do not `git push` to `main`** — always branch + PR.
 - **Do not delete a token from `src/json/` without explicit user confirmation** — even if a Figma re-export omits it; it might be a Figma filter accident.
 - **Do not commit `NPM_TOKEN` or any npm auth** — publishing uses OIDC, no secrets required.
-- **Do not skip the npm upgrade step** in the publish job — Node 20 ships with npm 10.x which cannot complete OIDC auth; Trusted Publisher requires npm ≥ 11.5.1. Pin `npm@^11.5.1` (not `@latest` — npm 12+ requires Node 22+).
+- **Do not skip the npm upgrade step** in the publish job — Trusted Publisher requires npm ≥ 11.5.1.
 
 ---
 

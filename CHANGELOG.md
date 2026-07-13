@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [3.0.0](https://github.com/zainadeel/tokomo/compare/v2.15.0...v3.0.0) (2026-07-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **colors:** reorganize semantic color tokens ([#88](https://github.com/zainadeel/tokomo/issues/88))
+
+### Added
+
+* **colors:** reorganize semantic color tokens ([#88](https://github.com/zainadeel/tokomo/issues/88)) ([be72eef](https://github.com/zainadeel/tokomo/commit/be72eefb7238d7d6d525891e8369c087ec70573a))
+
 ## [2.15.0](https://github.com/zainadeel/tokomo/compare/v2.14.0...v2.15.0) (2026-07-11)
 
 

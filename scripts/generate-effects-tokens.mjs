@@ -199,9 +199,8 @@ const generate = () => {
     var(--effect-highlight-elevated-floating);
 
   /* ── depressed-sm ──────────────────────────────────────────────────────── */
-  /* Note: outset contains both shadow (top) and highlight (bottom rim) for depressed */
+  /* Note: outset contains the bottom highlight rim for depressed elevations */
   --effect-shadow-depressed-sm:
-    0px -4px 2px -4px var(--color-elevation-shadow),
     0px  4px 2px -4px var(--color-elevation-highlight),
     0px  0px 0px  0.5px var(--color-elevation-highlight);
   --effect-highlight-depressed-sm:
@@ -213,7 +212,6 @@ const generate = () => {
 
   /* ── depressed-md ──────────────────────────────────────────────────────── */
   --effect-shadow-depressed-md:
-    0px -4px 2px -4px var(--color-elevation-shadow),
     0px  4px 2px -4px var(--color-elevation-highlight),
     0px  0px 0px  0.5px var(--color-elevation-highlight);
   --effect-highlight-depressed-md:

@@ -527,7 +527,8 @@
   --color-foreground-strong-walkthrough: var(--color-reference-light-teal-180-l35-c09-strong);
   --color-foreground-strong-warning: var(--color-reference-light-orange-60-l35-c09-strong);
   --color-foreground-tertiary: var(--color-reference-black-45);
-  --color-interaction-active: var(--color-reference-light-blue-250-l92-c04-faint);
+  --color-interaction-active-brand: var(--color-reference-light-blue-250-l92-c04-faint);
+  --color-interaction-active: var(--color-reference-black-10);
   --color-interaction-focus: var(--color-reference-black-15);
   --color-interaction-hover: var(--color-reference-black-10);
   --color-interaction-on-bold-background-active: var(--color-reference-white-15);
@@ -1122,7 +1123,8 @@
   --color-foreground-strong-walkthrough: var(--color-reference-dark-teal-180-l93-c08-strong);
   --color-foreground-strong-warning: var(--color-reference-dark-orange-60-l92-c06-strong);
   --color-foreground-tertiary: var(--color-reference-white-35);
-  --color-interaction-active: var(--color-reference-dark-blue-250-l27-c05-faint);
+  --color-interaction-active-brand: var(--color-reference-dark-blue-250-l27-c05-faint);
+  --color-interaction-active: var(--color-reference-white-10);
   --color-interaction-focus: var(--color-reference-white-15);
   --color-interaction-hover: var(--color-reference-white-10);
   --color-interaction-on-bold-background-active: var(--color-reference-black-15);

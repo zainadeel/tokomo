@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [3.1.0](https://github.com/zainadeel/tokomo/compare/v3.0.1...v3.1.0) (2026-07-15)
+
+
+### Added
+
+* **colors:** add active brand interaction token ([#92](https://github.com/zainadeel/tokomo/issues/92)) ([47dcb0e](https://github.com/zainadeel/tokomo/commit/47dcb0e99bfbcd527e2eb090a5b8b0064cd9efc5))
+
 ## [3.0.1](https://github.com/zainadeel/tokomo/compare/v3.0.0...v3.0.1) (2026-07-13)
 
 

@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [3.1.1](https://github.com/zainadeel/tokomo/compare/v3.1.0...v3.1.1) (2026-07-16)
+
+
+### Fixed
+
+* **colors:** update on-bold/on-medium active interaction token values ([#94](https://github.com/zainadeel/tokomo/issues/94)) ([d154ce3](https://github.com/zainadeel/tokomo/commit/d154ce36262b133c89e2608eaf6ac113923f1f4d))
+
 ## [3.1.0](https://github.com/zainadeel/tokomo/compare/v3.0.1...v3.1.0) (2026-07-15)
 
 

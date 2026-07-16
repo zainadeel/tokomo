@@ -4122,7 +4122,7 @@
             1,
             1
           ],
-          "alpha": 0.15000000596046448,
+          "alpha": 0.10000000149011612,
           "hex": "#FFFFFF"
         },
         "$extensions": {
@@ -4133,8 +4133,8 @@
             "STROKE"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:9d7ac98e2384848a44ca5b02231db934cda572e3/-1:-1",
-            "targetVariableName": "white/15",
+            "targetVariableId": "VariableID:072c068833a51958e9bf0f2b96bf57e731408d1c/-1:-1",
+            "targetVariableName": "white/10",
             "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
             "targetVariableSetName": "colors-reference"
           }

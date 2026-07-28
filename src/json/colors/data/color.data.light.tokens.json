@@ -470,10 +470,10 @@
         "components": [
           0,
           0.48627451062202454,
-          0.14509804546833038
+          0
         ],
         "alpha": 1,
-        "hex": "#007C25"
+        "hex": "#007C00"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:14213:895",
@@ -661,10 +661,10 @@
         "components": [
           0,
           0.48627451062202454,
-          0.14509804546833038
+          0
         ],
         "alpha": 1,
-        "hex": "#007C25"
+        "hex": "#007C00"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:19160:7",
@@ -1072,12 +1072,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0,
-            0.18431372940540314,
-            0.3450980484485626
+            0.003921568859368563,
+            0.20392157137393951,
+            0.3686274588108063
           ],
           "alpha": 1,
-          "hex": "#002F58"
+          "hex": "#01345E"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:14213:902",
@@ -1088,7 +1088,7 @@
           ],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:31f6ba57056ea7adeeb0eb2136a44d4a96025362/-1:-1",
-            "targetVariableName": "light/blue-250/L33-C09-strong",
+            "targetVariableName": "light/blue-250/L32-C09-strong",
             "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
             "targetVariableSetName": "colors-reference"
           }
@@ -1512,12 +1512,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0,
-            0.18431372940540314,
-            0.3450980484485626
+            0.003921568859368563,
+            0.20392157137393951,
+            0.3686274588108063
           ],
           "alpha": 1,
-          "hex": "#002F58"
+          "hex": "#01345E"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:14213:989",
@@ -1528,7 +1528,7 @@
           ],
           "com.figma.aliasData": {
             "targetVariableId": "VariableID:31f6ba57056ea7adeeb0eb2136a44d4a96025362/-1:-1",
-            "targetVariableName": "light/blue-250/L33-C09-strong",
+            "targetVariableName": "light/blue-250/L32-C09-strong",
             "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
             "targetVariableSetName": "colors-reference"
           }

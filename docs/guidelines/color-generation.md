@@ -82,7 +82,7 @@ Each chromatic hue has four tones per theme:
 
 In the exported reference tokens, these tones are encoded into names that also include lightness and chroma, for example:
 
-1. `light/blue-250/L33-C09-strong`
+1. `light/blue-250/L32-C09-strong`
 2. `light/blue-250/L50-C18-bold`
 3. `light/blue-250/L70-C18-medium`
 4. `light/blue-250/L92-C04-faint`
@@ -102,7 +102,7 @@ Grey follows the same conceptual tone model, but its tokens are stored as indivi
 
 Data and semantic tokens should map back to the reference layer through Figma alias metadata. Current files already follow this pattern. Representative examples are:
 
-1. `background.strong.brand -> light/blue-250/L33-C09-strong`
+1. `background.strong.brand -> light/blue-250/L32-C09-strong`
 2. `background.strong.negative -> light/red-30/L30-C11-strong`
 3. `data-misc.2 -> grey/L51-light-bold`
 
@@ -120,7 +120,20 @@ $$
 
 ### 4.2 Working Color Space
 
-The shipped tokens in this repository are exported as sRGB color values with hex output. Generation work may use OKLCH as the working model for lightness and chroma decisions, but the final repository artifacts must remain valid exported tokens in the current JSON format.
+OKLCH is the working model **and** the shipped output for the chromatic reference layer. Token names are not labels — they are the specification:
+
+1. `scripts/generate-color-tokens.mjs` parses `L<lightness>-C<chroma>` out of each reference token name and takes the hue angle from the family suffix (`blue-250` → 250).
+2. It emits that as a CSS `oklch()` value — `light/blue-250/L32-C09-strong` becomes `--color-reference-light-blue-250-l32-c09-strong: oklch(32% 0.09 250)`.
+3. The `hex` and `components` fields in the reference JSON are **Figma-mirror metadata**. They are not the shipped value for chromatic families, so renaming a token changes the shipped color even if the hex is left untouched.
+
+Because the name drives the output, a reference token's name and its stored hex must agree. See Section 9 for the parity rule.
+
+sRGB hex is still the shipped form where a name carries no OKLCH spec:
+
+1. the `black` and `white` opacity scales,
+2. semantic and data tokens that do not alias a reference token (these emit `var(--color-reference-…)` when they do alias one).
+
+Generation work may reason in OKLCH freely, but final artifacts must remain valid exported tokens in the current JSON format.
 
 ### 4.3 Overlay And Opacity Analysis
 

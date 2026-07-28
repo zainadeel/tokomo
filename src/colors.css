@@ -30,7 +30,7 @@
   --color-reference-dark-cyan-215-l27-c05-faint: oklch(27% 0.05 215);
   --color-reference-dark-cyan-215-l50-c11-medium: oklch(50% 0.11 215);
   --color-reference-dark-cyan-215-l70-c15-bold: oklch(70% 0.15 215);
-  --color-reference-dark-cyan-215-l92-c07-strong: oklch(92% 0.07 215);
+  --color-reference-dark-cyan-215-l93-c07-strong: oklch(93% 0.07 215);
   --color-reference-dark-green-145-l27-c05-faint: oklch(27% 0.05 145);
   --color-reference-dark-green-145-l50-c17-medium: oklch(50% 0.17 145);
   --color-reference-dark-green-145-l70-c19-bold: oklch(70% 0.19 145);
@@ -38,7 +38,7 @@
   --color-reference-dark-magenta-325-l28-c05-faint: oklch(28% 0.05 325);
   --color-reference-dark-magenta-325-l51-c17-medium: oklch(51% 0.17 325);
   --color-reference-dark-magenta-325-l67-c20-bold: oklch(67% 0.2 325);
-  --color-reference-dark-magenta-325-l90-c08-strong: oklch(90% 0.08 325);
+  --color-reference-dark-magenta-325-l91-c08-strong: oklch(91% 0.08 325);
   --color-reference-dark-olive-115-l27-c05-faint: oklch(27% 0.05 115);
   --color-reference-dark-olive-115-l51-c13-medium: oklch(51% 0.13 115);
   --color-reference-dark-olive-115-l75-c19-bold: oklch(75% 0.19 115);
@@ -78,7 +78,7 @@
   --color-reference-grey-l91-dark-strong: oklch(91% 0 0);
   --color-reference-grey-l93-light-faint: oklch(93% 0 0);
   --color-reference-grey-l98: oklch(98% 0 0);
-  --color-reference-light-blue-250-l33-c09-strong: oklch(33% 0.09 250);
+  --color-reference-light-blue-250-l32-c09-strong: oklch(32% 0.09 250);
   --color-reference-light-blue-250-l50-c18-bold: oklch(50% 0.18 250);
   --color-reference-light-blue-250-l70-c18-medium: oklch(70% 0.18 250);
   --color-reference-light-blue-250-l92-c04-faint: oklch(92% 0.04 250);
@@ -176,7 +176,7 @@
   --color-always-dark-border-strong-ai: var(--color-reference-dark-purple-290-l92-c05-strong);
   --color-always-dark-border-strong-brand: var(--color-reference-dark-blue-250-l91-c05-strong);
   --color-always-dark-border-strong-caution: var(--color-reference-dark-yellow-85-l93-c05-strong);
-  --color-always-dark-border-strong-guide: var(--color-reference-dark-cyan-215-l92-c07-strong);
+  --color-always-dark-border-strong-guide: var(--color-reference-dark-cyan-215-l93-c07-strong);
   --color-always-dark-border-strong-negative: var(--color-reference-dark-red-30-l91-c06-strong);
   --color-always-dark-border-strong-neutral: var(--color-reference-grey-l91-dark-strong);
   --color-always-dark-border-strong-positive: var(--color-reference-dark-green-145-l93-c06-strong);
@@ -233,7 +233,7 @@
   --color-background-secondary: var(--color-reference-grey-l98);
   --color-background-shade: var(--color-reference-black-40);
   --color-background-strong-ai: var(--color-reference-light-purple-290-l35-c13-strong);
-  --color-background-strong-brand: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-background-strong-brand: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-background-strong-caution: var(--color-reference-light-yellow-85-l40-c09-strong);
   --color-background-strong-guide: var(--color-reference-light-cyan-215-l30-c07-strong);
   --color-background-strong-negative: var(--color-reference-light-red-30-l30-c11-strong);
@@ -281,7 +281,7 @@
   --color-border-primary: var(--color-reference-black-20);
   --color-border-secondary: var(--color-reference-black-15);
   --color-border-strong-ai: var(--color-reference-light-purple-290-l35-c13-strong);
-  --color-border-strong-brand: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-border-strong-brand: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-border-strong-caution: var(--color-reference-light-yellow-85-l40-c09-strong);
   --color-border-strong-guide: var(--color-reference-light-cyan-215-l30-c07-strong);
   --color-border-strong-negative: var(--color-reference-light-red-30-l30-c11-strong);
@@ -298,8 +298,8 @@
   --color-color-intent-blue-faint-foreground: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-color-intent-blue-medium-background: var(--color-reference-light-blue-250-l70-c18-medium);
   --color-color-intent-blue-medium-border: var(--color-reference-light-blue-250-l50-c18-bold);
-  --color-color-intent-blue-medium-foreground: var(--color-reference-light-blue-250-l33-c09-strong);
-  --color-color-intent-blue-strong-background: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-color-intent-blue-medium-foreground: var(--color-reference-light-blue-250-l32-c09-strong);
+  --color-color-intent-blue-strong-background: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-color-intent-blue-strong-border: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-color-intent-blue-strong-foreground: var(--color-reference-light-blue-250-l70-c18-medium);
   --color-color-intent-cyan-bold-background: var(--color-reference-light-cyan-215-l51-c11-bold);
@@ -518,7 +518,7 @@
   --color-foreground-quaternary: var(--color-reference-black-20);
   --color-foreground-secondary: var(--color-reference-black-60);
   --color-foreground-strong-ai: var(--color-reference-light-purple-290-l35-c13-strong);
-  --color-foreground-strong-brand: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-foreground-strong-brand: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-foreground-strong-caution: var(--color-reference-light-yellow-85-l40-c09-strong);
   --color-foreground-strong-guide: var(--color-reference-light-cyan-215-l30-c07-strong);
   --color-foreground-strong-negative: var(--color-reference-light-red-30-l30-c11-strong);
@@ -577,7 +577,7 @@
   --color-inverted-border-strong-ai: var(--color-reference-dark-purple-290-l92-c05-strong);
   --color-inverted-border-strong-brand: var(--color-reference-dark-blue-250-l91-c05-strong);
   --color-inverted-border-strong-caution: var(--color-reference-dark-yellow-85-l93-c05-strong);
-  --color-inverted-border-strong-guide: var(--color-reference-dark-cyan-215-l92-c07-strong);
+  --color-inverted-border-strong-guide: var(--color-reference-dark-cyan-215-l93-c07-strong);
   --color-inverted-border-strong-negative: var(--color-reference-dark-red-30-l91-c06-strong);
   --color-inverted-border-strong-neutral: var(--color-reference-grey-l91-dark-strong);
   --color-inverted-border-strong-positive: var(--color-reference-dark-green-145-l93-c06-strong);
@@ -645,7 +645,7 @@
   --color-safety-score-background-excellent: var(--color-reference-light-blue-250-l70-c18-medium);
   --color-safety-score-background-fair: var(--color-reference-light-orange-60-l75-c20-medium);
   --color-safety-score-background-good: var(--color-reference-light-blue-250-l92-c04-faint);
-  --color-safety-score-foreground-on-excellent: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-safety-score-foreground-on-excellent: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-safety-score-foreground-on-fair: var(--color-reference-light-orange-60-l35-c09-strong);
   --color-safety-score-foreground-on-good: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-safety-score-interaction-focus: var(--color-reference-black-15);
@@ -696,7 +696,7 @@
   --color-data-diverging-blue-orange-7-5: var(--color-reference-light-orange-60-l93-c05-faint);
   --color-data-diverging-blue-orange-7-6: var(--color-reference-light-orange-60-l75-c20-medium);
   --color-data-diverging-blue-orange-7-7: var(--color-reference-light-orange-60-l52-c13-bold);
-  --color-data-diverging-blue-orange-9-1: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-data-diverging-blue-orange-9-1: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-data-diverging-blue-orange-9-2: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-data-diverging-blue-orange-9-3: var(--color-reference-light-blue-250-l70-c18-medium);
   --color-data-diverging-blue-orange-9-4: var(--color-reference-light-blue-250-l92-c04-faint);
@@ -723,7 +723,7 @@
   --color-data-sequence-blue-3-1: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-data-sequence-blue-3-2: var(--color-reference-light-blue-250-l70-c18-medium);
   --color-data-sequence-blue-3-3: var(--color-reference-light-blue-250-l92-c04-faint);
-  --color-data-sequence-blue-4-1: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-data-sequence-blue-4-1: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-data-sequence-blue-4-2: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-data-sequence-blue-4-3: var(--color-reference-light-blue-250-l70-c18-medium);
   --color-data-sequence-blue-4-4: var(--color-reference-light-blue-250-l92-c04-faint);
@@ -772,7 +772,7 @@
   --color-always-dark-border-strong-ai: var(--color-reference-dark-purple-290-l92-c05-strong);
   --color-always-dark-border-strong-brand: var(--color-reference-dark-blue-250-l91-c05-strong);
   --color-always-dark-border-strong-caution: var(--color-reference-dark-yellow-85-l93-c05-strong);
-  --color-always-dark-border-strong-guide: var(--color-reference-dark-cyan-215-l92-c07-strong);
+  --color-always-dark-border-strong-guide: var(--color-reference-dark-cyan-215-l93-c07-strong);
   --color-always-dark-border-strong-negative: var(--color-reference-dark-red-30-l91-c06-strong);
   --color-always-dark-border-strong-neutral: var(--color-reference-grey-l91-dark-strong);
   --color-always-dark-border-strong-positive: var(--color-reference-dark-green-145-l93-c06-strong);
@@ -831,7 +831,7 @@
   --color-background-strong-ai: var(--color-reference-dark-purple-290-l92-c05-strong);
   --color-background-strong-brand: var(--color-reference-dark-blue-250-l91-c05-strong);
   --color-background-strong-caution: var(--color-reference-dark-yellow-85-l93-c05-strong);
-  --color-background-strong-guide: var(--color-reference-dark-cyan-215-l92-c07-strong);
+  --color-background-strong-guide: var(--color-reference-dark-cyan-215-l93-c07-strong);
   --color-background-strong-negative: var(--color-reference-dark-red-30-l91-c06-strong);
   --color-background-strong-neutral: var(--color-reference-grey-l91-dark-strong);
   --color-background-strong-positive: var(--color-reference-dark-green-145-l93-c06-strong);
@@ -879,7 +879,7 @@
   --color-border-strong-ai: var(--color-reference-dark-purple-290-l92-c05-strong);
   --color-border-strong-brand: var(--color-reference-dark-blue-250-l91-c05-strong);
   --color-border-strong-caution: var(--color-reference-dark-yellow-85-l93-c05-strong);
-  --color-border-strong-guide: var(--color-reference-dark-cyan-215-l92-c07-strong);
+  --color-border-strong-guide: var(--color-reference-dark-cyan-215-l93-c07-strong);
   --color-border-strong-negative: var(--color-reference-dark-red-30-l91-c06-strong);
   --color-border-strong-neutral: var(--color-reference-grey-l91-dark-strong);
   --color-border-strong-positive: var(--color-reference-dark-green-145-l93-c06-strong);
@@ -906,8 +906,8 @@
   --color-color-intent-cyan-faint-foreground: var(--color-reference-dark-cyan-215-l70-c15-bold);
   --color-color-intent-cyan-medium-background: var(--color-reference-dark-cyan-215-l50-c11-medium);
   --color-color-intent-cyan-medium-border: var(--color-reference-dark-cyan-215-l70-c15-bold);
-  --color-color-intent-cyan-medium-foreground: var(--color-reference-dark-cyan-215-l92-c07-strong);
-  --color-color-intent-cyan-strong-background: var(--color-reference-dark-cyan-215-l92-c07-strong);
+  --color-color-intent-cyan-medium-foreground: var(--color-reference-dark-cyan-215-l93-c07-strong);
+  --color-color-intent-cyan-strong-background: var(--color-reference-dark-cyan-215-l93-c07-strong);
   --color-color-intent-cyan-strong-border: var(--color-reference-dark-cyan-215-l70-c15-bold);
   --color-color-intent-cyan-strong-foreground: var(--color-reference-dark-cyan-215-l50-c11-medium);
   --color-color-intent-green-bold-background: var(--color-reference-dark-green-145-l70-c19-bold);
@@ -954,8 +954,8 @@
   --color-color-intent-magenta-faint-foreground: var(--color-reference-dark-magenta-325-l67-c20-bold);
   --color-color-intent-magenta-medium-background: var(--color-reference-dark-magenta-325-l51-c17-medium);
   --color-color-intent-magenta-medium-border: var(--color-reference-dark-magenta-325-l67-c20-bold);
-  --color-color-intent-magenta-medium-foreground: var(--color-reference-dark-magenta-325-l90-c08-strong);
-  --color-color-intent-magenta-strong-background: var(--color-reference-dark-magenta-325-l90-c08-strong);
+  --color-color-intent-magenta-medium-foreground: var(--color-reference-dark-magenta-325-l91-c08-strong);
+  --color-color-intent-magenta-strong-background: var(--color-reference-dark-magenta-325-l91-c08-strong);
   --color-color-intent-magenta-strong-border: var(--color-reference-dark-magenta-325-l67-c20-bold);
   --color-color-intent-magenta-strong-foreground: var(--color-reference-dark-magenta-325-l51-c17-medium);
   --color-color-intent-olive-bold-background: var(--color-reference-dark-olive-115-l75-c19-bold);
@@ -1116,7 +1116,7 @@
   --color-foreground-strong-ai: var(--color-reference-dark-purple-290-l92-c05-strong);
   --color-foreground-strong-brand: var(--color-reference-dark-blue-250-l91-c05-strong);
   --color-foreground-strong-caution: var(--color-reference-dark-yellow-85-l93-c05-strong);
-  --color-foreground-strong-guide: var(--color-reference-dark-cyan-215-l92-c07-strong);
+  --color-foreground-strong-guide: var(--color-reference-dark-cyan-215-l93-c07-strong);
   --color-foreground-strong-negative: var(--color-reference-dark-red-30-l91-c06-strong);
   --color-foreground-strong-neutral: var(--color-reference-grey-l91-dark-strong);
   --color-foreground-strong-positive: var(--color-reference-dark-green-145-l93-c06-strong);
@@ -1171,7 +1171,7 @@
   --color-inverted-border-primary: var(--color-reference-black-20);
   --color-inverted-border-secondary: var(--color-reference-black-15);
   --color-inverted-border-strong-ai: var(--color-reference-light-purple-290-l35-c13-strong);
-  --color-inverted-border-strong-brand: var(--color-reference-light-blue-250-l33-c09-strong);
+  --color-inverted-border-strong-brand: var(--color-reference-light-blue-250-l32-c09-strong);
   --color-inverted-border-strong-caution: var(--color-reference-light-yellow-85-l40-c09-strong);
   --color-inverted-border-strong-guide: var(--color-reference-light-cyan-215-l30-c07-strong);
   --color-inverted-border-strong-negative: var(--color-reference-light-red-30-l30-c11-strong);

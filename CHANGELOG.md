@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [4.0.0](https://github.com/zainadeel/tokomo/compare/v3.1.1...v4.0.0) (2026-07-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **colors:** retune blue/cyan strong tones and realign oklch parity ([#96](https://github.com/zainadeel/tokomo/issues/96))
+
+### Added
+
+* **colors:** retune blue/cyan strong tones and realign oklch parity ([#96](https://github.com/zainadeel/tokomo/issues/96)) ([81748c3](https://github.com/zainadeel/tokomo/commit/81748c396ed32536cbe8aaacac556fcedbe0f1a1))
+
 ## [3.1.1](https://github.com/zainadeel/tokomo/compare/v3.1.0...v3.1.1) (2026-07-16)
 
 

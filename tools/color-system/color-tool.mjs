@@ -35,7 +35,7 @@ function parseHueGroup(key) {
 }
 
 function parseChromaticToneKey(key) {
-  // "L33-C09-strong" → { l: 0.33, c: 0.09, role: "strong" }
+  // "L32-C09-strong" → { l: 0.32, c: 0.09, role: "strong" }
   const m = key.match(/^L(\d+)-C(\d+)-(\w+)$/);
   if (!m) return null;
   return { l: Number(m[1]) / 100, c: Number(m[2]) / 100, role: m[3] };

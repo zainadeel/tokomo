@@ -416,7 +416,9 @@ On their own faint surface:
 2. `border.bold.*` measures about $4.55$–$4.68{:}1$ light and $4.54$–$7.76{:}1$ dark,
 3. `border.medium.*` measures about $1.33$–$2.37{:}1$ light and $2.37$–$2.73{:}1$ dark, so it does **not** clear $3{:}1$ and is a tinted edge rather than a control boundary.
 
-For strokes on colored fills, `border.on-strong-background.primary` ($3.18$–$4.05{:}1$) and `border.on-bold-background.primary` ($3.16{:}1$ and above) clear the threshold. `border.on-medium-background.primary` sits at $2.96$–$3.57{:}1$ and misses it in three intents: `walkthrough` at $2.96{:}1$ dark, `positive` at $2.97{:}1$ dark, and `negative` at $2.98{:}1$ light. Treat the on-medium strokes as not reliably meeting $3{:}1$. In practice a medium-tone fill is usually distinguishable on its own, so the threshold rarely binds there — but do not depend on it for a control that has no other affordance.
+For strokes on colored fills, all three on-background families now clear the threshold in every intent and both themes: `border.on-strong-background.primary` at $3.18$–$4.05{:}1$, `border.on-bold-background.primary` at $3.16{:}1$ and above, and `border.on-medium-background.primary` at $3.21$–$4.17{:}1$.
+
+The on-medium family previously missed the threshold in three intents and was retuned for it — see Section 7.5. Because `border.on-medium-background.primary` shares its value with `foreground.on-medium-background.tertiary`, that retune fixed the stroke and the content token together.
 
 The `secondary` and `tertiary` steps of all three on-background families remain well below $3{:}1$ and are decorative.
 
@@ -443,7 +445,11 @@ For the always-dark intent strokes, `strong` measures about $13.3$–$15.8{:}1$ 
 
 $3{:}1$ is the AA minimum for **large** text (24px, or 18.5px bold) and the 1.4.11 minimum for a meaningful icon. A content pairing below $3{:}1$ therefore cannot carry text at any size and cannot carry an icon. It is decorative only.
 
-`npm run report:contrast` measures every foreground token against this floor on the surfaces it can sit on. There are currently **64 pairings below it**, in three distinct categories. The categories matter more than the count: most are intentional, and only four are gaps.
+`npm run report:contrast` measures every foreground token against this floor on the surfaces it can sit on. There are currently **60 pairings below it**: 42 `quaternary` steps, 9 `faint` tones used as content, and 9 `foreground.medium.*` on standard surfaces.
+
+None of the 60 is a defect in a token. The first 51 are steps and tones that are not meant to carry content at all, and the remaining 9 are a correct token used on a surface it was not designed for. The categories below matter more than the count.
+
+Category C separately records four pairings that *were* genuine gaps — a token used exactly as intended and still missing the floor. All four have been fixed. They are kept here because the causes are worth understanding before the next retune.
 
 #### Category A — decorative by design (51 pairings)
 
@@ -479,35 +485,45 @@ The problem is that the token name invites the wrong use. `foreground.medium.bra
 
 Note that `negative` is the worst case here despite being the intent most likely to carry an urgent message.
 
-#### Category C — genuine gaps (4 pairings)
+#### Category C — genuine gaps, now resolved
 
-These are the cases where a token is being used exactly as intended and still misses the floor.
+Four pairings had a token used exactly as intended and still missing the floor. All four have been retuned.
 
-**`foreground.on-medium-background.tertiary` on `background.medium.*` (3):**
+**`foreground.on-medium-background.tertiary` on `background.medium.*`** missed the floor in three intents: `walkthrough` at $2.96{:}1$ dark, `positive` at $2.97{:}1$ dark, and `negative` at $2.98{:}1$ light. The other six passed at only $3.03$–$3.57{:}1$, so the whole family was marginal rather than just those three.
 
-| Intent | Light | Dark | Fails in |
-| --- | --- | --- | --- |
-| `walkthrough` | $3.41{:}1$ | $2.96{:}1$ | dark |
-| `positive` | $3.36{:}1$ | $2.97{:}1$ | dark |
-| `negative` | $2.98{:}1$ | $3.17{:}1$ | light |
+Retuned to `black/55` in light and `white/65` in dark, giving $3.36$–$4.17{:}1$ light and $3.21$–$3.60{:}1$ dark. Because `border.on-medium-background.primary` shares this value, the same fix resolved the stroke side.
 
-The other six intents pass, at $3.03$–$3.57{:}1$. Every value in this family sits within about $0.5$ of the floor, so the whole family is marginal rather than only these three. Since `border.on-medium-background.primary` now carries the same value, the identical miss appears on the stroke side — the two are the same underlying problem.
+**`navigation.foreground.tertiary` on `navigation.background`** was $3.21{:}1$ light but $2.68{:}1$ dark — the largest shortfall found, with a compounding cause. In dark mode `navigation.background` resolves to `grey-l27-dark-faint`, which is *lighter* than the standard dark surface `grey-l20`, while `navigation.foreground.tertiary` resolved to `white-30`, *dimmer* than the standard `white-35`. The sub-theme moved both sides of the pair in the wrong direction at once.
 
-**`navigation.foreground.tertiary` on `navigation.background` (1):** $3.21{:}1$ light, $2.68{:}1$ dark.
+Retuned to `white/35`, bringing it to parity with the core token rather than giving it a bespoke value. It now measures $3.14{:}1$ dark.
 
-This is the largest single shortfall in Category C, and it has a compounding cause. In dark mode `navigation.background` resolves to `grey-l27-dark-faint`, which is *lighter* than the standard dark surface `grey-l20`, while `navigation.foreground.tertiary` resolves to `white-30`, which is *dimmer* than the standard `white-35`. The sub-theme moves both sides of the pair in the wrong direction at once. The core `foreground.tertiary` on `background.primary` measures $3.23{:}1$ in dark by comparison.
+`tertiary` is documented in Section 7.3 as suitable for inactive or low-emphasis UI content, which means it is expected to be readable, so this was the most important of the four to fix.
 
-`tertiary` is documented in Section 7.3 as suitable for inactive or low-emphasis UI content, which means it is expected to be readable. At $2.68{:}1$ the navigation variant does not meet that expectation in dark mode.
+#### Current state of the two content floors
 
-#### Summary of what needs a decision
+| Step | Threshold | Pairings | Failing | Lowest |
+| --- | --- | --- | --- | --- |
+| `*.foreground.tertiary` | $3{:}1$ | 42 | 0 | $3.04{:}1$ |
+| `*.foreground.secondary` | $4.5{:}1$ | 42 | 0 | $4.69{:}1$ |
+
+`secondary` is the lowest step expected to carry body text, so it is held to AA $4.5{:}1$ rather than the $3{:}1$ floor. It previously failed in `foreground.on-medium-background.secondary` on `background.medium.walkthrough` ($4.36{:}1$ dark) and `positive` ($4.44{:}1$ dark), with `guide` sitting exactly on the threshold at $4.50{:}1$. Retuned to `white/90` in dark, the family now measures $4.69$–$5.35{:}1$.
+
+Two observations worth carrying forward.
+
+First, every failure found across both floors was in `on-medium-background`. Nothing else in the system missed either threshold. A mid-lightness fill compresses contrast from both directions, so `background.medium.*` is the tightest surface family in the system and the one to re-check first whenever the medium tones move.
+
+Second, the remaining tight case is not in that family: `foreground.tertiary` on the faint surfaces in dark mode sits at $3.04{:}1$, only $0.04$ above the floor. That is the value most likely to regress on a future retune of the faint tones or of `grey`.
+
+#### Summary
 
 | Item | Pairings | Status |
 | --- | --- | --- |
-| `quaternary` steps | 42 | Intentional. Document as never-for-content. |
+| `quaternary` steps | 42 | Intentional. Never for content. |
 | `foreground.faint.*` as content | 9 | Intentional. Wrong tone for the job. |
-| `foreground.medium.*` on standard surfaces | 9 | Usage guidance needed, tone is fine. |
-| `foreground.on-medium-background.tertiary` | 3 | Gap. Whole family is marginal. |
-| `navigation.foreground.tertiary` (dark) | 1 | Gap. Worst shortfall at $2.68{:}1$. |
+| `foreground.medium.*` on standard surfaces | 9 | Usage guidance; the tone itself is correct. |
+| `foreground.on-medium-background.tertiary` | 3 | Fixed — `black/55` light, `white/65` dark. |
+| `navigation.foreground.tertiary` (dark) | 1 | Fixed — `white/35`, at parity with core. |
+| `foreground.on-medium-background.secondary` | 2 | Fixed — `white/90` dark. |
 
 ### 7.6 Never Rely On Color Alone
 

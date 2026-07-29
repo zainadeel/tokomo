@@ -369,6 +369,8 @@ That means:
 2. `border.tertiary` should be understood as a dim structural hint, not as a prominent border,
 3. if the user needs clearer readability or stronger affordance, move up to a higher-emphasis foreground or border token.
 
+There is an important distinction between these two. `foreground.tertiary` clears $3{:}1$, so it remains usable for large text and for icons — it is de-emphasised, not unreadable. `border.tertiary` and the whole `quaternary` step sit below $3{:}1$ and cannot carry content at all. Section 7.5 lists every content pairing below that floor, including the cases where a token intended to be readable does not clear it.
+
 ### 7.4 Stroke Contrast
 
 Strokes are not text, so the threshold that applies to them is WCAG 1.4.11 Non-text Contrast at $3{:}1$, not the $4.5{:}1$ text threshold.
@@ -404,7 +406,7 @@ WCAG 1.4.11 applies to visual information *required to identify* a control. A te
 
 That reasoning does not extend to a bare checkbox, radio, or toggle. Those have no internal text, so the stroke is the only thing distinguishing the control from the surface, and $3{:}1$ does bind. Use `border.primary` there.
 
-If a field's state must be communicated — invalid, focused, disabled — that state needs its own treatment and cannot lean on the resting stroke. Use a semantic intent stroke plus a non-color cue, per Section 7.5.
+If a field's state must be communicated — invalid, focused, disabled — that state needs its own treatment and cannot lean on the resting stroke. Use a semantic intent stroke plus a non-color cue, per Section 7.6.
 
 #### Intent strokes
 
@@ -437,7 +439,77 @@ For the always-dark intent strokes, `strong` measures about $13.3$–$15.8{:}1$ 
 
 `npm run report:contrast` measures all of the above and flags strokes against $3{:}1$ rather than $4.5{:}1$. A flagged row is a prompt to check how the token is used, not an automatic defect, because the threshold only applies to control-identifying strokes. Expect `border.secondary`, `border.tertiary`, `divider.*`, and the `secondary`/`tertiary` on-background steps to be flagged permanently: they are decorative by design.
 
-### 7.5 Never Rely On Color Alone
+### 7.5 Content Tokens Below The 3:1 Absolute Floor
+
+$3{:}1$ is the AA minimum for **large** text (24px, or 18.5px bold) and the 1.4.11 minimum for a meaningful icon. A content pairing below $3{:}1$ therefore cannot carry text at any size and cannot carry an icon. It is decorative only.
+
+`npm run report:contrast` measures every foreground token against this floor on the surfaces it can sit on. There are currently **64 pairings below it**, in three distinct categories. The categories matter more than the count: most are intentional, and only four are gaps.
+
+#### Category A — decorative by design (51 pairings)
+
+**All `quaternary` steps (42).** `foreground.quaternary` on all eleven neutral surfaces ($1.59$–$1.92{:}1$), all three `foreground.on-*-background.quaternary` families on their fills ($1.47$–$1.90{:}1$), and the `always-dark`, `inverted`, `media`, and `navigation` quaternary steps ($1.61$–$1.88{:}1$).
+
+`quaternary` is the bottom of the de-emphasis ladder. It exists for washes, disabled hints, and ornament. **It must never carry text or an icon**, at any size, on any surface. That is a property of the step, not a bug to fix.
+
+**`foreground.faint.*` used as content (9).** On `background.primary` these measure $1.17$–$1.28{:}1$, the lowest values in the entire system. The `faint` tone is a surface tint; using it as a foreground on a standard surface is a misuse of the tone. It is only meaningful as content on a `bold` fill, where Section 7.2 measures it at $4.54{:}1$ or better.
+
+#### Category B — right token, wrong surface (9 pairings)
+
+`foreground.medium.*` on `background.primary`:
+
+| Intent | Light | Dark |
+| --- | --- | --- |
+| `caution` | $1.64{:}1$ | $3.13{:}1$ |
+| `walkthrough` | $1.98{:}1$ | $3.35{:}1$ |
+| `guide` | $2.02{:}1$ | $3.24{:}1$ |
+| `positive` | $2.06{:}1$ | $3.28{:}1$ |
+| `neutral` | $2.23{:}1$ | $3.02{:}1$ |
+| `ai` | $2.34{:}1$ | $3.07{:}1$ |
+| `warning` | $2.40{:}1$ | $3.03{:}1$ |
+| `brand` | $2.71{:}1$ | $3.07{:}1$ |
+| `negative` | $2.97{:}1$ | $2.89{:}1$ |
+
+Every intent fails the floor in light mode, and `negative` fails in both.
+
+This is not a defect in the `medium` tone. Section 7.2 pairs `foreground.medium.*` with `background.strong.*`, where it measures $4.53$–$4.71{:}1$ and passes AA. The tone is designed for strong fills, not for standard surfaces.
+
+The problem is that the token name invites the wrong use. `foreground.medium.brand` reads like a general-purpose colored text token, and on a card it silently lands at $2.71{:}1$.
+
+**For colored text on a standard surface, use `foreground.bold.*`** ($5.36$–$6.02{:}1$ light, $5.57$–$9.60{:}1$ dark) or `foreground.strong.*` ($9.26$–$14.26{:}1$ light, $13.32$–$15.19{:}1$ dark). Both clear AA for body text in both themes.
+
+Note that `negative` is the worst case here despite being the intent most likely to carry an urgent message.
+
+#### Category C — genuine gaps (4 pairings)
+
+These are the cases where a token is being used exactly as intended and still misses the floor.
+
+**`foreground.on-medium-background.tertiary` on `background.medium.*` (3):**
+
+| Intent | Light | Dark | Fails in |
+| --- | --- | --- | --- |
+| `walkthrough` | $3.41{:}1$ | $2.96{:}1$ | dark |
+| `positive` | $3.36{:}1$ | $2.97{:}1$ | dark |
+| `negative` | $2.98{:}1$ | $3.17{:}1$ | light |
+
+The other six intents pass, at $3.03$–$3.57{:}1$. Every value in this family sits within about $0.5$ of the floor, so the whole family is marginal rather than only these three. Since `border.on-medium-background.primary` now carries the same value, the identical miss appears on the stroke side — the two are the same underlying problem.
+
+**`navigation.foreground.tertiary` on `navigation.background` (1):** $3.21{:}1$ light, $2.68{:}1$ dark.
+
+This is the largest single shortfall in Category C, and it has a compounding cause. In dark mode `navigation.background` resolves to `grey-l27-dark-faint`, which is *lighter* than the standard dark surface `grey-l20`, while `navigation.foreground.tertiary` resolves to `white-30`, which is *dimmer* than the standard `white-35`. The sub-theme moves both sides of the pair in the wrong direction at once. The core `foreground.tertiary` on `background.primary` measures $3.23{:}1$ in dark by comparison.
+
+`tertiary` is documented in Section 7.3 as suitable for inactive or low-emphasis UI content, which means it is expected to be readable. At $2.68{:}1$ the navigation variant does not meet that expectation in dark mode.
+
+#### Summary of what needs a decision
+
+| Item | Pairings | Status |
+| --- | --- | --- |
+| `quaternary` steps | 42 | Intentional. Document as never-for-content. |
+| `foreground.faint.*` as content | 9 | Intentional. Wrong tone for the job. |
+| `foreground.medium.*` on standard surfaces | 9 | Usage guidance needed, tone is fine. |
+| `foreground.on-medium-background.tertiary` | 3 | Gap. Whole family is marginal. |
+| `navigation.foreground.tertiary` (dark) | 1 | Gap. Worst shortfall at $2.68{:}1$. |
+
+### 7.6 Never Rely On Color Alone
 
 Contrast is necessary but not sufficient. A status that is communicated only by hue is invisible to users with color vision deficiency, and it disappears entirely in forced-colors and monochrome rendering.
 

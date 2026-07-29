@@ -41,6 +41,14 @@ const APCA_UI_MIN = apcaThreshold("uiComponent").min;
 const THRESHOLDS = {
   text: { wcag: WCAG_AA_NORMAL, apca: APCA_BODY_MIN, label: "text (AA 4.5:1 / Lc 75)" },
   ui: { wcag: WCAG_UI_NONTEXT, apca: APCA_UI_MIN, label: "non-text (1.4.11 3:1 / Lc 30)" },
+  // The 3:1 absolute floor. A content token below this cannot be used for text at
+  // ANY size (3:1 is the AA large-text minimum) nor for a meaningful icon
+  // (1.4.11 non-text). Below it, a token is decorative only.
+  floor3: {
+    wcag: WCAG_UI_NONTEXT,
+    apca: null,
+    label: "3:1 absolute floor (AA large text / non-text icons)",
+  },
   informational: { wcag: null, apca: null, label: "not flagged (below AA by design)" },
 };
 
@@ -290,6 +298,72 @@ function buildPairs() {
     ),
   });
 
+  // -------------------------------------------------------------------------
+  // Foreground 3:1 floor audit.
+  //
+  // Every content token measured against the 3:1 absolute floor rather than
+  // 4.5:1. A foreground below 3:1 cannot carry text at any size, because 3:1 is
+  // the AA minimum for LARGE text, and cannot carry a meaningful icon either.
+  // Passing 3:1 but failing 4.5:1 means large-text-and-icons only.
+  // -------------------------------------------------------------------------
+
+  const CONTENT_STEPS = ["primary", "secondary", "tertiary", "quaternary"];
+
+  groups.push({
+    id: "floor-core-neutral",
+    title: "3:1 floor — foreground.{primary…quaternary} on every neutral surface",
+    kind: "floor3",
+    pairs: CONTENT_STEPS.flatMap((step) =>
+      NEUTRAL_SURFACES.map((surface) => [`--color-foreground-${step}`, surface])
+    ),
+  });
+
+  for (const tone of ["strong", "bold", "medium"]) {
+    groups.push({
+      id: `floor-on-${tone}`,
+      title: `3:1 floor — foreground.on-${tone}-background.{primary…quaternary} on background.${tone}.*`,
+      kind: "floor3",
+      pairs: CONTENT_STEPS.flatMap((step) =>
+        INTENTS.map((intent) => [
+          `--color-foreground-on-${tone}-background-${step}`,
+          `--color-background-${tone}-${intent}`,
+        ])
+      ),
+    });
+  }
+
+  groups.push({
+    id: "floor-intent-on-neutral",
+    title: "3:1 floor — foreground.{strong,bold,medium,faint}.* on background.primary",
+    kind: "floor3",
+    pairs: ["strong", "bold", "medium", "faint"].flatMap((tone) =>
+      INTENTS.map((intent) => [
+        `--color-foreground-${tone}-${intent}`,
+        "--color-background-primary",
+      ])
+    ),
+  });
+
+  // Sub-themes, each against its own surface.
+  const SUBTHEMES = [
+    ["always-dark", "--color-always-dark-background", INTENTS],
+    ["inverted", "--color-inverted-background", INTENTS],
+    ["media", "--color-media-background", []],
+    ["navigation", "--color-navigation-background", ["brand"]],
+  ];
+
+  for (const [family, surface, intents] of SUBTHEMES) {
+    groups.push({
+      id: `floor-${family}`,
+      title: `3:1 floor — ${family}.foreground.* on ${family}.background`,
+      kind: "floor3",
+      pairs: [
+        ...CONTENT_STEPS.map((step) => [`--color-${family}-foreground-${step}`, surface]),
+        ...intents.map((intent) => [`--color-${family}-foreground-${intent}`, surface]),
+      ],
+    });
+  }
+
   return groups;
 }
 
@@ -335,6 +409,7 @@ function run(modes, css) {
   const groups = buildPairs();
   const lines = [];
   const skipped = [];
+  const floorFailures = [];
   let wcagFailures = 0;
   let apcaShortfalls = 0;
 
@@ -390,6 +465,18 @@ function run(modes, css) {
       if (wcagFail) wcagFailures += 1;
       if (apcaFail) apcaShortfalls += 1;
 
+      if (group.kind === "floor3" && wcagFail) {
+        floorFailures.push({
+          group: group.title,
+          fgToken,
+          bgToken,
+          light: light.wcag,
+          dark: dark.wcag,
+          failsLight: light.wcag < WCAG_UI_NONTEXT,
+          failsDark: dark.wcag < WCAG_UI_NONTEXT,
+        });
+      }
+
       rows.push({
         fgToken,
         bgToken,
@@ -435,6 +522,39 @@ function run(modes, css) {
     );
     lines.push("");
     for (const entry of skipped) lines.push(`- ${entry}`);
+    lines.push("");
+  }
+
+  // Consolidated list of every content token that cannot carry text at any size.
+  lines.push("## Below the 3:1 absolute floor — consolidated");
+  lines.push("");
+  lines.push(
+    "Every foreground pairing below $3{:}1$ in at least one theme. $3{:}1$ is the AA minimum for " +
+      "**large** text (24px, or 18.5px bold) and the 1.4.11 minimum for a meaningful icon, so a " +
+      "pairing below it cannot carry text at any size and cannot carry an icon. It is decorative " +
+      "only — suitable for a disabled-state hint or a de-emphasis wash, nothing that must be read."
+  );
+  lines.push("");
+
+  if (!floorFailures.length) {
+    lines.push("No foreground pairing falls below 3:1.");
+    lines.push("");
+  } else {
+    lines.push(`${floorFailures.length} pairings below 3:1.`);
+    lines.push("");
+    lines.push("| Foreground | Background | Light | Dark | Fails in |");
+    lines.push("| --- | --- | --- | --- | --- |");
+    for (const row of [...floorFailures].sort((a, b) => {
+      const worst = (r) => Math.min(r.light, r.dark);
+      return worst(a) - worst(b);
+    })) {
+      const where =
+        row.failsLight && row.failsDark ? "both" : row.failsLight ? "light only" : "dark only";
+      lines.push(
+        `| \`${short(row.fgToken)}\` | \`${short(row.bgToken)}\` | ${fmt(row.light)}:1 | ` +
+          `${fmt(row.dark)}:1 | ${where} |`
+      );
+    }
     lines.push("");
   }
 

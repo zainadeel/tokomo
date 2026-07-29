@@ -201,7 +201,7 @@
   --color-always-dark-interaction-focus: var(--color-reference-white-15);
   --color-always-dark-interaction-hover: var(--color-reference-white-10);
   --color-always-dark-interaction-pressed: var(--color-reference-white-15);
-  --color-always-dark-shimmer: var(--color-reference-white-20);
+  --color-always-dark-shimmer: var(--color-reference-white-10);
   --color-background-bold-ai: var(--color-reference-light-purple-290-l52-c20-bold);
   --color-background-bold-brand: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-background-bold-caution: var(--color-reference-light-yellow-85-l51-c12-bold);

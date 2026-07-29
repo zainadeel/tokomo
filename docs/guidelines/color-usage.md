@@ -120,6 +120,8 @@ Use elevation, border, and divider semantic tokens for depth treatments and stru
 
 Border tokens should be treated as surface-adjacent colors. They are the right choice when the stroke should feel like part of the container or surface itself.
 
+Note that `border.primary`, `border.secondary`, and `border.tertiary` are tuned for surface definition, not for control identification. None of them reaches the $3{:}1$ non-text contrast threshold on any surface in either theme. If a stroke is the only thing identifying an interactive control or its state, see Section 7.4 before reaching for one of these.
+
 `border.tertiary` is the lowest-emphasis border option. It is best for subtle container hints, inactive outlines, and other edges that should be visible but not prominent. In practice it is intentionally very dim, so it should not be used when the border itself needs to carry strong affordance or attention.
 
 Divider tokens are narrower in purpose. Use them only when drawing a horizontal or vertical rule inside a surface to create separation between elements or blocks of information. Do not treat divider tokens as the default border color for every component edge.
@@ -361,7 +363,60 @@ That means:
 2. `border.tertiary` should be understood as a dim structural hint, not as a prominent border,
 3. if the user needs clearer readability or stronger affordance, move up to a higher-emphasis foreground or border token.
 
-### 7.4 Never Rely On Color Alone
+### 7.4 Stroke Contrast
+
+Strokes are not text, so the threshold that applies to them is WCAG 1.4.11 Non-text Contrast at $3{:}1$, not the $4.5{:}1$ text threshold.
+
+That threshold is conditional. It applies when the stroke is what identifies a control or its state, such as a text field outline, a checkbox edge, a radio ring, or a focus indicator. It does not apply to decoration, to a divider between blocks of content, or to a container edge on a surface that is already distinguishable by fill.
+
+#### Neutral strokes
+
+Measured against every surface they can legitimately sit on, including all nine faint intent surfaces:
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `border.primary` | $1.59$–$1.61{:}1$ | $1.84$–$1.92{:}1$ |
+| `border.secondary` | $1.40$–$1.41{:}1$ | $1.54$–$1.62{:}1$ |
+| `border.tertiary` | $1.25{:}1$ | $1.30$–$1.37{:}1$ |
+| `divider.divider` | $1.25{:}1$ | $1.30$–$1.37{:}1$ |
+
+Two things follow.
+
+First, **no neutral stroke token reaches $3{:}1$ anywhere**, in either theme, on any surface. They are surface-definition colors by design, and this is the same deliberate de-emphasis described for `border.tertiary` in Section 7.3 — it simply extends to the whole neutral stroke family.
+
+Second, the surface barely matters. `border.primary` is an alpha value over near-white or near-black surfaces, so it lands within $0.02$ of itself across `background.primary`, `background.secondary`, and every faint surface in light mode, and within $0.05$ in dark mode. Choosing a different neutral surface will not rescue a stroke that needs more contrast; only a different token will.
+
+The same holds for the `border.on-*-background.*` family, which spans about $1.25$–$1.65{:}1$ on its matching fills.
+
+#### When a stroke must identify a control
+
+Use a token that actually clears the threshold, or stop relying on the stroke alone:
+
+1. `border.bold.*` on its own faint surface measures about $4.55$–$4.68{:}1$ in light and $4.54$–$7.76{:}1$ in dark, so it clears $3{:}1$ comfortably,
+2. `border.strong.*` measures about $7.49$–$11.38{:}1$ in light and $10.93$–$12.38{:}1$ in dark,
+3. `border.medium.*` does **not** clear it — about $1.33$–$2.37{:}1$ in light and $2.37$–$2.73{:}1$ in dark — so it is a tinted edge, not a control boundary,
+4. otherwise keep the neutral stroke and add a second cue: a distinguishable fill, a visible label, or an icon.
+
+#### Always-dark sub-theme
+
+`always-dark.border-*` tokens are mode-invariant, but `always-dark.background` is intentionally mode-dependent (`grey-l18` in light, `grey-l20` in dark). That difference is immaterial to contrast:
+
+| Token | Light | Dark |
+| --- | --- | --- |
+| `always-dark.border-primary` | $1.84{:}1$ | $1.88{:}1$ |
+| `always-dark.border-secondary` | $1.54{:}1$ | $1.57{:}1$ |
+| `always-dark.border-tertiary` | $1.30{:}1$ | $1.32{:}1$ |
+| `always-dark.divider` | $1.30{:}1$ | $1.32{:}1$ |
+
+The mode gap is at most $0.04$, so the mode-dependent background does not need to be treated as a contrast risk. The neutral strokes sit in the same range as their theme-aware counterparts and carry the same caveat.
+
+For the always-dark intent strokes, `strong` measures about $13.3$–$15.8{:}1$ and `bold` about $5.6$–$10.0{:}1$, both comfortably clear. `faint` measures $1.20$–$1.29{:}1$ and is decorative only. `medium` sits at about $2.89$–$3.48{:}1$ and straddles the threshold: `always-dark.border-medium-negative` is $3.00{:}1$ in light but $2.89{:}1$ in dark, so do not treat the always-dark `medium` strokes as reliably meeting $3{:}1$.
+
+#### Regenerating these figures
+
+`npm run report:contrast` measures all of the above and flags strokes against $3{:}1$ rather than $4.5{:}1$. A flagged row is a prompt to check how the token is used, not an automatic defect, because the threshold only applies to control-identifying strokes.
+
+### 7.5 Never Rely On Color Alone
 
 Contrast is necessary but not sufficient. A status that is communicated only by hue is invisible to users with color vision deficiency, and it disappears entirely in forced-colors and monochrome rendering.
 

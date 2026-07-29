@@ -30,7 +30,19 @@ const CSS_PATH = "dist/colors.css";
 const REPORT_PATH = "reports/contrast.md";
 
 const WCAG_AA_NORMAL = 4.5;
+// WCAG 2.x 1.4.11 Non-text Contrast, which governs strokes that identify a
+// control or its state. Decorative strokes have no minimum.
+const WCAG_UI_NONTEXT = 3;
 const APCA_BODY_MIN = apcaThreshold("bodyText").min;
+const APCA_UI_MIN = apcaThreshold("uiComponent").min;
+
+// Threshold pair per group kind: [WCAG ratio, APCA |Lc|]. "informational" groups
+// are measured and reported but never flagged.
+const THRESHOLDS = {
+  text: { wcag: WCAG_AA_NORMAL, apca: APCA_BODY_MIN, label: "text (AA 4.5:1 / Lc 75)" },
+  ui: { wcag: WCAG_UI_NONTEXT, apca: APCA_UI_MIN, label: "non-text (1.4.11 3:1 / Lc 30)" },
+  informational: { wcag: null, apca: null, label: "not flagged (below AA by design)" },
+};
 
 // Semantic intents present in the strong/bold/medium/faint families.
 const INTENTS = [
@@ -185,11 +197,97 @@ function buildPairs() {
   groups.push({
     id: "7.3-low-emphasis",
     title: "§7.3 Low-emphasis tokens (expected to sit below AA by design)",
+    kind: "informational",
     pairs: [
       ["--color-foreground-tertiary", "--color-background-primary"],
       ["--color-foreground-quaternary", "--color-background-primary"],
       ["--color-border-tertiary", "--color-background-primary"],
     ],
+  });
+
+  // -------------------------------------------------------------------------
+  // Borders and dividers. These are non-text, so the relevant WCAG threshold
+  // is 1.4.11 Non-text Contrast at 3:1 — and it only applies where the stroke
+  // is the means of identifying a control or its state (a field outline, a
+  // checkbox edge, a focus ring). A purely decorative divider has no minimum.
+  // -------------------------------------------------------------------------
+
+  const NEUTRAL_STROKES = [
+    "--color-border-primary",
+    "--color-border-secondary",
+    "--color-border-tertiary",
+    "--color-divider-divider",
+  ];
+
+  // Neutral strokes must be checked on every surface they can legitimately sit
+  // on, which includes the faint intent surfaces, not just primary/secondary.
+  const NEUTRAL_SURFACES = [
+    "--color-background-primary",
+    "--color-background-secondary",
+    ...INTENTS.map((intent) => `--color-background-faint-${intent}`),
+  ];
+
+  groups.push({
+    id: "borders-neutral",
+    title: "Neutral strokes on every surface they can sit on",
+    kind: "ui",
+    pairs: NEUTRAL_STROKES.flatMap((stroke) =>
+      NEUTRAL_SURFACES.map((surface) => [stroke, surface])
+    ),
+  });
+
+  for (const tone of ["strong", "bold", "medium"]) {
+    groups.push({
+      id: `borders-on-${tone}`,
+      title: `border.on-${tone}-background.* on background.${tone}.*`,
+      kind: "ui",
+      pairs: ["primary", "secondary", "tertiary"].flatMap((emphasis) =>
+        INTENTS.map((intent) => [
+          `--color-border-on-${tone}-background-${emphasis}`,
+          `--color-background-${tone}-${intent}`,
+        ])
+      ),
+    });
+  }
+
+  groups.push({
+    id: "borders-semantic",
+    title: "Semantic intent strokes on their own faint surface",
+    kind: "ui",
+    pairs: ["strong", "bold", "medium"].flatMap((tone) =>
+      INTENTS.map((intent) => [
+        `--color-border-${tone}-${intent}`,
+        `--color-background-faint-${intent}`,
+      ])
+    ),
+  });
+
+  // The always-dark sub-theme. Its border tokens are mode-invariant but
+  // always-dark.background is deliberately NOT (grey-l18 light, grey-l20 dark),
+  // so these pairs are measured in both modes to confirm that difference stays
+  // immaterial to contrast.
+  groups.push({
+    id: "always-dark-neutral",
+    title: "always-dark neutral strokes on always-dark.background",
+    kind: "ui",
+    pairs: [
+      "--color-always-dark-border-primary",
+      "--color-always-dark-border-secondary",
+      "--color-always-dark-border-tertiary",
+      "--color-always-dark-divider",
+    ].map((stroke) => [stroke, "--color-always-dark-background"]),
+  });
+
+  groups.push({
+    id: "always-dark-semantic",
+    title: "always-dark intent strokes on always-dark.background",
+    kind: "ui",
+    pairs: ["strong", "bold", "medium", "faint"].flatMap((tone) =>
+      INTENTS.map((intent) => [
+        `--color-always-dark-border-${tone}-${intent}`,
+        "--color-always-dark-background",
+      ])
+    ),
   });
 
   return groups;
@@ -257,9 +355,23 @@ function run(modes, css) {
     "Foreground tokens with alpha are composited over their background in sRGB before measurement."
   );
   lines.push("");
+  lines.push(
+    "An `Lc` of exactly `0.00` is not an error: APCA clamps contrast below its own low-contrast " +
+      "threshold to zero rather than reporting a misleadingly small number. Read it as " +
+      "\"indistinguishable by APCA\" and use the WCAG column for those rows."
+  );
+  lines.push("");
+  lines.push(
+    "Strokes are measured against WCAG 1.4.11 Non-text Contrast (3:1). That threshold applies only " +
+      "where the stroke is what identifies a control or its state — a field outline, a checkbox " +
+      "edge, a focus ring. A stroke that is purely decorative, or a divider between blocks of " +
+      "content, has no minimum, so a flagged row is a prompt to check how the token is used rather " +
+      "than an automatic defect."
+  );
+  lines.push("");
 
   for (const group of groups) {
-    const isLowEmphasis = group.id === "7.3-low-emphasis";
+    const threshold = THRESHOLDS[group.kind ?? "text"];
     const rows = [];
 
     for (const [fgToken, bgToken] of group.pairs) {
@@ -270,9 +382,11 @@ function run(modes, css) {
         continue;
       }
 
-      const wcagFail = !isLowEmphasis && Math.min(light.wcag, dark.wcag) < WCAG_AA_NORMAL;
+      const wcagFail =
+        threshold.wcag !== null && Math.min(light.wcag, dark.wcag) < threshold.wcag;
       const apcaFail =
-        !isLowEmphasis && Math.min(Math.abs(light.lc), Math.abs(dark.lc)) < APCA_BODY_MIN;
+        threshold.apca !== null &&
+        Math.min(Math.abs(light.lc), Math.abs(dark.lc)) < threshold.apca;
       if (wcagFail) wcagFailures += 1;
       if (apcaFail) apcaShortfalls += 1;
 
@@ -292,6 +406,8 @@ function run(modes, css) {
     rows.sort((a, b) => a.worstWcag - b.worstWcag);
 
     lines.push(`## ${group.title}`);
+    lines.push("");
+    lines.push(`Threshold applied: ${threshold.label}.`);
     lines.push("");
     lines.push("| Foreground | Background | Light WCAG | Dark WCAG | Light Lc | Dark Lc | Below floor |");
     lines.push("| --- | --- | --- | --- | --- | --- | --- |");
@@ -351,9 +467,12 @@ function run(modes, css) {
   lines.push("## Summary");
   lines.push("");
   lines.push(
-    `- WCAG AA failures (excluding §7.3 low-emphasis tokens, which are below AA by design): **${wcagFailures}**`
+    `- WCAG failures against each group's own threshold — ${WCAG_AA_NORMAL}:1 for text, ` +
+      `${WCAG_UI_NONTEXT}:1 for non-text strokes, none for informational groups: **${wcagFailures}**`
   );
-  lines.push(`- Pairings below the APCA body-text floor of ${APCA_BODY_MIN}: **${apcaShortfalls}**`);
+  lines.push(
+    `- Pairings below their APCA floor (Lc ${APCA_BODY_MIN} text, Lc ${APCA_UI_MIN} non-text): **${apcaShortfalls}**`
+  );
   if (skipped.length) lines.push(`- Skipped (translucent background): **${skipped.length}**`);
   lines.push(`- Chromatic reference tokens outside sRGB: **${gamut.outsideSrgb.length}** (expected)`);
   lines.push(`- Chromatic reference tokens outside P3: **${gamut.outsideP3.length}**`);
@@ -370,8 +489,12 @@ await mkdir(path.dirname(REPORT_PATH), { recursive: true });
 await writeFile(REPORT_PATH, markdown, "utf8");
 
 console.log(`Wrote ${REPORT_PATH}`);
-console.log(`WCAG AA failures: ${wcagFailures}`);
-console.log(`Below APCA body-text floor (Lc ${APCA_BODY_MIN}): ${apcaShortfalls}`);
+console.log(
+  `WCAG failures vs per-group threshold (${WCAG_AA_NORMAL}:1 text, ${WCAG_UI_NONTEXT}:1 non-text): ${wcagFailures}`
+);
+console.log(
+  `Below APCA floor (Lc ${APCA_BODY_MIN} text, Lc ${APCA_UI_MIN} non-text): ${apcaShortfalls}`
+);
 console.log(
   `Chromatic reference tokens outside sRGB: ${gamut.outsideSrgb.length}/${gamut.chromatic} (expected — browsers gamut-map)`
 );

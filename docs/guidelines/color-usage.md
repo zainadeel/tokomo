@@ -390,13 +390,11 @@ Measured against every surface they can legitimately sit on, including all nine 
 | `border.tertiary` | $1.25{:}1$ | $1.30$–$1.37{:}1$ | no |
 | `divider.divider` | $1.25{:}1$ | $1.30$–$1.37{:}1$ | no |
 
-Three things follow.
+Two things follow.
 
 First, `border.primary` is the only neutral step that clears $3{:}1$, and it does so on every surface in both themes. That is what makes it the correct choice for a small non-text control whose stroke is its only identifier.
 
-Second, its margin is thin. The tightest cases are the faint surfaces in dark mode at $3.04{:}1$, only $0.04$ above the threshold. Any retune of the faint tones or of `grey` can push those under, so re-run the report whenever those move.
-
-Third, the surface barely matters. These are alpha values over near-white or near-black surfaces, so `border.secondary` lands within $0.02$ of itself across `background.primary`, `background.secondary`, and every faint surface in light mode. Choosing a different neutral surface will not rescue a stroke that needs more contrast; only a different token will.
+Second, the surface barely matters. These are alpha values over near-white or near-black surfaces, so `border.secondary` lands within $0.02$ of itself across `background.primary`, `background.secondary`, and every faint surface in light mode. Choosing a different neutral surface will not rescue a stroke that needs more contrast; only a different token will.
 
 #### Why `border.secondary` is the right default for fields
 
@@ -508,11 +506,7 @@ Retuned to `white/35`, bringing it to parity with the core token rather than giv
 
 `secondary` is the lowest step expected to carry body text, so it is held to AA $4.5{:}1$ rather than the $3{:}1$ floor. It previously failed in `foreground.on-medium-background.secondary` on `background.medium.walkthrough` ($4.36{:}1$ dark) and `positive` ($4.44{:}1$ dark), with `guide` sitting exactly on the threshold at $4.50{:}1$. Retuned to `white/90` in dark, the family now measures $4.69$–$5.35{:}1$.
 
-Two observations worth carrying forward.
-
-First, every failure found across both floors was in `on-medium-background`. Nothing else in the system missed either threshold. A mid-lightness fill compresses contrast from both directions, so `background.medium.*` is the tightest surface family in the system and the one to re-check first whenever the medium tones move.
-
-Second, the remaining tight case is not in that family: `foreground.tertiary` on the faint surfaces in dark mode sits at $3.04{:}1$, only $0.04$ above the floor. That is the value most likely to regress on a future retune of the faint tones or of `grey`.
+One observation worth carrying forward: every failure found across both floors was in `on-medium-background`. Nothing else in the system missed either threshold. A mid-lightness fill compresses contrast from both directions, so `background.medium.*` is the tightest surface family in the system and the one to re-check first whenever the medium tones move.
 
 #### Summary
 

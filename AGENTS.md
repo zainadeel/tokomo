@@ -4,6 +4,8 @@ Guide for AI agents (and humans) working on **TokoMo** (`@ds-mo/tokens`). Follow
 
 Keep this file as the single source of truth for project conventions. Update it when you add pipelines, token categories, or change the release flow.
 
+**Before changing any color token, read `docs/guidelines/color-generation.md` (palette model, contrast and gamut constraints, validation rules) and `docs/guidelines/color-usage.md` (semantic vs data usage, verified contrast pairings).** Those are hand-written specs, not generated output. `typography-usage.md` and `elevation-usage.md` cover style selection for those categories.
+
 ---
 
 ## What this project is
@@ -94,8 +96,14 @@ scripts/
   generate-ts-constants.mjs     # Generates TypeScript constants from token names
   build-docs.mjs                # Regenerates docs/index.html (GH Pages token browser)
   docs-template.html            # Template for the token browser
+  report-contrast.mjs           # WCAG + APCA report over shipped pairings (manual, not in build)
 docs/
   index.html            # Built GitHub Pages browser (do NOT edit by hand — regenerate)
+  guidelines/           # Hand-written specs — READ THESE before changing tokens
+    color-generation.md   # Reference palette model, contrast/gamut constraints, validation rules
+    color-usage.md        # Semantic vs data token usage, verified contrast pairings
+    typography-usage.md   # Type style selection
+    elevation-usage.md    # Elevation token selection
 dist/                   # Generated — do not edit directly
 .github/
   workflows/
@@ -114,14 +122,17 @@ release-please-config.json      # Release Please config (node, changelog section
 ## Commands
 
 ```bash
-npm run build          # Full build — CSS + JSON + TypeScript
-npm run test           # Validate light/dark mode preservation in generated JSON
-npm run build:colors   # Color tokens only (fast iteration)
-npm run build:docs     # Rebuild docs/index.html (GH Pages browser)
-npm run build:agent    # Validate and generate token-family agent guidance
-npm run dev            # Watch mode — rebuilds on src changes
-npm run clean          # Remove dist/
+npm run build            # Full build — CSS + JSON + TypeScript
+npm run test             # Token JSON mode preservation + OKLCH/contrast math
+npm run build:colors     # Color tokens only (fast iteration)
+npm run build:docs       # Rebuild docs/index.html (GH Pages browser)
+npm run build:agent      # Validate and generate token-family agent guidance
+npm run report:contrast  # WCAG + APCA report over shipped pairings (run after palette changes)
+npm run dev              # Watch mode — rebuilds on src changes
+npm run clean            # Remove dist/
 ```
+
+`report:contrast` is diagnostic and gates nothing. WCAG 2.x AA is the shipped accessibility contract; APCA `Lc` is tracked alongside it as forward-looking guidance only. See `docs/guidelines/color-generation.md` §4.5.
 
 No separate test/lint commands — validation is done by the Build workflow on every PR (it re-runs the build and asserts `src/` was not mutated).
 

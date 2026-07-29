@@ -1,6 +1,7 @@
-const fs = require("fs");
-const path = require("path");
-const {
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
   compositeOverlayRgb,
   contrastFromY,
   contrastRatioP3,
@@ -14,7 +15,7 @@ const {
   relativeLuminanceFromHex,
   rgbEncodedToY,
   solveBoldLightnessForContrast,
-} = require("./oklch-utils");
+} from "./oklch-utils.mjs";
 
 const DEFAULT_HUE_ORDER = [
   "grey",
@@ -928,10 +929,13 @@ function loadConfigFromCli(argv) {
   return JSON.parse(fs.readFileSync(configPath, "utf8"));
 }
 
-if (require.main === module) {
+const isCliInvocation =
+  process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isCliInvocation) {
   const config = loadConfigFromCli(process.argv);
   if (!config) {
-    console.error("Usage: node tools/color-system/run-color-generation-workflow.js <config.json>");
+    console.error("Usage: node tools/color-system/run-color-generation-workflow.mjs <config.json>");
     process.exit(1);
   }
 
@@ -940,7 +944,7 @@ if (require.main === module) {
   console.log(`Reports written to ${result.reportsDir}`);
 }
 
-module.exports = {
+export {
   DEFAULT_CONSTRAINTS,
   DEFAULT_CORE_TONES,
   DEFAULT_HUE_ORDER,

@@ -21,8 +21,12 @@ dist
 docs/*
 !docs/guidelines/
 
-# Generated copy of source tokens for the visual color tool
+# Generated copies staged into the visual color tool by scripts/copy-tool-assets.mjs
 tools/color-system/tokens.json
+tools/color-system/favicon.svg
+
+# Generated contrast report (npm run report:contrast)
+reports/
 
 # Claude
 .claude/

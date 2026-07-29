@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [4.0.1](https://github.com/zainadeel/tokomo/compare/v4.0.0...v4.0.1) (2026-07-29)
+
+
+### Fixed
+
+* **colors:** align always-dark tokens with dark reference variables ([#98](https://github.com/zainadeel/tokomo/issues/98)) ([ae7aa4c](https://github.com/zainadeel/tokomo/commit/ae7aa4c42ac5f0c67ff20b5e491175b67009ad1f))
+
 ## [4.0.0](https://github.com/zainadeel/tokomo/compare/v3.1.1...v4.0.0) (2026-07-28)
 
 

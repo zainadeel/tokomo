@@ -24,5 +24,8 @@ docs/*
 # Generated copy of source tokens for the visual color tool
 tools/color-system/tokens.json
 
+# Generated contrast report (npm run report:contrast)
+reports/
+
 # Claude
 .claude/

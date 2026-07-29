@@ -19,8 +19,10 @@ The repository-level color is defined by these files:
 3. `src/json/colors/data/color.data.dark.tokens.json`
 4. `src/json/colors/semantic/color.semantic.light.tokens.json`
 5. `src/json/colors/semantic/color.semantic.dark.tokens.json`
-6. `tools/color-system/oklch-utils.js`
-7. `tools/color-system/run-color-generation-workflow.js`
+6. `tools/color-system/oklch-utils.mjs`
+7. `tools/color-system/run-color-generation-workflow.mjs`
+8. `tools/color-system/apca.mjs`
+9. `scripts/report-contrast.mjs`
 
 This repository stores exported token artifacts and now also includes a repo-local reference workflow for palette working files. If external scripts are still used outside this repository, record their exact usage in the same PR that changes the palette.
 
@@ -128,6 +130,8 @@ OKLCH is the working model **and** the shipped output for the chromatic referenc
 
 Because the name drives the output, a reference token's name and its stored hex must agree. See Section 9 for the parity rule.
 
+There is one caveat on that agreement. `oklchToHex` in `tools/color-system/oklch-utils.mjs` converts by clipping each sRGB channel independently, which shifts hue for any color outside sRGB. For colors inside sRGB the mirrored hex and the shipped `oklch()` describe the same color. For colors outside it, they do not, and the `oklch()` is authoritative. This is acceptable because the hex is Figma-mirror metadata rather than a shipped value, but it means exact hex parity can only be required for in-gamut colors.
+
 sRGB hex is still the shipped form where a name carries no OKLCH spec:
 
 1. the `black` and `white` opacity scales,
@@ -138,6 +142,74 @@ Generation work may reason in OKLCH freely, but final artifacts must remain vali
 ### 4.3 Overlay And Opacity Analysis
 
 For separate opacity-threshold reporting, use sRGB alpha compositing before luminance conversion and WCAG contrast evaluation. This matches common design and web-tool behavior.
+
+### 4.4 Gamut And Browser Support Strategy
+
+The palette is authored inside **Display P3** and ships a single unqualified `oklch()` value per chromatic token. There is no `@media (color-gamut: p3)` tier and no second sRGB value, and that is deliberate.
+
+The reasoning is:
+
+1. `clampP3Chroma` in the workflow fits every chromatic tone to P3 using `fitOklchToP3Gamut`, so authored values are inside P3 by construction,
+2. when a browser renders an `oklch()` value the display cannot show, CSS Color 4 requires it to gamut-map by reducing chroma at constant lightness and hue rather than clipping channels,
+3. so one authored value renders at full chroma on a P3 display and degrades perceptually on an sRGB display, with no duplicate declarations to keep in sync.
+
+This means P3-capable displays get the intended color and sRGB displays get a hue-stable and lightness-stable approximation of it. Note that this browser-side behavior is better than the naive per-channel clipping used for the Figma hex mirror described in Section 4.2; the two are not the same operation and only the browser path affects shipped rendering.
+
+The consequence to accept is the syntax floor. `oklch()` is Baseline 2023, which means Chrome 111, Safari 15.4, and Firefox 113. Below those versions the `--color-reference-*` declarations are invalid, the custom properties go unset, and every semantic and data token that aliases them resolves to nothing rather than to a fallback color. There is currently no `@supports (color: oklch(0 0 0))` hex tier guarding against this.
+
+That floor is an accepted constraint rather than an oversight. If a consumer must support a browser below it, the correct fix is a consumer-side fallback layer or an added `@supports` tier in this repository, and either choice should be recorded here.
+
+How much this strategy is relied on in practice, from `npm run report:contrast`:
+
+1. of 88 chromatic reference tokens, **49 are outside sRGB**. Browser gamut mapping is therefore load-bearing for more than half the palette on an sRGB display, not an edge case,
+2. **5 are outside Display P3**, so their authored chroma is not reachable on any current display:
+
+```text
+dark-blue-250-l91-c05-strong
+dark-cyan-215-l93-c07-strong
+dark-purple-290-l92-c05-strong
+light-blue-250-l70-c18-medium
+light-teal-180-l35-c09-strong
+```
+
+Those five are an accepted state, not a defect to fix. They still render correctly, because the browser reduces their chroma to fit the display, so the only consequence is that the authored value overstates the chroma actually achievable. The likely cause is manual tuning under Section 8 without a subsequent clamp pass.
+
+The decision is to leave them as they are. Correcting them would change shipped color values for no visible benefit, since gamut mapping already produces the same practical result. Two follow-on rules apply:
+
+1. do not "fix" these tokens in isolation,
+2. if a future retune touches `blue-250`, `cyan-215`, `purple-290`, or `teal-180`, re-run the `clampP3Chroma` phase so new values land inside P3 by construction.
+
+Treat a rising count here as a signal that manual tuning is drifting away from the clamp phase, not as a release blocker.
+
+### 4.5 APCA As A Secondary Diagnostic
+
+WCAG 2.x contrast ratio remains the shipped accessibility contract for this system. Every hard constraint in Section 6 and every pairing guarantee in `color-usage.md` Section 7 is expressed as a WCAG ratio, and nothing in the build gates on anything else.
+
+APCA is tracked alongside it as a **non-binding** forward-looking signal. WCAG 2.x is known to be lenient on dark backgrounds and harsh in the mid-tones, which is exactly the range the `strong` and `medium` tones occupy, so a second measure is useful for spotting pairs whose ratio looks acceptable but whose perceived readability is weaker.
+
+APCA reports a signed lightness contrast value `Lc`: positive for dark content on a light background, negative for light content on a dark background. Compare magnitudes against these floors:
+
+| Content | Minimum | Preferred |
+| --- | --- | --- |
+| Body text | 75 | 90 |
+| Non-body text | 60 | 75 |
+| Large text (at or above 36px) | 45 | 60 |
+| UI components | 30 | — |
+| Any discernible element | 15 | — |
+
+To score the current exported tokens against both measures:
+
+```bash
+npm run build
+npm run report:contrast
+```
+
+That writes `reports/contrast.md`, covering every pairing documented in `color-usage.md` Section 7 in both themes, with the WCAG ratio and the APCA `Lc` side by side. The report is regenerable output and is not committed.
+
+Two rules apply to it:
+
+1. a WCAG regression is a blocking problem, because WCAG is the contract,
+2. an APCA shortfall is information, not a failure, and should not be "fixed" by changing a token unless a design review agrees the pair is genuinely hard to read.
 
 ## 5. Background Anchors
 
@@ -175,7 +247,45 @@ When retuning the reference palette, use these anchor relationships:
 4. Dark medium chroma should remain controlled, typically at or below `0.17`.
 5. Grey medium remains neutral chroma.
 
-### 6.4 Grey Neutrality
+### 6.4 Chroma Caps Are Absolute, And Gamut Headroom Is Not
+
+The chroma caps in 6.1 through 6.3 are absolute numbers applied uniformly across hues. Maximum displayable chroma is not uniform across hues, so those caps do not represent the same amount of headroom for every family.
+
+Measured maximum chroma at $L=0.5$, the lightness band the `bold` tone occupies:
+
+| Hue | sRGB max C | P3 max C |
+| --- | --- | --- |
+| `cyan-215` | 0.088 | 0.117 |
+| `teal-180` | 0.091 | 0.123 |
+| `yellow-85` | 0.102 | 0.118 |
+| `olive-115` | 0.113 | 0.132 |
+| `orange-60` | 0.117 | 0.134 |
+| `blue-250` | 0.142 | 0.183 |
+| `green-145` | 0.157 | 0.213 |
+| `red-30` | 0.200 | 0.224 |
+| `pink-0` | 0.203 | 0.228 |
+| `magenta-325` | 0.234 | 0.254 |
+| `purple-290` | 0.283 | 0.290 |
+
+The spread is more than threefold. The practical consequences are:
+
+1. the `bold` cap of `0.20` is not reachable in P3 for `cyan-215`, `teal-180`, `yellow-85`, `olive-115`, `orange-60`, or `blue-250`, so for those families the gamut boundary is the real constraint and the cap never binds,
+2. for `purple-290` the cap binds well inside the gamut, leaving roughly 30 percent of available chroma unused,
+3. the currently exported bolds reflect exactly that: `light/blue-250/L50-C18-bold` sits at about 98 percent of its P3 maximum and `light/cyan-215/L51-C11-bold` at about 94 percent, while `light/purple-290/L52-C20-bold` sits at about 69 percent of its own.
+
+So the cool families run at their ceiling and the violet families do not. This is the structural reason the blue and cyan `strong` tones needed retuning in `81748c3`, and it is worth understanding before assuming a future retune has free chroma to spend.
+
+The considered alternative is to express caps as a **percentage of each hue's maximum chroma** at the tone's lightness, which is the usual way to make multi-hue palettes read as equally vivid, since equal absolute chroma does not look equally colorful across hues.
+
+Absolute caps are retained for now because:
+
+1. they are predictable and reviewable, since a cap is a single number rather than a function of hue and lightness,
+2. the token names encode chroma directly (`C18`, `C11`) and are the shipped specification per Section 4.2, so a percentage model would still have to resolve to a concrete per-hue number in the name,
+3. the gamut fit already prevents a cap from producing an undisplayable color, so the failure mode of an over-generous cap is a color that is less vivid than intended, not a broken one.
+
+If the palette is ever rebuilt for perceptual evenness across hues rather than per-hue tuning, revisit this decision and update Sections 6.1 through 6.3 together with the workflow utility.
+
+### 6.5 Grey Neutrality
 
 Grey is not a chromatic family. Preserve it as a neutral ladder.
 
@@ -187,7 +297,7 @@ When grey is retuned:
 
 ## 7. Candidate Selection Logic
 
-The working specification includes faint and bold solver behavior. That logic is now captured in the consolidated workflow utility at `tools/color-system/run-color-generation-workflow.js`.
+The working specification includes faint and bold solver behavior. That logic is now captured in the consolidated workflow utility at `tools/color-system/run-color-generation-workflow.mjs`.
 
 ### 7.1 Faint Solver Guidance
 
@@ -228,13 +338,16 @@ Before accepting a color change in this repository, validate the following:
 5. light and dark hue order remains consistent,
 6. each chromatic hue still has strong, bold, medium, and faint coverage,
 7. faint, bold, strong, and medium contrast rules still hold,
-8. downstream semantic and data usage still matches the intended reference tone semantics.
+8. downstream semantic and data usage still matches the intended reference tone semantics,
+9. `npm run report:contrast` shows no new WCAG AA failure among the pairings in `color-usage.md` Section 7.
+
+On the name and hex parity rule: a reference token's name and its stored hex must agree for colors inside sRGB. For colors outside sRGB they cannot agree exactly, because the mirrored hex is produced by per-channel clipping while the shipped value is the `oklch()` parsed from the name. In that case treat the name as correct and the hex as an approximation. See Section 4.2.
 
 ## 10. Practical Workflow In This Repository
 
 When working on core colors here:
 
-1. treat `tokens/colors/reference/hex.tokens.json` as the base palette artifact,
+1. treat `src/json/colors/reference/color.reference.tokens.json` as the base palette artifact,
 2. check which semantic and data tokens alias the reference values being changed,
 3. update exported token files together so the repository stays internally consistent,
 4. record any external generation or analysis commands in the PR if they were used,
@@ -270,7 +383,7 @@ Example config:
 Run it with:
 
 ```bash
-node tools/color-system/run-color-generation-workflow.js path/to/config.json
+node tools/color-system/run-color-generation-workflow.mjs path/to/config.json
 ```
 
 What the workflow does:

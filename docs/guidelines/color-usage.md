@@ -120,7 +120,13 @@ Use elevation, border, and divider semantic tokens for depth treatments and stru
 
 Border tokens should be treated as surface-adjacent colors. They are the right choice when the stroke should feel like part of the container or surface itself.
 
-Note that `border.primary`, `border.secondary`, and `border.tertiary` are tuned for surface definition, not for control identification. None of them reaches the $3{:}1$ non-text contrast threshold on any surface in either theme. If a stroke is the only thing identifying an interactive control or its state, see Section 7.4 before reaching for one of these.
+The three neutral steps are tuned for different jobs, and the difference is a contrast decision rather than a taste one:
+
+1. `border.tertiary` is decorative chrome: container edges and other structure on a surface that is already distinguishable without the stroke,
+2. `border.secondary` is the default for controls that contain their own identifying content, such as a text field with a label or placeholder inside it,
+3. `border.primary` is reserved for small non-text controls where the stroke itself is the only thing identifying the control, such as an unchecked checkbox, a radio ring, or a toggle track.
+
+Do not reach for `border.primary` simply because a stroke should look stronger. It is the only neutral step that clears the $3{:}1$ non-text contrast threshold, so spending it on ordinary chrome removes the one option available when a control genuinely needs it. See Section 7.4 for the measured values and the reasoning.
 
 `border.tertiary` is the lowest-emphasis border option. It is best for subtle container hints, inactive outlines, and other edges that should be visible but not prominent. In practice it is intentionally very dim, so it should not be used when the border itself needs to carry strong affordance or attention.
 
@@ -369,52 +375,67 @@ Strokes are not text, so the threshold that applies to them is WCAG 1.4.11 Non-t
 
 That threshold is conditional. It applies when the stroke is what identifies a control or its state, such as a text field outline, a checkbox edge, a radio ring, or a focus indicator. It does not apply to decoration, to a divider between blocks of content, or to a container edge on a surface that is already distinguishable by fill.
 
-#### Neutral strokes
+#### The neutral stroke ladder
+
+The three neutral steps are aligned to the foreground de-emphasis ladder: `border.primary` carries the same value as `foreground.tertiary`, and `border.secondary` the same value as `foreground.quaternary`. `border.tertiary` is unchanged and remains the lightest step.
 
 Measured against every surface they can legitimately sit on, including all nine faint intent surfaces:
 
-| Token | Light | Dark |
-| --- | --- | --- |
-| `border.primary` | $1.59$–$1.61{:}1$ | $1.84$–$1.92{:}1$ |
-| `border.secondary` | $1.40$–$1.41{:}1$ | $1.54$–$1.62{:}1$ |
-| `border.tertiary` | $1.25{:}1$ | $1.30$–$1.37{:}1$ |
-| `divider.divider` | $1.25{:}1$ | $1.30$–$1.37{:}1$ |
+| Token | Light | Dark | Clears $3{:}1$ |
+| --- | --- | --- | --- |
+| `border.primary` | $3.22$–$3.35{:}1$ | $3.04$–$3.23{:}1$ | yes |
+| `border.secondary` | $1.59$–$1.61{:}1$ | $1.84$–$1.92{:}1$ | no |
+| `border.tertiary` | $1.25{:}1$ | $1.30$–$1.37{:}1$ | no |
+| `divider.divider` | $1.25{:}1$ | $1.30$–$1.37{:}1$ | no |
 
-Two things follow.
+Three things follow.
 
-First, **no neutral stroke token reaches $3{:}1$ anywhere**, in either theme, on any surface. They are surface-definition colors by design, and this is the same deliberate de-emphasis described for `border.tertiary` in Section 7.3 — it simply extends to the whole neutral stroke family.
+First, `border.primary` is the only neutral step that clears $3{:}1$, and it does so on every surface in both themes. That is what makes it the correct choice for a small non-text control whose stroke is its only identifier.
 
-Second, the surface barely matters. `border.primary` is an alpha value over near-white or near-black surfaces, so it lands within $0.02$ of itself across `background.primary`, `background.secondary`, and every faint surface in light mode, and within $0.05$ in dark mode. Choosing a different neutral surface will not rescue a stroke that needs more contrast; only a different token will.
+Second, its margin is thin. The tightest cases are the faint surfaces in dark mode at $3.04{:}1$, only $0.04$ above the threshold. Any retune of the faint tones or of `grey` can push those under, so re-run the report whenever those move.
 
-The same holds for the `border.on-*-background.*` family, which spans about $1.25$–$1.65{:}1$ on its matching fills.
+Third, the surface barely matters. These are alpha values over near-white or near-black surfaces, so `border.secondary` lands within $0.02$ of itself across `background.primary`, `background.secondary`, and every faint surface in light mode. Choosing a different neutral surface will not rescue a stroke that needs more contrast; only a different token will.
 
-#### When a stroke must identify a control
+#### Why `border.secondary` is the right default for fields
 
-Use a token that actually clears the threshold, or stop relying on the stroke alone:
+`border.secondary` sits at about $1.6{:}1$, well under $3{:}1$, and that is deliberate rather than an oversight.
 
-1. `border.bold.*` on its own faint surface measures about $4.55$–$4.68{:}1$ in light and $4.54$–$7.76{:}1$ in dark, so it clears $3{:}1$ comfortably,
-2. `border.strong.*` measures about $7.49$–$11.38{:}1$ in light and $10.93$–$12.38{:}1$ in dark,
-3. `border.medium.*` does **not** clear it — about $1.33$–$2.37{:}1$ in light and $2.37$–$2.73{:}1$ in dark — so it is a tinted edge, not a control boundary,
-4. otherwise keep the neutral stroke and add a second cue: a distinguishable fill, a visible label, or an icon.
+WCAG 1.4.11 applies to visual information *required to identify* a control. A text input carries its own label, placeholder, or value inside it, so the control is identifiable without its outline and the outline is not what conveys "this is a field". The stroke is there to define the editable region, not to announce the component.
+
+That reasoning does not extend to a bare checkbox, radio, or toggle. Those have no internal text, so the stroke is the only thing distinguishing the control from the surface, and $3{:}1$ does bind. Use `border.primary` there.
+
+If a field's state must be communicated — invalid, focused, disabled — that state needs its own treatment and cannot lean on the resting stroke. Use a semantic intent stroke plus a non-color cue, per Section 7.5.
+
+#### Intent strokes
+
+On their own faint surface:
+
+1. `border.strong.*` measures about $7.49$–$11.38{:}1$ light and $10.93$–$12.38{:}1$ dark,
+2. `border.bold.*` measures about $4.55$–$4.68{:}1$ light and $4.54$–$7.76{:}1$ dark,
+3. `border.medium.*` measures about $1.33$–$2.37{:}1$ light and $2.37$–$2.73{:}1$ dark, so it does **not** clear $3{:}1$ and is a tinted edge rather than a control boundary.
+
+For strokes on colored fills, `border.on-strong-background.primary` ($3.18$–$4.05{:}1$) and `border.on-bold-background.primary` ($3.16{:}1$ and above) clear the threshold. `border.on-medium-background.primary` sits at $2.96$–$3.57{:}1$ and misses it in three intents: `walkthrough` at $2.96{:}1$ dark, `positive` at $2.97{:}1$ dark, and `negative` at $2.98{:}1$ light. Treat the on-medium strokes as not reliably meeting $3{:}1$. In practice a medium-tone fill is usually distinguishable on its own, so the threshold rarely binds there — but do not depend on it for a control that has no other affordance.
+
+The `secondary` and `tertiary` steps of all three on-background families remain well below $3{:}1$ and are decorative.
 
 #### Always-dark sub-theme
 
 `always-dark.border-*` tokens are mode-invariant, but `always-dark.background` is intentionally mode-dependent (`grey-l18` in light, `grey-l20` in dark). That difference is immaterial to contrast:
 
-| Token | Light | Dark |
-| --- | --- | --- |
-| `always-dark.border-primary` | $1.84{:}1$ | $1.88{:}1$ |
-| `always-dark.border-secondary` | $1.54{:}1$ | $1.57{:}1$ |
-| `always-dark.border-tertiary` | $1.30{:}1$ | $1.32{:}1$ |
-| `always-dark.divider` | $1.30{:}1$ | $1.32{:}1$ |
+| Token | Light | Dark | Clears $3{:}1$ |
+| --- | --- | --- | --- |
+| `always-dark.border-primary` | $3.21{:}1$ | $3.23{:}1$ | yes |
+| `always-dark.border-secondary` | $1.84{:}1$ | $1.88{:}1$ | no |
+| `always-dark.border-tertiary` | $1.30{:}1$ | $1.32{:}1$ | no |
+| `always-dark.divider` | $1.30{:}1$ | $1.32{:}1$ | no |
 
-The mode gap is at most $0.04$, so the mode-dependent background does not need to be treated as a contrast risk. The neutral strokes sit in the same range as their theme-aware counterparts and carry the same caveat.
+The mode gap is at most $0.02$, so the mode-dependent background is not a contrast risk. The ladder mirrors the theme-aware one, so the same usage rules apply. The `inverted`, `media`, `navigation`, and `translucent` sub-themes follow the same alignment.
 
-For the always-dark intent strokes, `strong` measures about $13.3$–$15.8{:}1$ and `bold` about $5.6$–$10.0{:}1$, both comfortably clear. `faint` measures $1.20$–$1.29{:}1$ and is decorative only. `medium` sits at about $2.89$–$3.48{:}1$ and straddles the threshold: `always-dark.border-medium-negative` is $3.00{:}1$ in light but $2.89{:}1$ in dark, so do not treat the always-dark `medium` strokes as reliably meeting $3{:}1$.
+For the always-dark intent strokes, `strong` measures about $13.3$–$15.8{:}1$ and `bold` about $5.6$–$10.0{:}1$, both comfortably clear. `faint` measures $1.20$–$1.29{:}1$ and is decorative only. `medium` sits at about $2.89$–$3.48{:}1$ and straddles the threshold, with `always-dark.border-medium-negative` at $3.00{:}1$ light but $2.89{:}1$ dark, so do not treat the always-dark `medium` strokes as reliably meeting $3{:}1$.
 
 #### Regenerating these figures
 
-`npm run report:contrast` measures all of the above and flags strokes against $3{:}1$ rather than $4.5{:}1$. A flagged row is a prompt to check how the token is used, not an automatic defect, because the threshold only applies to control-identifying strokes.
+`npm run report:contrast` measures all of the above and flags strokes against $3{:}1$ rather than $4.5{:}1$. A flagged row is a prompt to check how the token is used, not an automatic defect, because the threshold only applies to control-identifying strokes. Expect `border.secondary`, `border.tertiary`, `divider.*`, and the `secondary`/`tertiary` on-background steps to be flagged permanently: they are decorative by design.
 
 ### 7.5 Never Rely On Color Alone
 
@@ -466,7 +487,9 @@ Avoid these patterns:
 5. pairing strong semantic backgrounds with regular foreground tokens instead of on-background tokens,
 6. using `divider.*` as a generic border token instead of as an internal rule,
 7. changing token meaning across screens without a strong product reason,
-8. communicating a status only through color, with no icon, label, or other redundant cue.
+8. communicating a status only through color, with no icon, label, or other redundant cue,
+9. using `border.primary` for ordinary chrome or container edges because it looks stronger, which spends the only neutral step that clears $3{:}1$ and leaves nothing for controls that need it,
+10. relying on `border.secondary` or `border.tertiary` to identify a control that has no internal text or other affordance.
 
 ## 10. Maintenance Rule
 

@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [5.0.0](https://github.com/zainadeel/tokomo/compare/v4.0.1...v5.0.0) (2026-07-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **colors:** align border ladder, lift contrast floors, and add APCA diagnostics ([#100](https://github.com/zainadeel/tokomo/issues/100))
+
+### Added
+
+* **colors:** align border ladder, lift contrast floors, and add APCA diagnostics ([#100](https://github.com/zainadeel/tokomo/issues/100)) ([036689c](https://github.com/zainadeel/tokomo/commit/036689c8c6eb2cc7253fe2b175bbeeb42ce50ee5))
+
 ## [4.0.1](https://github.com/zainadeel/tokomo/compare/v4.0.0...v4.0.1) (2026-07-29)
 
 

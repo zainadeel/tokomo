@@ -349,6 +349,38 @@
       }
     }
   },
+  "opacity": {
+    "low": {
+      "$type": "number",
+      "$value": 25,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:19252:9",
+        "com.figma.scopes": [
+          "OPACITY"
+        ]
+      }
+    },
+    "medium": {
+      "$type": "number",
+      "$value": 50,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:19252:10",
+        "com.figma.scopes": [
+          "OPACITY"
+        ]
+      }
+    },
+    "high": {
+      "$type": "number",
+      "$value": 75,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:19252:11",
+        "com.figma.scopes": [
+          "OPACITY"
+        ]
+      }
+    }
+  },
   "$extensions": {
     "com.figma.modeName": "value"
   }

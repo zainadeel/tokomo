@@ -9,6 +9,7 @@
  *   --effect-animation-delay-*      (ms) — instant, short-1/2/3, medium-1/2/3, long-1/2/3
  *   --effect-animation-easing-*     — linear, ease-in, ease-out, ease-in-out, ease-in-out-back
  *   --effect-blur-*                 (px) — sm, md, lg
+ *   --effect-opacity-*              (0–1) — low, medium, high (Figma authors as 0–100)
  *
  * What stays HAND-AUTHORED (not representable as Figma variables):
  *   --effect-motion-*               (shorthand: duration + easing combined)
@@ -45,6 +46,14 @@ const generate = () => {
   lines.push('  /* Blur */');
   for (const [key, token] of Object.entries(json.blur)) {
     lines.push(`  --effect-blur-${key}: ${token.$value}px;`);
+  }
+  lines.push('');
+
+  // ── opacity ─────────────────────────────────────────────────────────────────
+  // Figma authors opacity on a 0–100 scale (OPACITY scope); CSS wants a 0–1 number.
+  lines.push('  /* Opacity */');
+  for (const [key, token] of Object.entries(json.opacity)) {
+    lines.push(`  --effect-opacity-${key}: ${token.$value / 100};`);
   }
   lines.push('');
 

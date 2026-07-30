@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [5.1.0](https://github.com/zainadeel/tokomo/compare/v5.0.0...v5.1.0) (2026-07-30)
+
+
+### Added
+
+* **effects:** add opacity low/medium/high tokens ([#102](https://github.com/zainadeel/tokomo/issues/102)) ([b169d99](https://github.com/zainadeel/tokomo/commit/b169d99c3a5c0917dddd498daf7ba6ee6cdbb113))
+
 ## [5.0.0](https://github.com/zainadeel/tokomo/compare/v4.0.1...v5.0.0) (2026-07-29)
 
 

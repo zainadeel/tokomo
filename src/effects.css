@@ -7,6 +7,11 @@
   --effect-blur-md: 16px;
   --effect-blur-lg: 32px;
 
+  /* Opacity */
+  --effect-opacity-low: 0.25;
+  --effect-opacity-medium: 0.5;
+  --effect-opacity-high: 0.75;
+
   /* Animation durations */
   --effect-animation-duration-instant: 0ms;
   --effect-animation-duration-short-1: 50ms;

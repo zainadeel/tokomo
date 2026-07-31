@@ -1242,7 +1242,7 @@
   --color-safety-score-background-fair: var(--color-reference-dark-orange-60-l75-c20-bold);
   --color-safety-score-background-good: var(--color-reference-dark-blue-250-l27-c05-faint);
   --color-safety-score-foreground-on-excellent: var(--color-reference-dark-blue-250-l91-c05-strong);
-  --color-safety-score-foreground-on-fair: var(--color-reference-dark-orange-60-l92-c06-strong);
+  --color-safety-score-foreground-on-fair: var(--color-reference-dark-orange-60-l28-c05-faint);
   --color-safety-score-foreground-on-good: var(--color-reference-dark-blue-250-l65-c20-bold);
   --color-safety-score-interaction-focus: var(--color-reference-white-15);
   --color-safety-score-interaction-hover: var(--color-reference-black-15);

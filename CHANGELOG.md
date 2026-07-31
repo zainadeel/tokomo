@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [5.1.1](https://github.com/zainadeel/tokomo/compare/v5.1.0...v5.1.1) (2026-07-31)
+
+
+### Fixed
+
+* **colors:** update safety-score foreground on-fair token ([#104](https://github.com/zainadeel/tokomo/issues/104)) ([958a3ba](https://github.com/zainadeel/tokomo/commit/958a3baf4972d817bbacd1108b3add6dd0936274))
+
 ## [5.1.0](https://github.com/zainadeel/tokomo/compare/v5.0.0...v5.1.0) (2026-07-30)
 
 

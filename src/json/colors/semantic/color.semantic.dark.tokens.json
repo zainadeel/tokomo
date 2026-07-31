@@ -13380,12 +13380,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            1,
-            0.8627451062202454,
-            0.7411764860153198
+            0.23137255012989044,
+            0.13333334028720856,
+            0.05098039284348488
           ],
           "alpha": 1,
-          "hex": "#FFDCBD"
+          "hex": "#3B220D"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:18328:23",
@@ -13395,8 +13395,8 @@
             "STROKE"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:b45b89f26037272f575ad7f9dce408193c964a85/-1:-1",
-            "targetVariableName": "dark/orange-60/L92-C06-strong",
+            "targetVariableId": "VariableID:3eb61ebd9eeb54790014c7b93c8749e73bc9901a/-1:-1",
+            "targetVariableName": "dark/orange-60/L28-C05-faint",
             "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
             "targetVariableSetName": "colors-reference"
           }

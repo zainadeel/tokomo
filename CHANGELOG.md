@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [5.1.2](https://github.com/zainadeel/tokomo/compare/v5.1.1...v5.1.2) (2026-08-04)
+
+
+### Fixed
+
+* **tokens:** update line-height and icon size 3xl to 56 ([#107](https://github.com/zainadeel/tokomo/issues/107)) ([0ec99f8](https://github.com/zainadeel/tokomo/commit/0ec99f8fbc4242ed383fcbff4966108827cc8bd4))
+
 ## [5.1.1](https://github.com/zainadeel/tokomo/compare/v5.1.0...v5.1.1) (2026-07-31)
 
 

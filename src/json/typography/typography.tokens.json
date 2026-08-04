@@ -176,7 +176,7 @@
     },
     "3xl": {
       "$type": "number",
-      "$value": 64,
+      "$value": 56,
       "$extensions": {
         "com.figma.variableId": "VariableID:18282:7",
         "com.figma.scopes": [

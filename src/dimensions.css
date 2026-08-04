@@ -87,7 +87,7 @@
   --dimension-iconography-lg: calc(var(--dimension-size-base) * 3);
   --dimension-iconography-xl: calc(var(--dimension-size-base) * 4);
   --dimension-iconography-2xl: calc(var(--dimension-size-base) * 6);
-  --dimension-iconography-3xl: calc(var(--dimension-size-base) * 8);
+  --dimension-iconography-3xl: calc(var(--dimension-size-base) * 7);
 
   /* Card widths */
   --dimension-card-width-xs: 300px;

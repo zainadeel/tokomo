@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.0.2](https://github.com/zainadeel/tokomo/compare/v6.0.1...v6.0.2) (2026-08-05)
+
+
+### Fixed
+
+* lighten elevation shadow/highlight color and widen stroke to 1px ([#114](https://github.com/zainadeel/tokomo/issues/114)) ([daaf7a5](https://github.com/zainadeel/tokomo/commit/daaf7a513dfb0888c58098e0d9dbcf27a900db34))
+
 ## [6.0.1](https://github.com/zainadeel/tokomo/compare/v6.0.0...v6.0.1) (2026-08-05)
 
 

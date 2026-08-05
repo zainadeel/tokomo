@@ -305,6 +305,7 @@ Must be done manually by the package owner once:
 | Color token values | `src/json/colors/` (reference, semantic, data) |
 | Dimension/spacing values | `src/json/dimensions/` |
 | Typography values | `src/json/typography/` |
+| Text style spec (documentation only) | `TEXT_STYLE_SPEC` in `scripts/build-docs.mjs` — mirror of `@ds-mo/ui` `ds-text`; this package ships no `.text-*` classes |
 | Effects (shadows, radii) | `src/json/effects/` |
 | Color CSS generation logic | `scripts/generate-color-tokens.mjs` |
 | Build orchestration | `scripts/build.mjs` |

@@ -450,19 +450,44 @@ const typography = parseVars(typographyCss).map(({ name, value }) => ({
   numeric: parseFloat(value) || null,
 }));
 
-// Append hand-authored text style classes (parsed from the CSS)
-const textStyleClasses = [
-  ...typographyCss.matchAll(/^\.(text-[\w-]+)\s*\{/gm),
-].map(([, cls]) => cls);
+// ── Text style spec ───────────────────────────────────────────────────────────
+// Documentation only. TokoMo ships the primitives above; the composite text
+// styles are implemented by `ds-text` in `@ds-mo/ui`, which owns emphasis as a
+// boolean modifier over every size variant. This table mirrors that
+// implementation so designers can read the recipes without a second source of
+// truth in CSS. Keep it in sync with @ds-mo/ui `src/wc/utils/typography.css`.
+const TEXT_STYLE_SPEC = [
+  // variant             size   line   uppercase  regular weight/tracking     emphasis weight/tracking
+  ['text-display-medium', '3xl', '3xl', false, ['semibold', 'negative'],        ['bold',     'negative-double']],
+  ['text-display-small',  '2xl', '2xl', false, ['semibold', 'negative'],        ['bold',     'negative-double']],
+  ['text-title-large',    'xl',  'xl',  false, ['medium',   'negative'],        ['semibold', 'negative-double']],
+  ['text-title-medium',   'lg',  'lg',  false, ['medium',   'negative-half'],   ['semibold', 'negative']],
+  ['text-title-small',    'md',  'md',  false, ['medium',   'negative-half'],   ['semibold', 'negative']],
+  ['text-body-large',     'lg',  'lg',  false, ['regular',  'negative-half'],   ['medium',   'negative']],
+  ['text-body-medium',    'md',  'md',  false, ['regular',  'negative-half'],   ['medium',   'negative']],
+  ['text-body-small',     'sm',  'sm',  false, ['regular',  'none'],            ['medium',   'negative-half']],
+  ['text-caption',        'xs',  'xs',  true,  ['medium',   'positive'],        ['semibold', 'positive']],
+];
 
-for (const cls of textStyleClasses) {
-  typography.push({
-    name: '.' + cls,
-    group: 'textstyle',
-    label: cls,
-    value: null,
-    numeric: null,
-  });
+for (const [variant, size, line, uppercase, regular, emphasized] of TEXT_STYLE_SPEC) {
+  for (const emphasis of [false, true]) {
+    const [weight, tracking] = emphasis ? emphasized : regular;
+    typography.push({
+      name: variant,
+      group: 'textstyle',
+      // Searchable: matches the variant, and "emphasis"/"regular" on its own.
+      label: `${variant} ${emphasis ? 'emphasis' : 'regular'}`,
+      value: null,
+      numeric: null,
+      emphasis,
+      uppercase,
+      size,
+      line,
+      weight,
+      tracking,
+      snippet: `<ds-text variant="${variant}"${emphasis ? ' emphasis' : ''}>`,
+    });
+  }
 }
 
 console.log(`  ✓ typography    (${typography.length} tokens)`);
@@ -470,6 +495,7 @@ console.log(`  ✓ typography    (${typography.length} tokens)`);
 // ── Effects tokens ────────────────────────────────────────────────────────────
 
 const FX_GROUPS = [
+  ['--effect-opacity-',                       'opacity'],
   ['--effect-blur-',                          'blur'],
   ['--effect-animation-duration-',            'duration'],
   ['--effect-animation-delay-',               'delay'],

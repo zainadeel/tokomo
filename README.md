@@ -77,8 +77,10 @@ Light is the default. No JS required — pure CSS variable overrides.
 |---|---|---|
 | `colors.css` | `--color-*` | Semantic colors (light + dark), reference palette, data viz |
 | `dimensions.css` | `--dimension-*` | Space, radius, size, stroke-width — all `calc()` from `--dimension-base` |
-| `typography.css` | `--typography-*` | Weight, font-size, line-height, letter-spacing + `.text-*` classes |
+| `typography.css` | `--typography-*` | Font family, weight, font-size, line-height, letter-spacing, paragraph spacing |
 | `effects.css` | `--effect-*` | Blur, animation timing, easing, elevation shadows |
+
+Typography ships **primitives only**. Composite text styles (display/title/body/caption × regular/emphasis) are implemented by the `ds-text` component in `@ds-mo/ui` — this package intentionally does not ship `.text-*` utility classes. The [token browser](https://zainadeel.github.io/tokomo/) documents the recipes as a reference spec; see [docs/guidelines/typography-usage.md](docs/guidelines/typography-usage.md).
 
 ## Scaling
 

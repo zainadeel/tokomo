@@ -399,11 +399,44 @@
       color: var(--fg);
       overflow: hidden;
     }
-    .textstyle-classname {
+    .textstyle-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      text-align: right;
+    }
+    .textstyle-variant {
       font-size: 12px;
       color: var(--fg-muted);
       font-family: 'SF Mono', ui-monospace, monospace;
       white-space: nowrap;
+    }
+    .textstyle-variant em {
+      font-style: normal;
+      color: var(--fg);
+    }
+    .textstyle-spec {
+      font-size: 10px;
+      color: var(--fg-muted);
+      opacity: 0.75;
+      font-family: 'SF Mono', ui-monospace, monospace;
+      white-space: nowrap;
+    }
+    .group-note {
+      margin: 0;
+      padding: 4px 8px 12px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--fg-muted);
+      max-width: 640px;
+    }
+    .group-note code {
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 10px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: var(--divider);
     }
 
     /* ── Effect visuals ───────────────────────────────────────────────── */
@@ -417,7 +450,13 @@
     .fx-duration-fill {
       height: 100%;
       background: var(--fg);
-      min-width: 2px;
+    }
+
+    .fx-opacity-box {
+      width: 32px;
+      height: 20px;
+      background: var(--fg);
+      flex-shrink: 0;
     }
 
     .fx-blur-box {
@@ -574,6 +613,7 @@ const GROUPS = {
   typography: [],
   effects: [
     { id: 'all',        label: 'All' },
+    { id: 'opacity',    label: 'Opacity' },
     { id: 'duration',   label: 'Duration' },
     { id: 'delay',      label: 'Delay' },
     { id: 'easing',     label: 'Easing' },
@@ -897,11 +937,14 @@ function renderTypography(tokens) {
   let lastGroup = null;
 
   for (const t of tokens) {
-    if (showHeaders && t.group !== lastGroup) {
-      const h = document.createElement('div');
-      h.className = 'group-header';
-      h.textContent = typoGroupLabel(t.group);
-      frag.appendChild(h);
+    if (t.group !== lastGroup) {
+      if (showHeaders) {
+        const h = document.createElement('div');
+        h.className = 'group-header';
+        h.textContent = typoGroupLabel(t.group);
+        frag.appendChild(h);
+      }
+      if (t.group === 'textstyle') frag.appendChild(makeTextstyleNote());
       lastGroup = t.group;
     }
 
@@ -966,37 +1009,83 @@ function typoVisual(t) {
   }
 }
 
+/** Explanatory line under a group header. `html` is trusted template content. */
+function makeGroupNote(html) {
+  const note = document.createElement('p');
+  note.className = 'group-note';
+  note.innerHTML = html;
+  return note;
+}
+
+function makeTextstyleNote() {
+  return makeGroupNote(
+    'Reference spec — these are <strong>not</strong> CSS classes in this package. '
+    + 'Composite text styles are implemented by <code>ds-text</code> in <code>@ds-mo/ui</code>, '
+    + 'where <code>emphasis</code> is a boolean modifier on every size variant. '
+    + 'Copy a row to get the <code>ds-text</code> usage.'
+  );
+}
+
+// Text styles are documented here but implemented by `ds-text` in @ds-mo/ui —
+// there are no `.text-*` classes in this stylesheet to apply. The preview is
+// composed inline from the same primitive tokens the component uses, so it stays
+// token-driven and theme-accurate without shipping a competing implementation.
 function makeTextstyleRow(t) {
   const row = document.createElement('div');
   row.className = 'textstyle-row';
   row.setAttribute('tabindex', '0');
   row.setAttribute('role', 'button');
-  row.setAttribute('aria-label', `${t.name} — click to copy class name`);
+  row.setAttribute('aria-label', `${t.snippet} — click to copy`);
 
-  const sampleText = textstyleSample(t.label);
+  const style = [
+    `font-family:var(--typography-font-family)`,
+    `font-size:var(--typography-fontsize-${t.size})`,
+    `line-height:var(--typography-lineheight-${t.line})`,
+    `font-weight:var(--typography-weight-${t.weight})`,
+    `letter-spacing:var(--typography-letterspacing-${t.tracking})`,
+    t.uppercase ? 'text-transform:uppercase' : '',
+  ].filter(Boolean).join(';');
+
   row.innerHTML = `
-    <div class="textstyle-sample ${escHtml(t.label)}">${escHtml(sampleText)}</div>
-    <span class="textstyle-classname">${escHtml(t.name)}</span>`;
-  addCopyHandler(row, t.name, t.label);
+    <div class="textstyle-sample" style="${escHtml(style)}">${escHtml(textstyleSample(t.name))}</div>
+    <div class="textstyle-meta">
+      <span class="textstyle-variant">${escHtml(t.name)}${t.emphasis ? ' <em>emphasis</em>' : ''}</span>
+      <span class="textstyle-spec">${escHtml(`${t.size} / ${t.line} · ${t.weight} · ${t.tracking}`)}</span>
+    </div>`;
+  addCopyHandler(row, t.snippet, t.label);
   return row;
 }
 
-function textstyleSample(cls) {
-  if (cls.includes('display')) return 'Display';
-  if (cls.includes('title-large')) return 'Title Large';
-  if (cls.includes('title-medium')) return 'Title Medium';
-  if (cls.includes('title-small')) return 'Title Small';
-  if (cls.includes('body-large')) return 'Body Large — The quick brown fox';
-  if (cls.includes('body-medium')) return 'Body Medium — The quick brown fox';
-  if (cls.includes('body-small')) return 'Body Small — The quick brown fox jumps over the lazy dog';
-  if (cls.includes('caption')) return 'CAPTION TEXT';
+function textstyleSample(variant) {
+  if (variant.includes('display')) return 'Display';
+  if (variant.includes('title-large')) return 'Title Large';
+  if (variant.includes('title-medium')) return 'Title Medium';
+  if (variant.includes('title-small')) return 'Title Small';
+  if (variant.includes('body-large')) return 'Body Large — The quick brown fox';
+  if (variant.includes('body-medium')) return 'Body Medium — The quick brown fox';
+  if (variant.includes('body-small')) return 'Body Small — The quick brown fox jumps over the lazy dog';
+  if (variant.includes('caption')) return 'CAPTION TEXT';
   return 'Sample text';
 }
 
 // ── Effects ───────────────────────────────────────────────────────────────────
 
+// Width of the time bar track, in px. Must match .fx-duration-track.
+const FX_TRACK_W = 160;
+
+// Longest time token across BOTH duration and delay, from the full dataset
+// rather than the filtered view — otherwise the scale would silently rebase
+// when you switch tabs or search, and the same token would draw two lengths.
+function maxTimeToken() {
+  const all = TOKEN_DATA.effects || [];
+  return Math.max(
+    ...all.filter(t => t.group === 'duration' || t.group === 'delay').map(t => t.numeric || 0),
+    1
+  );
+}
+
 function renderEffects(tokens) {
-  const maxDuration = Math.max(...tokens.filter(t => t.group === 'duration').map(t => t.numeric || 0), 1);
+  const maxTime = maxTimeToken();
 
   const frag = document.createDocumentFragment();
   // Show group headers when nothing narrows the view to a single group —
@@ -1005,11 +1094,17 @@ function renderEffects(tokens) {
   let lastGroup = null;
 
   for (const t of tokens) {
-    if (showHeaders && t.group !== lastGroup) {
-      const h = document.createElement('div');
-      h.className = 'group-header';
-      h.textContent = fxGroupLabel(t.group);
-      frag.appendChild(h);
+    if (t.group !== lastGroup) {
+      // The header is redundant on a single-group tab, but the note explains how
+      // to read the visual — keep it even when the header is suppressed.
+      if (showHeaders) {
+        const h = document.createElement('div');
+        h.className = 'group-header';
+        h.textContent = fxGroupLabel(t.group);
+        frag.appendChild(h);
+      }
+      const note = fxGroupNote(t.group, maxTime);
+      if (note) frag.appendChild(note);
       lastGroup = t.group;
     }
 
@@ -1020,7 +1115,7 @@ function renderEffects(tokens) {
     row.setAttribute('aria-label', `${t.name} — click to copy`);
 
     row.innerHTML = `
-      <div class="tok-visual">${fxVisual(t, maxDuration)}</div>
+      <div class="tok-visual">${fxVisual(t, maxTime)}</div>
       <span class="tok-name">${escHtml(t.name)}</span>
       <span class="tok-value">${escHtml(fxDisplayValue(t))}</span>`;
     addCopyHandler(row, `var(${t.name})`, t.name);
@@ -1032,17 +1127,40 @@ function renderEffects(tokens) {
   contentEl.appendChild(frag);
 }
 
-function fxGroupLabel(g) {
-  return { duration: 'Duration', delay: 'Delay', easing: 'Easing', blur: 'Blur',
-           elevation: 'Elevation', motion: 'Motion', transition: 'Transition', other: 'Other' }[g] || g;
+function fxGroupNote(g, maxTime) {
+  if (g === 'duration' || g === 'delay') {
+    return makeGroupNote(
+      `Bar length is &radic;-scaled on one shared 0&ndash;${maxTime}ms scale, so duration `
+      + 'and delay are directly comparable and the short steps stay legible. '
+      + 'Exact values are on the right.'
+    );
+  }
+  if (g === 'easing') {
+    return makeGroupNote(
+      'Each curve is plotted on the unit square it is defined on &mdash; progress runs '
+      + 'left to right, output bottom to top. The dashed diagonal is linear, so '
+      + 'deviation from it is the easing character.'
+    );
+  }
+  return null;
 }
 
-function fxVisual(t, maxDuration) {
+function fxGroupLabel(g) {
+  return { opacity: 'Opacity', duration: 'Duration', delay: 'Delay', easing: 'Easing',
+           blur: 'Blur', elevation: 'Elevation', motion: 'Motion', transition: 'Transition',
+           other: 'Other' }[g] || g;
+}
+
+function fxVisual(t, maxTime) {
   switch (t.group) {
     case 'duration':
     case 'delay': {
       const ms = t.numeric || 0;
-      const w = ms === 0 ? 2 : Math.max(2, Math.round((ms / Math.max(maxDuration, 1)) * 152));
+      // Duration tops out at 2000ms but delay reaches 6000ms, so a linear map
+      // against the duration-only max overflowed the track by 3x. Scale both
+      // groups against the shared max instead — and use sqrt, because a linear
+      // 0-6000ms map renders every sub-200ms step as a sub-pixel sliver.
+      const w = ms === 0 ? 0 : Math.max(3, Math.round(Math.sqrt(ms / maxTime) * FX_TRACK_W));
       return `<div class="fx-duration-track"><div class="fx-duration-fill" style="width:${w}px"></div></div>`;
     }
     case 'easing': {
@@ -1053,6 +1171,11 @@ function fxVisual(t, maxDuration) {
         return makeBezierSvg(x1, y1, x2, y2);
       }
       return `<div class="fx-easing-label">${escHtml(t.value || '')}</div>`;
+    }
+    case 'opacity': {
+      // Foreground fill carrying the real token, so the step is the actual
+      // rendered value rather than a hard-coded approximation of it.
+      return `<div class="fx-opacity-box" style="opacity:var(${t.name})"></div>`;
     }
     case 'blur': {
       const b = t.numeric || 4;
@@ -1073,14 +1196,25 @@ function fxVisual(t, maxDuration) {
 }
 
 function makeBezierSvg(x1, y1, x2, y2) {
-  // 40×24 SVG showing the cubic-bezier curve
-  const W = 40, H = 24;
-  // Bezier goes from (0,H) to (W,0) in SVG coords (y-flipped)
-  const cx1 = x1 * W, cy1 = H - y1 * H;
-  const cx2 = x2 * W, cy2 = H - y2 * H;
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" style="flex-shrink:0">
-    <path d="M0,${H} C${cx1.toFixed(1)},${cy1.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${W},0"
-      stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+  // A cubic-bezier is defined on a unit square, so the preview box must be
+  // square. The old 40x24 box stretched x by 1.67x relative to y, which sheared
+  // every curve and made the eases look shallower than they actually are.
+  //
+  // PAD adds vertical headroom so a curve that leaves the 0..1 range (a back
+  // ease overshooting past 1) is not silently clipped flat at the frame edge.
+  const S = 24, PAD = 4;
+  const px = v => (v * S).toFixed(1);
+  const py = v => (S - v * S).toFixed(1);
+
+  // Progress runs bottom-left (0,0) to top-right (1,1); SVG y is flipped.
+  const curve = `M0,${S} C${px(x1)},${py(y1)} ${px(x2)},${py(y2)} ${S},0`;
+
+  return `<svg width="${S}" height="${S + PAD * 2}" viewBox="0 ${-PAD} ${S} ${S + PAD * 2}"
+      fill="none" style="flex-shrink:0" aria-hidden="true">
+    <path d="M0,${S} L${S},0" stroke="currentColor" stroke-width="1" opacity="0.25"
+      stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>
+    <path d="${curve}" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+      vector-effect="non-scaling-stroke"/>
   </svg>`;
 }
 

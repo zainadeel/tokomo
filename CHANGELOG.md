@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.0.1](https://github.com/zainadeel/tokomo/compare/v6.0.0...v6.0.1) (2026-08-05)
+
+
+### Fixed
+
+* **colors:** rework safety score foregrounds and interaction overlays ([#112](https://github.com/zainadeel/tokomo/issues/112)) ([8942bb8](https://github.com/zainadeel/tokomo/commit/8942bb88fec9493e47a24b8015fc0dc3b9cea728))
+
 ## [6.0.0](https://github.com/zainadeel/tokomo/compare/v5.1.2...v6.0.0) (2026-08-05)
 
 

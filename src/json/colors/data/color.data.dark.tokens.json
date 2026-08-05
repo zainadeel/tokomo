@@ -853,11 +853,11 @@
         "colorSpace": "srgb",
         "components": [
           0,
-          0.3921568691730499,
-          0.7450980544090271
+          0.5686274766921997,
+          1
         ],
         "alpha": 1,
-        "hex": "#0064BE"
+        "hex": "#0091FF"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:19163:37",
@@ -866,8 +866,8 @@
           "SHAPE_FILL"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:a767a066f7503d837d107d5495810542ebd1b6ab/-1:-1",
-          "targetVariableName": "dark/blue-250/L50-C17-medium",
+          "targetVariableId": "VariableID:80e4e9e7a639ccaa384906ce8eae6c2778079505/-1:-1",
+          "targetVariableName": "dark/blue-250/L65-C20-bold",
           "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
           "targetVariableSetName": "colors-reference"
         }
@@ -878,12 +878,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.07058823853731155,
-          0.1568627506494522,
-          0.24313725531101227
+          0,
+          0.3921568691730499,
+          0.7450980544090271
         ],
         "alpha": 1,
-        "hex": "#12283E"
+        "hex": "#0064BE"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:19163:36",
@@ -892,8 +892,8 @@
           "SHAPE_FILL"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:99ac270e3c5b7f5afa287059f751526c2b8c27bf/-1:-1",
-          "targetVariableName": "dark/blue-250/L27-C05-faint",
+          "targetVariableId": "VariableID:a767a066f7503d837d107d5495810542ebd1b6ab/-1:-1",
+          "targetVariableName": "dark/blue-250/L50-C17-medium",
           "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
           "targetVariableSetName": "colors-reference"
         }

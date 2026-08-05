@@ -138,6 +138,33 @@ No separate test/lint commands — validation is done by the Build workflow on e
 
 ---
 
+## Toolchain
+
+Node and npm are both pinned, and CI uses exactly these:
+
+| | Version | Pinned by |
+|---|---|---|
+| Node | `24.15.0` | `.nvmrc` |
+| npm | `11.12.1` | `packageManager` (Corepack) |
+
+Interactive shells with an `.nvmrc` hook pick Node up on `cd`. **Agent and CI
+shells usually do not** — they inherit whatever Node started the session. Select
+it explicitly before running any npm command:
+
+```bash
+nvm use    # or: export PATH="$HOME/.nvm/versions/node/$(cat .nvmrc)/bin:$PATH"
+```
+
+Then confirm with `node -v && npm -v` before `npm install`.
+
+This matters because npm rewrites `package-lock.json` in its own version's
+format. Running `npm install` under an older npm silently reformats the whole
+lockfile — stripping `libc` fields from optional platform packages, for example
+— which buries a real dependency change under a large, unrelated diff that CI
+then rewrites back.
+
+---
+
 ## Build pipeline (what `npm run build` does)
 
 1. **Clean** — nuke `dist/`, recreate subdirs (`dist/themes/`, `dist/json/`)

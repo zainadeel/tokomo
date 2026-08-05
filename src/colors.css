@@ -459,8 +459,8 @@
   --color-driver-status-interaction-focus: var(--color-reference-black-15);
   --color-driver-status-interaction-hover: var(--color-reference-white-15);
   --color-driver-status-interaction-pressed: var(--color-reference-white-20);
-  --color-elevation-highlight: var(--color-reference-white-15);
-  --color-elevation-shadow: var(--color-reference-black-15);
+  --color-elevation-highlight: var(--color-reference-white-10);
+  --color-elevation-shadow: var(--color-reference-black-10);
   --color-entity-cluster-marker-background: var(--color-reference-black-60);
   --color-entity-cluster-marker-foreground: var(--color-reference-white-100);
   --color-entity-cluster-marker-interaction-focus: var(--color-reference-black-15);
@@ -1055,8 +1055,8 @@
   --color-driver-status-interaction-focus: var(--color-reference-white-15);
   --color-driver-status-interaction-hover: var(--color-reference-black-15);
   --color-driver-status-interaction-pressed: var(--color-reference-black-20);
-  --color-elevation-highlight: var(--color-reference-white-15);
-  --color-elevation-shadow: var(--color-reference-black-15);
+  --color-elevation-highlight: var(--color-reference-white-10);
+  --color-elevation-shadow: var(--color-reference-black-10);
   --color-entity-cluster-marker-background: var(--color-reference-white-55);
   --color-entity-cluster-marker-foreground: var(--color-reference-black-100);
   --color-entity-cluster-marker-interaction-focus: var(--color-reference-white-15);

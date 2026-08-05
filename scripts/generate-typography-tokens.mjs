@@ -13,9 +13,12 @@
  *
  * What stays HAND-AUTHORED:
  *   --typography-font-family        (not a Figma variable in this export)
- *   Text style classes (.text-display-medium, .text-body-large, etc.)
- *   These are composite styles that combine multiple tokens — they live in CSS,
- *   not in Figma variables. All property values reference CSS custom properties.
+ *
+ * What this deliberately does NOT generate: text style classes.
+ * Composite text styles (display/title/body/caption × regular/emphasis) are
+ * owned by `@ds-mo/ui` and implemented by the `ds-text` component. TokoMo ships
+ * the primitives and documents the recipes; it does not ship a competing set of
+ * `.text-*` utility classes. See docs/guidelines/typography-usage.md.
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -70,138 +73,24 @@ const generate = () => {
     lines.push(`  --typography-paragraphspacing-${key}: ${roundTo2dp(token.$value)}px;`);
   }
 
-  // ── hand-authored: font family + text style classes ───────────────────────
-  const textStyles = `
+  // ── hand-authored: font family ─────────────────────────────────────────────
+  const fontFamily = `
   /* ─────────────────────────────────────────────────────────────────────────
      HAND-AUTHORED — Font family.
      Not exported as a Figma variable in this collection. Override here to
-     swap the entire typeface without touching individual text style classes.
+     swap the entire typeface across every consumer.
      ───────────────────────────────────────────────────────────────────────── */
   --typography-font-family: 'Inter', sans-serif;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   HAND-AUTHORED — Text style classes.
-   These compose multiple typography tokens into reusable CSS classes.
-   They cannot be expressed as Figma variables (they are text styles, not variables).
-   All property values reference CSS custom properties — no hard-coded values.
-   ───────────────────────────────────────────────────────────────────────────── */
-
-.text-display-medium {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-3xl);
-  line-height: var(--typography-lineheight-3xl);
-  font-weight: var(--typography-weight-bold);
-  letter-spacing: var(--typography-letterspacing-negative-double);
-}
-
-.text-display-small {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-2xl);
-  line-height: var(--typography-lineheight-2xl);
-  font-weight: var(--typography-weight-bold);
-  letter-spacing: var(--typography-letterspacing-negative-double);
-}
-
-.text-title-large {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-xl);
-  line-height: var(--typography-lineheight-xl);
-  font-weight: var(--typography-weight-semibold);
-  letter-spacing: var(--typography-letterspacing-negative-double);
-}
-
-.text-title-medium {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-lg);
-  line-height: var(--typography-lineheight-lg);
-  font-weight: var(--typography-weight-semibold);
-  letter-spacing: var(--typography-letterspacing-negative);
-}
-
-.text-title-small {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-md);
-  line-height: var(--typography-lineheight-md);
-  font-weight: var(--typography-weight-semibold);
-  letter-spacing: var(--typography-letterspacing-negative);
-}
-
-.text-body-large {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-lg);
-  line-height: var(--typography-lineheight-lg);
-  font-weight: var(--typography-weight-regular);
-  letter-spacing: var(--typography-letterspacing-negative-half);
-}
-
-.text-body-large-emphasis {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-lg);
-  line-height: var(--typography-lineheight-lg);
-  font-weight: var(--typography-weight-medium);
-  letter-spacing: var(--typography-letterspacing-negative);
-}
-
-.text-body-medium {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-md);
-  line-height: var(--typography-lineheight-md);
-  font-weight: var(--typography-weight-regular);
-  letter-spacing: var(--typography-letterspacing-negative-half);
-}
-
-.text-body-medium-emphasis {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-md);
-  line-height: var(--typography-lineheight-md);
-  font-weight: var(--typography-weight-medium);
-  letter-spacing: var(--typography-letterspacing-negative);
-}
-
-.text-body-small {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-sm);
-  line-height: var(--typography-lineheight-sm);
-  font-weight: var(--typography-weight-regular);
-  letter-spacing: var(--typography-letterspacing-none);
-}
-
-.text-body-small-emphasis {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-sm);
-  line-height: var(--typography-lineheight-sm);
-  font-weight: var(--typography-weight-medium);
-  letter-spacing: var(--typography-letterspacing-negative-half);
-}
-
-.text-caption {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-xs);
-  line-height: var(--typography-lineheight-xs);
-  font-weight: var(--typography-weight-medium);
-  text-transform: uppercase;
-  letter-spacing: var(--typography-letterspacing-positive);
-}
-
-.text-caption-emphasis {
-  font-family: var(--typography-font-family);
-  font-size: var(--typography-fontsize-xs);
-  line-height: var(--typography-lineheight-xs);
-  font-weight: var(--typography-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: var(--typography-letterspacing-positive);
 }`;
 
-  // Note: the hand-authored block opens with the font-family inside :root {},
-  // then closes :root and continues with the text style classes outside it.
+  // The hand-authored block adds the font-family inside :root {} and closes it.
   const output = [
     '/* AUTO-GENERATED + HAND-AUTHORED. See scripts/generate-typography-tokens.mjs */',
     '/* Generated section: from src/json/typography/typography.tokens.json         */',
     '',
     ':root {',
     ...lines,
-    textStyles,
+    fontFamily,
     '',
   ].join('\n');
 

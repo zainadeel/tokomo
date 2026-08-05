@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.0.0](https://github.com/zainadeel/tokomo/compare/v5.1.2...v6.0.0) (2026-08-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* hand text styles to ds-text and rework effects previews ([#109](https://github.com/zainadeel/tokomo/issues/109))
+
+### Added
+
+* hand text styles to ds-text and rework effects previews ([#109](https://github.com/zainadeel/tokomo/issues/109)) ([76ddac9](https://github.com/zainadeel/tokomo/commit/76ddac9bedf8ebc87ab1d0dd247dda0ae1e33a53))
+
 ## [5.1.2](https://github.com/zainadeel/tokomo/compare/v5.1.1...v5.1.2) (2026-08-04)
 
 

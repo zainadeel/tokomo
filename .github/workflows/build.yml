@@ -25,6 +25,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Build docs
+        run: npm run build:docs
+
       - name: Verify dist artifacts
         run: |
           for f in \
@@ -42,6 +45,7 @@ jobs:
             dist/agent.json \
             dist/agent.mjs \
             dist/agent.d.ts \
+            dist/agent.schema.json \
             dist/index.mjs \
             dist/index.cjs \
             dist/index.d.ts; do

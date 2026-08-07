@@ -2,7 +2,7 @@
 /* Source: src/json/dimensions/dimensions.tokens.json        */
 
 :root {
-  /* Base — override --dimension-base to scale the entire dimension system */
+  /* Base — shared 8px default; override a category base independently when needed */
   --dimension-base:              8px;
   --dimension-space-base:        var(--dimension-base);
   --dimension-radius-base:       var(--dimension-base);

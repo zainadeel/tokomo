@@ -6,18 +6,23 @@ This document explains how typography styles should be used in product UI.
 
 These guidelines apply to both mobile and web. The exact size values differ by platform, but the usage pattern is the same.
 
-### Where text styles live
+### Where text recipes live
 
 `@ds-mo/tokens` ships typography **primitives** only — `--typography-fontsize-*`, `--typography-lineheight-*`, `--typography-weight-*`, `--typography-letterspacing-*`, `--typography-paragraphspacing-*`, and `--typography-font-family`.
 
-The **composite text styles** described below are implemented by the `ds-text` component in `@ds-mo/ui`. TokoMo does not ship `.text-*` utility classes; the token browser documents the recipes as a reference spec so the two never drift apart.
+TokoMo also defines the recommended **composite text recipes** in its single machine-readable guidance contract, exported as `@ds-mo/tokens/agent`. The Documentation tab and typography previews are generated from that same contract. TokoMo does not ship `.text-*` utility classes, so consumers can implement these recipes in any framework or component system without inheriting an implementation.
 
-In application code, always reach for `ds-text` rather than assembling font tokens by hand:
+For example, the regular `text-body-medium` recipe is:
 
-```html
-<ds-text variant="text-body-medium">Normal product copy</ds-text>
-<ds-text variant="text-title-small" emphasis as="h2">Section heading</ds-text>
+```css
+font-family: var(--typography-font-family);
+font-size: var(--typography-fontsize-md);
+line-height: var(--typography-lineheight-md);
+font-weight: var(--typography-weight-regular);
+letter-spacing: var(--typography-letterspacing-negative-half);
 ```
+
+Start with a named recipe. Assemble primitives independently only when defining a deliberate new system-level recipe.
 
 ## 2. Quick Decision Rule
 
@@ -68,11 +73,12 @@ In practice, de-emphasis usually comes from a combination of text role and foreg
 
 ## 4. Emphasis
 
-Emphasis is a **boolean modifier available on every size variant**, not a separate set of styles. Each of the nine variants has two recipes: a default (regular) recipe and an emphasis recipe.
+Each of the nine variants has a regular recipe and an emphasis recipe. Treat emphasis as one modifier on the underlying style rather than as a new typography role.
 
-```html
-<ds-text variant="text-body-medium">Default</ds-text>
-<ds-text variant="text-body-medium" emphasis>Emphasized</ds-text>
+```css
+/* text-body-medium emphasis changes these two assignments */
+font-weight: var(--typography-weight-medium);
+letter-spacing: var(--typography-letterspacing-negative);
 ```
 
 Emphasis is useful when:
@@ -85,21 +91,21 @@ Visually, emphasis works by stepping the font weight up one level and tightening
 
 ### 4.1 The full matrix
 
-| Variant | Size / line-height | Default weight / tracking | Emphasis weight / tracking |
+| Variant | Size / line-height | Regular weight / tracking | Emphasis weight / tracking |
 |---|---|---|---|
-| `text-display-medium` | 44 / 56 | semibold · −0.3 | bold · −0.6 |
-| `text-display-small` | 32 / 48 | semibold · −0.3 | bold · −0.6 |
-| `text-title-large` | 24 / 32 | medium · −0.3 | semibold · −0.6 |
-| `text-title-medium` | 18 / 24 | medium · −0.15 | semibold · −0.3 |
-| `text-title-small` | 14 / 20 | medium · −0.15 | semibold · −0.3 |
-| `text-body-large` | 18 / 24 | regular · −0.15 | medium · −0.3 |
-| `text-body-medium` | 14 / 20 | regular · −0.15 | medium · −0.3 |
-| `text-body-small` | 12 / 16 | regular · 0 | medium · −0.15 |
-| `text-caption` | 9 / 12 | medium · +0.3 | semibold · +0.3 |
+| `text-display-medium` | `fontsize-3xl` / `lineheight-3xl` | `weight-semibold` / `letterspacing-negative` | `weight-bold` / `letterspacing-negative-double` |
+| `text-display-small` | `fontsize-2xl` / `lineheight-2xl` | `weight-semibold` / `letterspacing-negative` | `weight-bold` / `letterspacing-negative-double` |
+| `text-title-large` | `fontsize-xl` / `lineheight-xl` | `weight-medium` / `letterspacing-negative` | `weight-semibold` / `letterspacing-negative-double` |
+| `text-title-medium` | `fontsize-lg` / `lineheight-lg` | `weight-medium` / `letterspacing-negative-half` | `weight-semibold` / `letterspacing-negative` |
+| `text-title-small` | `fontsize-md` / `lineheight-md` | `weight-medium` / `letterspacing-negative-half` | `weight-semibold` / `letterspacing-negative` |
+| `text-body-large` | `fontsize-lg` / `lineheight-lg` | `weight-regular` / `letterspacing-negative-half` | `weight-medium` / `letterspacing-negative` |
+| `text-body-medium` | `fontsize-md` / `lineheight-md` | `weight-regular` / `letterspacing-negative-half` | `weight-medium` / `letterspacing-negative` |
+| `text-body-small` | `fontsize-sm` / `lineheight-sm` | `weight-regular` / `letterspacing-none` | `weight-medium` / `letterspacing-negative-half` |
+| `text-caption` | `fontsize-xs` / `lineheight-xs` | `weight-medium` / `letterspacing-positive` | `weight-semibold` / `letterspacing-positive` |
 
 Two consequences are worth internalising:
 
-1. **Titles and display styles default to the lighter recipe.** A `title-*` or `display-*` variant without `emphasis` is one weight step below what you may expect. If a heading needs to read at full strength, set `emphasis` explicitly.
+1. **Titles and display styles use a deliberate regular weight.** If one of these styles needs stronger emphasis at the same size, select its emphasis recipe rather than choosing a weight in isolation.
 2. **Emphasis is not a hierarchy tool.** If a piece of text needs to function as a heading, section label, or clearly higher-level content, move to the appropriate title or display role instead of trying to create hierarchy through emphasis alone.
 
 Emphasis should be used deliberately, not as the default rendering of a style.
@@ -117,23 +123,7 @@ Typical examples are:
 
 If the text is functioning as a title, use a title style rather than trying to force hierarchy by only increasing body size.
 
-## 6. Underline Styles
-
-> **Not a TokoMo concern.** No underline tokens exist in `@ds-mo/tokens`. Underline treatment is handled by the `ds-text` `decoration` prop in `@ds-mo/ui` (`none`, `underline`, `dotted-underline`). The guidance below describes the intended meaning of each treatment.
-
-Underline treatments are intended for body, title, and caption styles when text needs to communicate a specific interactive meaning.
-
-Use a solid underline to indicate that the text is a hyperlink or tappable link.
-
-If the text is already using the brand bold foreground color, that color can already signal link behavior on its own, so a solid underline is not always required. If the text is any other color, the solid underline is the clearer signal that it links somewhere.
-
-Use a dotted underline to indicate that the text has an associated interaction that discloses more information, such as a hover or reveal behavior.
-
-The dotted and solid behaviors can also work together. In cases where the text can disclose more information and also take the user somewhere or open something, the text can use a dotted underline at rest and switch to a solid underline on hover.
-
-These underline treatments should be used to communicate interaction meaning, not as a decorative default.
-
-## 7. Display Styles
+## 6. Display Styles
 
 Display styles should be used very sparingly.
 
@@ -147,19 +137,19 @@ Typical examples are:
 
 Display styles should not be treated as general-purpose headings. They are intentionally more dramatic and should be reserved for exceptional emphasis.
 
-## 8. Anti-Patterns
+## 7. Anti-Patterns
 
 Avoid these patterns:
 
 1. defaulting to `body-large` when normal copy should just use `body-medium`,
 2. setting `emphasis` everywhere instead of only where extra emphasis is needed,
-3. using underline treatments as decoration instead of as an interaction cue,
-4. using title styles for ordinary paragraph text,
-5. using display styles for common headers or labels,
-6. escalating text size too quickly when a smaller hierarchy shift would do the job,
-7. assembling `--typography-*` primitives by hand in application code instead of using a `ds-text` variant.
+3. using title styles for ordinary paragraph text,
+4. using display styles for common headers or labels,
+5. escalating text size too quickly when a smaller hierarchy shift would do the job,
+6. changing weight without the recipe's corresponding letter-spacing change,
+7. assembling `--typography-*` primitives independently instead of starting from a documented composite.
 
-## 9. Practical Summary
+## 8. Practical Summary
 
 Start with `body-medium`.
 
@@ -167,12 +157,10 @@ Move down to `body-small` for subdued supporting copy.
 
 Move up to `body-large` for slight hierarchy.
 
-Set `emphasis` when you need more weight at the same size — and remember `title-*` and `display-*` need it to render at full strength.
-
-Use underline treatments only when you need to communicate link or disclosure behavior.
+Use the emphasis recipe when you need more weight at the same size; it also changes letter spacing, and its target weight depends on whether the style is display, title, body, or caption.
 
 Use `title-*` for actual titles.
 
 Use `display-*` only for rare, oversized emphasis, especially large numeric values.
 
-Always go through a `ds-text` variant rather than composing font primitives yourself.
+Implement the documented composite in the framework or component system of your choice rather than inventing a new primitive combination by default.

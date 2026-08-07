@@ -5,7 +5,8 @@
  *   1. Reading scripts/docs-template.html
  *   2. Inlining all token CSS (colors, dimensions, typography, effects)
  *   3. Parsing token data from dist/ CSS files
- *   4. Writing docs/index.html — no external assets needed
+ *   4. Reading the validated token guidance from dist/agent.json
+ *   5. Writing docs/index.html — no external assets needed
  *
  * Run after `npm run build`:
  *   npm run build && npm run build:docs
@@ -21,6 +22,7 @@ const distDir = join(root, 'dist');
 const docsDir = join(root, 'docs');
 
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+const tokenGuidance = JSON.parse(readFileSync(join(distDir, 'agent.json'), 'utf8'));
 const packageLabel = `${pkg.name} v${pkg.version}`;
 
 mkdirSync(docsDir, { recursive: true });
@@ -59,7 +61,8 @@ function parseVars(css) {
 
 /**
  * Evaluate a dimension CSS value to a pixel number.
- * All dimension tokens use calc() relative to an 8px base.
+ * Scale-based dimension tokens use calc() relative to category bases that
+ * resolve to 8px by default. Fixed layout values and unitless values do not.
  */
 function toPx(value) {
   if (!value || value === '0') return 0;
@@ -450,44 +453,50 @@ const typography = parseVars(typographyCss).map(({ name, value }) => ({
   numeric: parseFloat(value) || null,
 }));
 
-// ── Text style spec ───────────────────────────────────────────────────────────
-// Documentation only. TokoMo ships the primitives above; the composite text
-// styles are implemented by `ds-text` in `@ds-mo/ui`, which owns emphasis as a
-// boolean modifier over every size variant. This table mirrors that
-// implementation so designers can read the recipes without a second source of
-// truth in CSS. Keep it in sync with @ds-mo/ui `src/wc/utils/typography.css`.
-const TEXT_STYLE_SPEC = [
-  // variant             size   line   uppercase  regular weight/tracking     emphasis weight/tracking
-  ['text-display-medium', '3xl', '3xl', false, ['semibold', 'negative'],        ['bold',     'negative-double']],
-  ['text-display-small',  '2xl', '2xl', false, ['semibold', 'negative'],        ['bold',     'negative-double']],
-  ['text-title-large',    'xl',  'xl',  false, ['medium',   'negative'],        ['semibold', 'negative-double']],
-  ['text-title-medium',   'lg',  'lg',  false, ['medium',   'negative-half'],   ['semibold', 'negative']],
-  ['text-title-small',    'md',  'md',  false, ['medium',   'negative-half'],   ['semibold', 'negative']],
-  ['text-body-large',     'lg',  'lg',  false, ['regular',  'negative-half'],   ['medium',   'negative']],
-  ['text-body-medium',    'md',  'md',  false, ['regular',  'negative-half'],   ['medium',   'negative']],
-  ['text-body-small',     'sm',  'sm',  false, ['regular',  'none'],            ['medium',   'negative-half']],
-  ['text-caption',        'xs',  'xs',  true,  ['medium',   'positive'],        ['semibold', 'positive']],
-];
+// ── Text style recipes ────────────────────────────────────────────────────────
+// The browser preview and the machine contract now share one source. TokoMo
+// still ships primitive typography variables rather than CSS classes, but its
+// agent manifest defines the recommended framework-neutral composites.
+const typographyRecipe = tokenGuidance.recipes.find(
+  recipe => recipe.id === 'token-recipe:typography-composites',
+);
+if (!typographyRecipe) throw new Error('Token guidance is missing typography composites.');
 
-for (const [variant, size, line, uppercase, regular, emphasized] of TEXT_STYLE_SPEC) {
-  for (const emphasis of [false, true]) {
-    const [weight, tracking] = emphasis ? emphasized : regular;
-    typography.push({
-      name: variant,
-      group: 'textstyle',
-      // Searchable: matches the variant, and "emphasis"/"regular" on its own.
-      label: `${variant} ${emphasis ? 'emphasis' : 'regular'}`,
-      value: null,
-      numeric: null,
-      emphasis,
-      uppercase,
-      size,
-      line,
-      weight,
-      tracking,
-      snippet: `<ds-text variant="${variant}"${emphasis ? ' emphasis' : ''}>`,
-    });
-  }
+function assignmentFor(variant, property) {
+  return variant.assignments.find(assignment => assignment.property === property);
+}
+
+function tokenSuffix(assignment, prefix) {
+  return assignment?.token?.replace(prefix, '') ?? '';
+}
+
+for (const variant of typographyRecipe.variants) {
+  const family = assignmentFor(variant, 'font-family');
+  const size = assignmentFor(variant, 'font-size');
+  const line = assignmentFor(variant, 'line-height');
+  const weight = assignmentFor(variant, 'font-weight');
+  const tracking = assignmentFor(variant, 'letter-spacing');
+  const transform = assignmentFor(variant, 'text-transform');
+  const baseName = variant.id.replace(/-emphasis$/, '');
+  const snippet = variant.assignments.map(assignment =>
+    `${assignment.property}: ${assignment.token ? `var(${assignment.token})` : assignment.value};`
+  ).join('\n');
+
+  typography.push({
+    name: baseName,
+    group: 'textstyle',
+    label: `${baseName} ${variant.modifier}`,
+    value: null,
+    numeric: null,
+    emphasis: variant.modifier === 'emphasis',
+    uppercase: transform?.value === 'uppercase',
+    family: family?.token,
+    size: tokenSuffix(size, '--typography-fontsize-'),
+    line: tokenSuffix(line, '--typography-lineheight-'),
+    weight: tokenSuffix(weight, '--typography-weight-'),
+    tracking: tokenSuffix(tracking, '--typography-letterspacing-'),
+    snippet,
+  });
 }
 
 console.log(`  ✓ typography    (${typography.length} tokens)`);
@@ -502,6 +511,8 @@ const FX_GROUPS = [
   ['--effect-animation-easing-',              'easing'],
   ['--effect-motion-',                        'motion'],
   ['--effect-transition-interaction-',        'transition'],
+  ['--effect-shadow-',                        'elevation'],
+  ['--effect-highlight-',                     'elevation'],
   ['--effect-elevation-',                     'elevation'],
   ['--effect-focus-ring',                     'elevation'],
 ];
@@ -513,16 +524,14 @@ function getFxGroup(name) {
   return 'other';
 }
 
-// --effect-shadow-* and --effect-highlight-* are internal CSS sub-parts of the
-// composited elevation styles (inset highlights can't be clipped together with
-// outer shadows, so the composite splits them). They aren't tokens a designer
-// picks — hide them from the docs.
 const effects = parseVars(effectsCss)
-  .filter(({ name }) => !name.startsWith('--effect-shadow-') && !name.startsWith('--effect-highlight-'))
   .map(({ name, value }) => ({
     name,
     group: getFxGroup(name),
-    subgroup: 'style',
+    subgroup: name.startsWith('--effect-shadow-') ? 'shadow'
+      : name.startsWith('--effect-highlight-') ? 'highlight'
+        : name.startsWith('--effect-elevation-') ? 'combined'
+          : 'style',
     label: name.slice(2),
     value,
     numeric: parseFloat(value) || null,
@@ -558,7 +567,8 @@ const total = colors.length + dimensions.length + typography.length + effects.le
 console.log(`  ✓ total         (${total} tokens)\n`);
 
 const TOKEN_DATA_JS =
-  `const TOKEN_DATA = ${JSON.stringify({ colors, dimensions, typography, effects })};`;
+  `const TOKEN_DATA = ${JSON.stringify({ colors, dimensions, typography, effects })};\n`
+  + `const TOKEN_GUIDANCE = ${JSON.stringify(tokenGuidance)};`;
 
 // ── Generate HTML ─────────────────────────────────────────────────────────────
 

@@ -15,7 +15,7 @@ TokoMo is an npm package (`@ds-mo/tokens`) that ships **design tokens** as:
 - CSS custom properties (the primary deliverable — one file per category + a combined index)
 - Light/dark theme files (`dist/themes/light.css`, `dist/themes/dark.css`)
 - Machine-readable JSON (`dist/tokens.json`, per-category files, and mode-aware `dist/json/colors.modes.json`)
-- Agent selection guidance (`dist/agent.json`, exported as `@ds-mo/tokens/agent`)
+- Framework-neutral selection and composition guidance (`dist/agent.json`, exported only as `@ds-mo/tokens/agent`)
 - TypeScript constants for all token names (`dist/index.mjs` / `.cjs` / `.d.ts`)
 - Reset and global utility CSS
 
@@ -67,6 +67,8 @@ const categories = tokensIndex._meta.categories;
 
 ```
 src/
+  agent/
+    token-families.agent.json # Human-authored principles, intents, families, and recipes
   colors.css           # Color token CSS (generated from JSON sources)
   dimensions.css       # Spacing/sizing token CSS
   typography.css       # Font family/size/weight/line-height token CSS
@@ -85,7 +87,10 @@ src/
       data/            # Data-visualization palettes (light + dark)
     dimensions/        # Spacing/sizing tokens
     typography/        # Font family/size/weight/line-height tokens
-    effects/           # Shadow/blur/border-radius tokens
+    effects/           # Blur, opacity, and animation primitives
+agent/
+  schemas/
+    token-agent.schema.json # Public JSON Schema copied to dist/agent.schema.json
 scripts/
   build.mjs                     # Orchestrates the full build
   generate-color-tokens.mjs     # JSON → colors.css
@@ -94,8 +99,9 @@ scripts/
   generate-effects-tokens.mjs   # JSON → effects.css
   generate-json-tokens.mjs      # Merges per-category JSON → dist/tokens.json
   generate-ts-constants.mjs     # Generates TypeScript constants from token names
-  build-docs.mjs                # Regenerates docs/index.html (GH Pages token browser)
-  docs-template.html            # Template for the token browser
+  generate-agent-manifest.mjs   # Validates guidance coverage + emits dist/agent.*
+  build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation)
+  docs-template.html            # Template for Browser / Documentation / Color Tool navigation
   report-contrast.mjs           # WCAG + APCA report over shipped pairings (manual, not in build)
 docs/
   index.html            # Built GitHub Pages browser (do NOT edit by hand — regenerate)
@@ -107,7 +113,7 @@ docs/
 dist/                   # Generated — do not edit directly
 .github/
   workflows/
-    build.yml          # PR: npm ci, build, verify artifacts + src unchanged
+    build.yml          # PR: npm ci, build, test, build docs, verify artifacts + src unchanged
     codeql.yml         # JS/TS security scan — PR + push + weekly Sunday cron
     pr-title.yml       # Lints PR titles as conventional commits
     release-please.yml # Opens release PRs on feat/fix; auto-publishes to npm on merge (OIDC)
@@ -126,7 +132,7 @@ npm run build            # Full build — CSS + JSON + TypeScript
 npm run test             # Token JSON mode preservation + OKLCH/contrast math
 npm run build:colors     # Color tokens only (fast iteration)
 npm run build:docs       # Rebuild docs/index.html (GH Pages browser)
-npm run build:agent      # Validate and generate token-family agent guidance
+npm run build:agent      # Validate and generate the unified agent guidance contract
 npm run report:contrast  # WCAG + APCA report over shipped pairings (run after palette changes)
 npm run dev              # Watch mode — rebuilds on src changes
 npm run clean            # Remove dist/
@@ -134,7 +140,7 @@ npm run clean            # Remove dist/
 
 `report:contrast` is diagnostic and gates nothing. WCAG 2.x AA is the shipped accessibility contract; APCA `Lc` is tracked alongside it as forward-looking guidance only. See `docs/guidelines/color-generation.md` §4.5.
 
-No separate test/lint commands — validation is done by the Build workflow on every PR (it re-runs the build and asserts `src/` was not mutated).
+There is no separate lint command. `npm test` covers token-mode preservation, color math, and the generated agent contract. The Build workflow re-runs the build, runs tests, verifies distributable artifacts, and asserts `src/` was not mutated.
 
 ---
 
@@ -171,7 +177,8 @@ then rewrites back.
 2. **Generate CSS** — each `generate-*-tokens.mjs` reads `src/json/**` and writes **`src/*.css`** (committed source)
 3. **Copy to dist** — `scripts/build.mjs` copies `src/*.css` and `src/themes/` into `dist/`
 4. **Generate JSON** (`generate-json-tokens.mjs`) — parses **`src/*.css`** custom properties → flat default-light tokens plus explicit light/dark color modes in `dist/json/colors.modes.json`
-5. **Generate TypeScript** (`generate-ts-constants.mjs`) — emits `dist/index.mjs`, `dist/index.cjs`, `dist/index.d.ts`
+5. **Generate guidance** (`generate-agent-manifest.mjs`) — validates every published token has family coverage, validates recipe references/composition, copies the schema, and emits `dist/agent.json`, `.mjs`, and `.d.ts`
+6. **Generate TypeScript** (`generate-ts-constants.mjs`) — emits `dist/index.mjs`, `dist/index.cjs`, `dist/index.d.ts`
 
 ---
 
@@ -211,9 +218,18 @@ All token values are defined as CSS custom properties. **Color** light/dark valu
 5. Update `package.json` `exports` with the new `dist/<category>.css` entry.
 6. Update `src/index.css` to `@import` the new category.
 
-Agent guidance belongs in `src/agent/token-families.agent.json`. Document token
-families and selection constraints rather than duplicating every generated token.
-Every token pattern must match at least one token emitted by the build.
+Agent guidance belongs in the single source `src/agent/token-families.agent.json`; do not add a parallel `guidance` manifest or package export. Its schema is `agent/schemas/token-agent.schema.json`.
+
+The contract contains:
+
+- principles for semantic-first selection,
+- exactly nine core color intents,
+- token families with `useWhen`, `avoidWhen`, constraints, selection role, and token patterns,
+- framework-neutral recipes with roles, composition rules, variants, exact tokens/patterns, state ownership, and accessibility guidance.
+
+The generator enforces productive patterns, reference integrity, full token coverage, the complete typography regular/emphasis matrix, and same-suffix elevation parts. The website Documentation view and typography previews are generated from `dist/agent.json`, so human and machine guidance cannot be maintained separately.
+
+Guidance must remain valid without `@ds-mo/ui` or any other component library. Generic CSS examples are allowed; do not reference CompoMo implementations or component APIs in the manifest.
 
 ---
 
@@ -304,7 +320,7 @@ Must be done manually by the package owner once:
 
 | Workflow | Trigger | Purpose |
 |---|---|---|
-| `build.yml` | PR to main | `npm ci` + build + verify dist artifacts + verify `src/` not mutated |
+| `build.yml` | PR to main | `npm ci` + build + tests + docs build + verify dist artifacts + verify `src/` not mutated |
 | `pr-title.yml` | PR opened/edited | Enforce conventional-commit PR titles (lowercase subject) |
 | `codeql.yml` | Push/PR to main, weekly Sunday | GitHub CodeQL JS/TS security scan |
 | `release-please.yml` | Push to main | Open release PR on feat/fix; publish to npm via OIDC when release PR merges |
@@ -332,7 +348,9 @@ Must be done manually by the package owner once:
 | Color token values | `src/json/colors/` (reference, semantic, data) |
 | Dimension/spacing values | `src/json/dimensions/` |
 | Typography values | `src/json/typography/` |
-| Text style spec (documentation only) | `TEXT_STYLE_SPEC` in `scripts/build-docs.mjs` — mirror of `@ds-mo/ui` `ds-text`; this package ships no `.text-*` classes |
+| Text style recipes (documentation only) | `token-recipe:typography-composites` in `src/agent/token-families.agent.json`; this package ships no `.text-*` classes |
+| Token selection guidance and recipes | `src/agent/token-families.agent.json` |
+| Agent guidance schema | `agent/schemas/token-agent.schema.json` |
 | Effects (shadows, radii) | `src/json/effects/` |
 | Color CSS generation logic | `scripts/generate-color-tokens.mjs` |
 | Build orchestration | `scripts/build.mjs` |

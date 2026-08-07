@@ -14,7 +14,9 @@
  * What stays HAND-AUTHORED (not representable as Figma variables):
  *   --effect-motion-*               (shorthand: duration + easing combined)
  *   --effect-transition-*           (property-specific transition shorthands)
- *   --effect-inset-*, outset-*, surface-*, edge-*, overlay-*  (box-shadow tokens)
+ *   --effect-shadow-*            (outer box-shadow layers)
+ *   --effect-highlight-*         (inset box-shadow layers)
+ *   --effect-elevation-*         (combined shadow + highlight recipes)
  *   --effect-focus-ring             (composite box-shadow)
  */
 
@@ -82,7 +84,7 @@ const generate = () => {
 
   /* ─────────────────────────────────────────────────────────────────────────
      HAND-AUTHORED — Motion presets and transition shorthands.
-     These compose duration + easing together for convenience in components.
+     These compose duration + easing into reusable motion values.
      Not representable as Figma variables (they combine multiple primitives).
      ───────────────────────────────────────────────────────────────────────── */
 
@@ -160,13 +162,13 @@ const generate = () => {
      Multi-layer box-shadows cannot be expressed as Figma number variables.
 
      Three tokens per elevation level:
-       --effect-shadow-{name}    outset layers only  → apply via box-shadow on the main element
-       --effect-highlight-{name} inset layers only   → apply via box-shadow on an ::after overlay
-       --effect-elevation-{name} combined convenience → only safe when element has no overflow:clip
+       --effect-shadow-{name}    outer layers only
+       --effect-highlight-{name} inset layers only
+       --effect-elevation-{name} combined default for the normal one-element case
 
-     The shadow/highlight split exists because inset box-shadows are clipped by overflow:hidden.
-     Components that need overflow:clip (e.g. cards with rounded corners + clipped content)
-     must apply shadow on the root and highlight on a full-size ::after positioned inside.
+     The public split supports paint hierarchies where an unclipped outer frame
+     carries depth around an inner content region that clips descendants. An
+     element's own overflow does not automatically require separate layers.
      ───────────────────────────────────────────────────────────────────────── */
 
   /* ── elevated-none ─────────────────────────────────────────────────────── */

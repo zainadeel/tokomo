@@ -72,3 +72,45 @@ test('typography composites and elevation parts remain complete', async () => {
     assert.equal(byRole.combined, `--effect-elevation-${variant.id}`);
   }
 });
+
+test('foreground and neutral-border hierarchies carry their usage and contrast contracts', async () => {
+  const manifest = await readJson('dist/agent.json');
+  const foreground = manifest.recipes.find(recipe => recipe.id === 'token-recipe:foreground-hierarchy');
+  const borders = manifest.recipes.find(recipe => recipe.id === 'token-recipe:neutral-border-hierarchy');
+  const surfacePairing = manifest.recipes.find(recipe => recipe.id === 'token-recipe:semantic-color-pairing');
+
+  assert.ok(foreground, 'foreground hierarchy recipe must be published');
+  assert.ok(borders, 'neutral border hierarchy recipe must be published');
+
+  assert.ok(foreground.compositionRules.some(rule =>
+    rule.includes('Default most body copy') && rule.includes('secondary')
+  ));
+  assert.ok(foreground.compositionRules.some(rule =>
+    rule.includes('Reserve primary') && rule.includes('high emphasis')
+  ));
+  assert.ok(foreground.accessibility.some(rule =>
+    rule.includes('primary and secondary') && rule.includes('4.5:1')
+  ));
+  assert.ok(foreground.accessibility.some(rule =>
+    rule.includes('tertiary') && rule.includes('3:1')
+  ));
+
+  for (const id of ['faint', 'medium', 'bold', 'strong', 'literal-faint', 'literal-medium', 'literal-bold', 'literal-strong']) {
+    const variant = surfacePairing.variants.find(candidate => candidate.id === id);
+    const content = variant.assignments.find(assignment => assignment.role === 'content');
+    assert.match(content.token, /secondary$/, `${id} should default ordinary content to secondary`);
+  }
+
+  assert.ok(borders.compositionRules.some(rule =>
+    rule.includes('tertiary') && rule.includes('non-interactive')
+  ));
+  assert.ok(borders.compositionRules.some(rule =>
+    rule.includes('secondary') && rule.includes('interactive control')
+  ));
+  assert.ok(borders.compositionRules.some(rule =>
+    rule.includes('primary') && rule.includes('stroke itself')
+  ));
+  assert.ok(borders.accessibility.some(rule =>
+    rule.includes('primary neutral border') && rule.includes('3:1')
+  ));
+});

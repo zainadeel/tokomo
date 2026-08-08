@@ -177,10 +177,20 @@
       "constraints": [
         "Select the semantic intent before selecting a tone tier.",
         "Faint surfaces default to ordinary primary or secondary foregrounds; medium, bold, and strong surfaces use their matching on-background foregrounds.",
+        "Default most ordinary text and UI labels to the secondary foreground step; reserve primary for titles, key values, selected labels, and other high-emphasis content.",
+        "Use tertiary only for deliberately de-emphasized content, large text, or meaningful icons; use quaternary only for disabled hints and ornament that does not carry content.",
+        "Use tertiary borders only for decorative non-interactive structure, secondary borders for controls with another identifying affordance, and primary borders when the stroke itself must identify the control.",
         "Do not infer a token from its current rendered hue."
       ],
-      "recipes": ["token-recipe:semantic-color-pairing", "token-recipe:interaction-layers"],
+      "recipes": [
+        "token-recipe:foreground-hierarchy",
+        "token-recipe:neutral-border-hierarchy",
+        "token-recipe:semantic-color-pairing",
+        "token-recipe:interaction-layers"
+      ],
       "accessibility": [
+        "Primary and secondary foregrounds clear 4.5:1 on their documented backgrounds; tertiary foregrounds clear 3:1 but are not normal-text defaults.",
+        "Primary neutral borders clear 3:1 on their documented surfaces; secondary and tertiary borders are not control-identifying strokes.",
         "Use documented foreground/background pairings and provide a non-color cue when meaning matters."
       ],
       "references": [
@@ -242,8 +252,14 @@
         "Keep foregrounds, borders, dividers, and interaction states within the same context family.",
         "A context name describes its rendering environment, not a light- or dark-theme override."
       ],
-      "recipes": ["token-recipe:interaction-layers"],
+      "recipes": [
+        "token-recipe:foreground-hierarchy",
+        "token-recipe:neutral-border-hierarchy",
+        "token-recipe:interaction-layers"
+      ],
       "accessibility": [
+        "Primary and secondary foregrounds clear 4.5:1 on the matching context background; tertiary foregrounds clear 3:1.",
+        "Primary borders clear 3:1 on the matching context background; secondary and tertiary borders are decorative.",
         "Do not mix an ordinary foreground with a fixed-context background unless that pairing is explicitly verified."
       ],
       "references": [
@@ -706,6 +722,293 @@
   ],
   "recipes": [
     {
+      "id": "token-recipe:foreground-hierarchy",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Choose a foreground step by content emphasis, then keep it paired with the surface family it was designed for.",
+      "useWhen": [
+        "Choosing text, icon, or other content color within an ordinary, semantic, or fixed rendering context."
+      ],
+      "avoidWhen": [
+        "Choosing a chart mark, decorative wash, background, border, divider, or interaction overlay."
+      ],
+      "tokenRoles": [
+        {
+          "id": "primary",
+          "summary": "High-emphasis foreground content.",
+          "tokenPatterns": [
+            "--color-foreground-primary",
+            "--color-foreground-on-*-background-primary",
+            "--color-*-foreground-primary"
+          ],
+          "required": false
+        },
+        {
+          "id": "secondary",
+          "summary": "Default foreground for most ordinary readable content.",
+          "tokenPatterns": [
+            "--color-foreground-secondary",
+            "--color-foreground-on-*-background-secondary",
+            "--color-*-foreground-secondary"
+          ],
+          "required": false
+        },
+        {
+          "id": "tertiary",
+          "summary": "Deliberately de-emphasized foreground content.",
+          "tokenPatterns": [
+            "--color-foreground-tertiary",
+            "--color-foreground-on-*-background-tertiary",
+            "--color-*-foreground-tertiary"
+          ],
+          "required": false
+        },
+        {
+          "id": "surface",
+          "summary": "The documented background paired with the chosen foreground family.",
+          "tokenPatterns": ["--color-background-*", "--color-*-background"],
+          "required": true
+        }
+      ],
+      "compositionRules": [
+        "Default most body copy, descriptions, routine labels, and ordinary UI text to the secondary step.",
+        "Reserve primary for titles, key values, selected labels, and other text or icons whose high emphasis is important to the hierarchy.",
+        "Use tertiary only for deliberately de-emphasized or inactive content; it can carry large text and meaningful icons but is not a normal-size body-text color.",
+        "Use quaternary only for disabled hints, washes, and ornament; it must never carry readable text or a meaningful icon.",
+        "On medium, bold, or strong semantic surfaces, use the corresponding on-background hierarchy rather than an ordinary foreground.",
+        "Inside a fixed context, keep the foreground and background in that same context family."
+      ],
+      "variants": [
+        {
+          "id": "foreground-standard-primary",
+          "label": "Standard primary foreground",
+          "modifier": "high emphasis",
+          "when": "A title, key value, selected label, or other important content sits on the primary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "primary", "property": "color", "token": "--color-foreground-primary" }
+          ],
+          "notes": ["The documented pairing clears 4.5:1 in light and dark themes."]
+        },
+        {
+          "id": "foreground-standard-secondary",
+          "label": "Standard secondary foreground",
+          "modifier": "default content",
+          "when": "Most body copy, descriptions, routine labels, and ordinary UI text sit on the primary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "secondary", "property": "color", "token": "--color-foreground-secondary" }
+          ],
+          "notes": ["The documented pairing clears 4.5:1 in light and dark themes."]
+        },
+        {
+          "id": "foreground-standard-tertiary",
+          "label": "Standard tertiary foreground",
+          "modifier": "de-emphasized",
+          "when": "Inactive or intentionally de-emphasized large text or meaningful icons sit on the primary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "tertiary", "property": "color", "token": "--color-foreground-tertiary" }
+          ],
+          "notes": ["The documented pairing clears 3:1, not 4.5:1; do not use it for normal-size body text."]
+        },
+        {
+          "id": "foreground-on-background-primary",
+          "label": "On-background primary foreground",
+          "modifier": "high emphasis",
+          "when": "High-emphasis content sits on its matching medium, bold, or strong semantic surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
+            { "role": "primary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-primary" }
+          ],
+          "notes": ["Keep the tone name in both assignments aligned; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-on-background-secondary",
+          "label": "On-background secondary foreground",
+          "modifier": "default content",
+          "when": "Ordinary readable content sits on its matching medium, bold, or strong semantic surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
+            { "role": "secondary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-secondary" }
+          ],
+          "notes": ["Keep the tone name in both assignments aligned; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-on-background-tertiary",
+          "label": "On-background tertiary foreground",
+          "modifier": "de-emphasized",
+          "when": "De-emphasized large text or meaningful icons sit on their matching medium, bold, or strong semantic surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
+            { "role": "tertiary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-tertiary" }
+          ],
+          "notes": ["Keep the tone name in both assignments aligned; the documented pairings clear 3:1 but are not normal-text defaults."]
+        },
+        {
+          "id": "foreground-context-primary",
+          "label": "Context primary foreground",
+          "modifier": "high emphasis",
+          "when": "High-emphasis content sits inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "primary", "property": "color", "tokenPattern": "--color-*-foreground-primary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-context-secondary",
+          "label": "Context secondary foreground",
+          "modifier": "default content",
+          "when": "Ordinary readable content sits inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "secondary", "property": "color", "tokenPattern": "--color-*-foreground-secondary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-context-tertiary",
+          "label": "Context tertiary foreground",
+          "modifier": "de-emphasized",
+          "when": "De-emphasized large text or meaningful icons sit inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "tertiary", "property": "color", "tokenPattern": "--color-*-foreground-tertiary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; the documented pairings clear 3:1 but are not normal-text defaults."]
+        }
+      ],
+      "accessibility": [
+        "Every documented primary and secondary foreground pairing clears WCAG 2.x AA 4.5:1 in both themes.",
+        "Every documented tertiary foreground pairing clears 3:1 in both themes, which supports large text and meaningful icons but not normal-size text.",
+        "A foreground guarantee applies only on the documented ordinary, matching on-background, or same-context surface."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-recipe:neutral-border-hierarchy",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Choose a neutral border step by whether the stroke is decorative, supports another affordance, or must identify an interactive control.",
+      "useWhen": [
+        "Choosing neutral container, field, or control boundaries on ordinary or fixed-context surfaces."
+      ],
+      "avoidWhen": [
+        "Communicating a semantic status, drawing an internal divider, or choosing a border for a colored surface with its own matching border family."
+      ],
+      "tokenRoles": [
+        {
+          "id": "primary",
+          "summary": "Control-identifying neutral stroke.",
+          "tokenPatterns": ["--color-border-primary", "--color-*-border-primary"],
+          "required": false
+        },
+        {
+          "id": "secondary",
+          "summary": "Default interactive boundary when another affordance identifies the control.",
+          "tokenPatterns": ["--color-border-secondary", "--color-*-border-secondary"],
+          "required": false
+        },
+        {
+          "id": "tertiary",
+          "summary": "Decorative non-interactive structural edge.",
+          "tokenPatterns": ["--color-border-tertiary", "--color-*-border-tertiary"],
+          "required": false
+        },
+        {
+          "id": "surface",
+          "summary": "The ordinary or matching fixed-context surface beneath the border.",
+          "tokenPatterns": ["--color-background-*", "--color-*-background"],
+          "required": true
+        }
+      ],
+      "compositionRules": [
+        "Use tertiary for decorative, non-interactive container edges and structure that remains understandable without the stroke.",
+        "Use secondary as the default resting boundary for an interactive control that also has a label, value, fill, shape, or other identifying affordance.",
+        "Use primary only when the stroke itself must identify the interactive control or state, such as an unchecked checkbox, radio ring, or toggle track.",
+        "Do not use tertiary for interactive controls, and do not rely on secondary when the control has no other identifying affordance.",
+        "A semantic state such as invalid, focused, or disabled needs its documented semantic or interaction treatment and must not rely on the resting neutral border alone."
+      ],
+      "variants": [
+        {
+          "id": "neutral-border-primary",
+          "label": "Primary neutral border",
+          "modifier": "control-identifying",
+          "when": "The stroke itself is required to identify an interactive control on an ordinary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "primary", "property": "border-color", "token": "--color-border-primary" }
+          ],
+          "notes": ["This border clears 3:1 on primary, secondary, and faint ordinary surfaces in both themes."]
+        },
+        {
+          "id": "neutral-border-secondary",
+          "label": "Secondary neutral border",
+          "modifier": "interactive default",
+          "when": "A control is already identifiable through content, fill, shape, or another affordance.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "secondary", "property": "border-color", "token": "--color-border-secondary" }
+          ],
+          "notes": ["This border is intentionally below 3:1 and cannot be the sole visual information identifying the control."]
+        },
+        {
+          "id": "neutral-border-tertiary",
+          "label": "Tertiary neutral border",
+          "modifier": "decorative only",
+          "when": "A non-interactive container edge or structural hint remains understandable without the stroke.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "tertiary", "property": "border-color", "token": "--color-border-tertiary" }
+          ],
+          "notes": ["This border is decorative, intentionally below 3:1, and should not be used for interactive controls."]
+        },
+        {
+          "id": "context-border-primary",
+          "label": "Context primary border",
+          "modifier": "control-identifying",
+          "when": "The stroke itself identifies a control inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "primary", "property": "border-color", "tokenPattern": "--color-*-border-primary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; documented primary context borders clear 3:1."]
+        },
+        {
+          "id": "context-border-secondary",
+          "label": "Context secondary border",
+          "modifier": "interactive default",
+          "when": "A control inside a fixed context has another identifying affordance.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "secondary", "property": "border-color", "tokenPattern": "--color-*-border-secondary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; this border cannot be the sole control identifier."]
+        },
+        {
+          "id": "context-border-tertiary",
+          "label": "Context tertiary border",
+          "modifier": "decorative only",
+          "when": "A non-interactive edge inside a fixed context remains understandable without the stroke.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "tertiary", "property": "border-color", "tokenPattern": "--color-*-border-tertiary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; do not use this border for interactive controls."]
+        }
+      ],
+      "accessibility": [
+        "Every documented primary neutral border pairing clears WCAG 1.4.11 non-text contrast at 3:1 in both themes.",
+        "Secondary and tertiary neutral borders are intentionally below 3:1 and may be used only when the border does not carry the information required to identify a control or state."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
       "id": "token-recipe:semantic-color-pairing",
       "kind": "token-recipe",
       "status": "stable",
@@ -738,7 +1041,7 @@
       ],
       "compositionRules": [
         "Pick intent from meaning, never from hue.",
-        "On a faint semantic surface, default to ordinary foreground-primary or foreground-secondary rather than a chromatic intent foreground.",
+        "On a faint semantic surface, default ordinary content to foreground-secondary rather than a chromatic intent foreground; use foreground-primary only when high emphasis is warranted.",
         "On medium, bold, or strong surfaces, use the corresponding on-background foreground hierarchy.",
         "For optional chromatic tinting, pair faint with bold and medium with strong in either direction.",
         "Apply the same default foreground rules to literal color-intent backgrounds; when tinting them, keep background and foreground on the same hue.",
@@ -750,17 +1053,17 @@
           "label": "Faint semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-faint-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-primary" },
+            { "role": "content", "property": "color", "token": "--color-foreground-secondary" },
             { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-faint-*" }
           ],
-          "notes": ["Use foreground-secondary when the content hierarchy is supporting rather than primary."]
+          "notes": ["Use foreground-primary only for titles, key values, selected labels, and other high-emphasis content."]
         },
         {
           "id": "medium",
           "label": "Medium semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-medium-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-primary" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-secondary" },
             { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-medium-*" }
           ]
         },
@@ -769,7 +1072,7 @@
           "label": "Bold semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-bold-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-primary" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-secondary" },
             { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-bold-*" }
           ]
         },
@@ -778,7 +1081,7 @@
           "label": "Strong semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-strong-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-primary" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-secondary" },
             { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-strong-*" }
           ]
         },
@@ -823,16 +1126,16 @@
           "label": "Literal faint surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-faint-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-primary" }
+            { "role": "content", "property": "color", "token": "--color-foreground-secondary" }
           ],
-          "notes": ["Use foreground-secondary when the content hierarchy is supporting rather than primary."]
+          "notes": ["Use foreground-primary only for titles, key values, selected labels, and other high-emphasis content."]
         },
         {
           "id": "literal-medium",
           "label": "Literal medium surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-medium-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-primary" }
+            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-secondary" }
           ]
         },
         {
@@ -840,7 +1143,7 @@
           "label": "Literal bold surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-bold-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-primary" }
+            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-secondary" }
           ]
         },
         {
@@ -848,7 +1151,7 @@
           "label": "Literal strong surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-strong-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-primary" }
+            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-secondary" }
           ]
         },
         {

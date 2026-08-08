@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ds-mo.dev/schemas/token-agent.schema.json",
+  "title": "TokoMo token guidance",
+  "description": "Framework-neutral selection guidance and composition recipes for @ds-mo/tokens.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "principles",
+    "intents",
+    "families",
+    "recipes"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": "2.0.0" },
+    "package": { "const": "@ds-mo/tokens" },
+    "packageVersion": { "type": "string" },
+    "kind": { "const": "tokens" },
+    "principles": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/principle" }
+    },
+    "intents": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/intent" }
+    },
+    "families": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/family" }
+    },
+    "recipes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/recipe" }
+    }
+  },
+  "$defs": {
+    "stringList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "status": {
+      "enum": ["experimental", "stable", "deprecated", "removed"]
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "path"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "principle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "summary"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^principle:[a-z0-9.-]+$" },
+        "summary": { "type": "string", "minLength": 1 }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "optional", "summary", "useWhen", "avoidWhen"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^intent:[a-z0-9.-]+$" },
+        "status": { "$ref": "#/$defs/status" },
+        "optional": { "type": "boolean" },
+        "summary": { "type": "string", "minLength": 1 },
+        "useWhen": { "$ref": "#/$defs/stringList" },
+        "avoidWhen": { "$ref": "#/$defs/stringList" },
+        "precedence": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "family": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "category",
+        "audience",
+        "status",
+        "summary",
+        "tokenPatterns",
+        "selectionRole",
+        "useWhen",
+        "avoidWhen",
+        "constraints"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^token-family:[a-z0-9.-]+$" },
+        "kind": { "const": "token-family" },
+        "category": { "enum": ["color", "dimension", "typography", "effect"] },
+        "audience": { "enum": ["general", "specialized", "foundation"] },
+        "status": { "$ref": "#/$defs/status" },
+        "summary": { "type": "string", "minLength": 1 },
+        "tokenPatterns": { "$ref": "#/$defs/stringList" },
+        "selectionRole": { "enum": ["direct", "recipe-part", "last-resort"] },
+        "useWhen": { "$ref": "#/$defs/stringList" },
+        "avoidWhen": { "$ref": "#/$defs/stringList" },
+        "constraints": { "$ref": "#/$defs/stringList" },
+        "recipes": { "$ref": "#/$defs/stringList" },
+        "accessibility": { "$ref": "#/$defs/stringList" },
+        "references": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reference" }
+        }
+      }
+    },
+    "tokenRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "summary", "required"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+        "summary": { "type": "string", "minLength": 1 },
+        "tokenPatterns": { "$ref": "#/$defs/stringList" },
+        "literal": { "type": "boolean" },
+        "required": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["literal"],
+            "properties": { "literal": { "const": true } }
+          },
+          "then": { "not": { "required": ["tokenPatterns"] } },
+          "else": { "required": ["tokenPatterns"] }
+        }
+      ]
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "property"],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "property": { "type": "string", "minLength": 1 },
+        "token": { "type": "string", "pattern": "^--[a-z0-9-]+$" },
+        "tokenPattern": { "type": "string", "pattern": "^--[a-z0-9-*{}]+$" },
+        "value": { "type": "string", "minLength": 1 }
+      },
+      "oneOf": [
+        { "required": ["token"] },
+        { "required": ["tokenPattern"] },
+        { "required": ["value"] }
+      ]
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "assignments"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$" },
+        "label": { "type": "string", "minLength": 1 },
+        "modifier": { "type": "string", "minLength": 1 },
+        "when": { "type": "string", "minLength": 1 },
+        "assignments": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/assignment" }
+        },
+        "notes": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "example": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["language", "content"],
+      "properties": {
+        "language": { "enum": ["css", "html", "json"] },
+        "content": { "type": "string", "minLength": 1 }
+      }
+    },
+    "recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "status",
+        "summary",
+        "useWhen",
+        "avoidWhen",
+        "tokenRoles",
+        "compositionRules",
+        "variants"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^token-recipe:[a-z0-9.-]+$" },
+        "kind": { "const": "token-recipe" },
+        "status": { "$ref": "#/$defs/status" },
+        "summary": { "type": "string", "minLength": 1 },
+        "useWhen": { "$ref": "#/$defs/stringList" },
+        "avoidWhen": { "$ref": "#/$defs/stringList" },
+        "tokenRoles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/tokenRole" }
+        },
+        "compositionRules": { "$ref": "#/$defs/stringList" },
+        "variants": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/variant" }
+        },
+        "stateOwnership": { "$ref": "#/$defs/stringList" },
+        "accessibility": { "$ref": "#/$defs/stringList" },
+        "examples": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/example" }
+        },
+        "references": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reference" }
+        }
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@
  * Output: src/dimensions.css
  *
  * What this generates (from Figma):
- *   --dimension-base                 (8px — override to scale the whole system)
+ *   --dimension-base                 (8px — shared default for the four category bases)
  *   --dimension-{space,radius,size,stroke-width}-base   (all alias --dimension-base)
  *   --dimension-space-*              calc() expressions relative to --dimension-space-base
  *   --dimension-radius-*             calc() expressions relative to --dimension-radius-base
@@ -22,7 +22,9 @@
  *   Each token value from Figma is divided by BASE_PX (8) to get a multiplier.
  *   The multiplier is expressed as a clean integer fraction (e.g. 3/4, 5/4)
  *   matching the naming convention where the suffix ≈ 100 × (value / 8).
- *   This lets you scale the entire dimension system by overriding --dimension-base.
+ *   This lets you scale spacing, radius, size/iconography, stroke width, and
+ *   offsets together by overriding --dimension-base while leaving fixed layout
+ *   values, z-index, unitless scale, and radius-half unchanged.
  *
  */
 
@@ -93,7 +95,7 @@ const toCalcExpr = (value, baseVar) => {
   return `calc(var(${baseVar}) * ${dec})`;
 };
 
-/** Absolute px — for semantic component widths not derived from the grid base */
+/** Absolute px — for named layout widths not derived from the grid base */
 const toPx = value => `${value}px`;
 
 const generate = () => {
@@ -101,7 +103,7 @@ const generate = () => {
   const lines = [];
 
   // ── base variables ────────────────────────────────────────────────────────
-  lines.push('  /* Base — override --dimension-base to scale the entire dimension system */');
+  lines.push('  /* Base — shared 8px default; override a category base independently when needed */');
   lines.push('  --dimension-base:              8px;');
   lines.push('  --dimension-space-base:        var(--dimension-base);');
   lines.push('  --dimension-radius-base:       var(--dimension-base);');
@@ -149,7 +151,7 @@ const generate = () => {
   }
   lines.push('');
 
-  // ── component widths/heights (absolute px — not derived from base grid) ───
+  // ── named layout widths/heights (absolute px — not derived from base grid) ─
   const layoutGroups = [
     ['width-card',         'card-width',         'Card widths'],
     ['width-modal',        'modal-width',         'Modal widths'],

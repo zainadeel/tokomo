@@ -60,6 +60,19 @@ import tokens from '@ds-mo/tokens/json';
 import colors from '@ds-mo/tokens/json/colors';
 ```
 
+### Selection guidance
+
+`@ds-mo/tokens/agent` is the single machine-readable contract for choosing and composing tokens. It contains framework-neutral principles, the nine color intents, token-family guidance, and recipes for semantic color pairing, interaction layers, typography composites, and elevation.
+
+```ts
+import guidance from '@ds-mo/tokens/agent';
+
+const colorFamilies = guidance.families.filter(family => family.category === 'color');
+const typeRecipes = guidance.recipes.find(recipe => recipe.id === 'token-recipe:typography-composites');
+```
+
+The [documentation site](https://zainadeel.github.io/tokomo/) renders the same contract for people under **Browser / Documentation / Color Tool**. The Browser shows values; Documentation intentionally explains selection with token names only.
+
 ## Theming
 
 Light/dark theme is controlled via a `data-theme` attribute on `<html>`:
@@ -76,23 +89,23 @@ Light is the default. No JS required — pure CSS variable overrides.
 | File | Prefix | Contains |
 |---|---|---|
 | `colors.css` | `--color-*` | Semantic colors (light + dark), reference palette, data viz |
-| `dimensions.css` | `--dimension-*` | Space, radius, size, stroke-width — all `calc()` from `--dimension-base` |
+| `dimensions.css` | `--dimension-*` | Space, radius, size, stroke-width, fixed layout constraints, transforms, and z-index |
 | `typography.css` | `--typography-*` | Font family, weight, font-size, line-height, letter-spacing, paragraph spacing |
 | `effects.css` | `--effect-*` | Blur, animation timing, easing, elevation shadows |
 
-Typography ships **primitives only**. Composite text styles (display/title/body/caption × regular/emphasis) are implemented by the `ds-text` component in `@ds-mo/ui` — this package intentionally does not ship `.text-*` utility classes. The [token browser](https://zainadeel.github.io/tokomo/) documents the recipes as a reference spec; see [docs/guidelines/typography-usage.md](docs/guidelines/typography-usage.md).
+Typography ships **CSS primitives rather than `.text-*` classes**. TokoMo itself defines the recommended display/title/body/caption × regular/emphasis composites in `@ds-mo/tokens/agent`, so any framework or component library can implement them consistently. See [docs/guidelines/typography-usage.md](docs/guidelines/typography-usage.md).
 
 ## Scaling
 
-All dimension tokens are `calc()` from `--dimension-base: 8px`. Override it to scale everything:
+`--dimension-base` is `8px`. The spacing, radius, size, and stroke-width category bases alias it by default, so one override scales those four token scales together:
 
 ```css
 :root {
-  --dimension-base: 10px; /* scales all spacing, radius, size, stroke-width */
+  --dimension-base: 10px;
 }
 ```
 
-Or override a single category:
+Each category also has its own override point. Radius therefore has a separate base while still resolving to the same 8px default:
 
 ```css
 :root {
@@ -101,29 +114,27 @@ Or override a single category:
 }
 ```
 
+Fixed layout widths/heights, z-index layers, unitless transform scales, and `--dimension-radius-half` do not inherit `--dimension-base`; choose those by their documented role rather than expecting a global scale override. Offset tokens do follow the spacing base.
+
 ## Elevation
 
-Each level gives you three tokens to handle `overflow: hidden` clipping:
+Each suffix publishes a public outer shadow, inset highlight, and combined elevation token. Use the combined token by default:
 
 ```css
-/* Simple case — no overflow clipping */
-.card { box-shadow: var(--effect-elevation-elevated-sm); }
+/* Normal one-element case */
+.surface { box-shadow: var(--effect-elevation-elevated-sm); }
 
-/* With overflow: hidden — split shadow and highlight */
-.card {
-  overflow: hidden;
-  box-shadow: var(--effect-shadow-elevated-sm);   /* outset on root */
-  position: relative;
+/* Split only when the paint/clipping hierarchy requires two layers */
+.surface-frame {
+  box-shadow: var(--effect-shadow-elevated-sm);
 }
-.card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: var(--effect-highlight-elevated-sm); /* inset on overlay */
-  pointer-events: none;
+.surface-content {
+  overflow: hidden;
+  box-shadow: var(--effect-highlight-elevated-sm);
 }
 ```
+
+Keep split parts on the same suffix. An element's own overflow does not automatically require a split; use it when an ancestor or inner clipping boundary would otherwise cut a descendant's outer shadow. See [docs/guidelines/elevation-usage.md](docs/guidelines/elevation-usage.md).
 
 Available: `elevated-none`, `elevated-sm`, `elevated-md`, `elevated-floating`, `depressed-sm`, `depressed-md`, `elevated-panel-top/right/bottom/left`
 

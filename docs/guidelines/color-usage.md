@@ -20,13 +20,15 @@ Use this rule first:
 
 1. use semantic colors when the color communicates UI role,
 2. use data colors when the color differentiates or encodes data,
-3. use reference colors only when working on the token system itself.
+3. use literal color-intent tokens only when the hue itself is the intended identity,
+4. use reference colors only while maintaining the token system or after a reviewed semantic-token gap and explicit design decision.
 
 Examples:
 
 1. page background, card text, button hover, error banner: semantic
 2. bar series, line series, pie slices, heatmap steps: data
-3. palette generation or alias maintenance: reference
+3. a deliberately hue-named treatment with no semantic meaning: literal color intent
+4. palette generation, alias maintenance, or a reviewed semantic gap: reference
 
 ## 3. Semantic Colors
 
@@ -37,7 +39,7 @@ Semantic tokens are named by purpose, not by visual appearance. They should be c
 For example:
 
 1. `background.primary` means the main surface,
-2. `foreground.secondary` means lower-emphasis content,
+2. `foreground.secondary` means the default step for most ordinary readable content,
 3. `background.strong.negative` means a strong negative-intent surface,
 4. `interaction.hover` means an interaction overlay,
 5. `foreground.on-strong-background.primary` means primary content placed on a strong colored background.
@@ -59,7 +61,39 @@ A foundational semantic layer should keep its first-class intent set small and d
 
 In practice, intents should represent long-lived UI meaning rather than short-lived product categorization. Product-specific concepts should only become first-class semantic intents when they are expected to recur broadly and remain stable over time.
 
-### 3.3 Common Semantic Families
+### 3.3 Core Intent Selection
+
+Choose an intent from meaning, never from its current hue. The nine core intents are:
+
+| Intent | Meaning | Use it for | Do not use it for |
+| --- | --- | --- | --- |
+| `neutral` | No evaluative, risk, identity, or experience-specific meaning | general information and semantic unavailable/not-applicable states | ordinary disabled or de-emphasized content; use the normal foreground hierarchy and disabled behavior |
+| `brand` | Product identity and the default accent | ordinary primary actions, links, selection, and optionally in-progress activity | success, risk, failure, or another stronger semantic outcome |
+| `ai` | Optional AI experience identity | AI-generated or AI-assisted content and entry into an AI experience | ordinary automation or a status whose consequence matters more than its AI provenance |
+| `negative` | Failure or harmful consequence | errors, invalid or broken states, destructive actions, expiry, and disconnection | pending or attention-only states |
+| `warning` | Rare stronger-risk distinction | cases where a materially higher risk must be distinguished from normal attention | most pending, urgent, or attention states; default those to caution |
+| `caution` | Default attention state | pending, ongoing, upcoming, urgent, or later-action conditions | completed failures or the rare condition that genuinely needs the stronger warning distinction |
+| `positive` | Favourable action or outcome | success, completion, validity, health, and improvement | the ordinary action that may lead to success; for example, Save remains brand until an outcome exists |
+| `guide` | Help and onboarding | temporary guidance, instructional tooltips or rings, and single- or multi-step coaching | ordinary information or the reserved Walkthrough product concept |
+| `walkthrough` | Optional Motive-specific product concept | Motive's explicitly defined Walkthrough experience or a directly equivalent concept defined by another product | onboarding and general guidance; use guide |
+
+Use these precedence rules when more than one meaning appears possible:
+
+1. status and consequence generally outrank provenance or experience identity,
+2. an AI result that succeeds or fails uses positive or negative for that outcome rather than blending AI with the status,
+3. ordinary loading is neutral, while an explicitly product-coloured in-progress state may use brand,
+4. default to caution and use warning only when the stronger distinction is genuinely necessary,
+5. when one region needs to convey different meanings at the same time, separate those meanings into distinct cues instead of blending intent colors.
+
+Semantic intent is visual meaning; it does not set assistive-technology urgency. Live-region behavior and announcements belong to the implementation and the actual content.
+
+#### Literal Color Intent
+
+`color-color-intent.*` is deliberately hue-based and semantically meaningless. Blue, green, red, and the other hue names identify the color itself, not brand, positive, negative, or any other semantic state.
+
+Use a literal color-intent family only when a consumer intentionally needs a named hue while retaining TokoMo's mode-aware tones and pairings. Never substitute it for semantic status, product identity, data visualization, guide, AI, or walkthrough meaning.
+
+### 3.4 Common Semantic Families
 
 The semantic files are organized around usage families.
 
@@ -82,18 +116,23 @@ Typical mapping:
 
 Use foreground tokens for text, icons, and strokes that follow content hierarchy.
 
-1. `foreground.primary` is the highest-emphasis content,
-2. `foreground.secondary` through `foreground.quaternary` reduce emphasis,
-3. `foreground.strong.*`, `foreground.bold.*`, `foreground.medium.*`, and `foreground.faint.*` provide colored content roles,
-4. `foreground.on-strong-background.*` is for content placed on strong colored surfaces.
+1. `foreground.primary` is reserved for the highest-emphasis content,
+2. `foreground.secondary` is the default for most readable body copy, descriptions, routine labels, and ordinary UI text,
+3. `foreground.tertiary` is for deliberately de-emphasized or inactive content and is limited to large text and meaningful icons,
+4. `foreground.quaternary` is for disabled hints, washes, and ornament that does not carry readable content,
+5. `foreground.strong.*`, `foreground.bold.*`, `foreground.medium.*`, and `foreground.faint.*` provide colored content roles,
+6. matching `foreground.on-*-background.*` families are for content placed on medium, bold, or strong colored surfaces.
 
 Typical mapping:
 
-1. main body text: `foreground.primary`
-2. helper text or secondary icon: `foreground.secondary`
-3. inactive or intentionally de-emphasized content: `foreground.tertiary`
-4. disabled or very low-emphasis ornament: lower-emphasis foreground token such as `foreground.quaternary`
-5. text on a bold brand or status fill: `foreground.on-bold-background.primary`
+1. title, key value, selected label, or other important UI text: `foreground.primary`
+2. most body copy, descriptions, routine labels, and ordinary UI text: `foreground.secondary`
+3. inactive or intentionally de-emphasized large text or meaningful icon: `foreground.tertiary`
+4. disabled hint or nonessential ornament: `foreground.quaternary`
+5. high-emphasis text on a bold brand or status fill: `foreground.on-bold-background.primary`
+6. ordinary text on a bold brand or status fill: `foreground.on-bold-background.secondary`
+
+The primary and secondary steps both clear $4.5{:}1$ on their documented backgrounds, so this distinction is about hierarchy rather than whether normal-size text is readable. The tertiary step clears $3{:}1$, which is enough for large text and meaningful icons but not for normal-size body text. Those guarantees apply only when each foreground is used on its ordinary surface, matching on-background surface, or matching fixed-context background.
 
 `foreground.tertiary` is primarily a low-emphasis UI color. A common use is to show that an element is inactive, secondary to the current task, or intentionally not meant to attract attention yet.
 
@@ -103,9 +142,32 @@ It can also be used to soften emphasis on screen more generally, but it should n
 
 Use interaction tokens for overlays caused by state changes, not for base surfaces or replacement fills.
 
-1. `interaction.hover` and `interaction.pressed` are for standard surfaces,
-2. `interaction.on-strong-background.hover` and `interaction.on-strong-background.pressed` are for colored fills,
-3. paired interaction tokens preserve visible state change without breaking contrast.
+Select the family from the background underneath the interaction:
+
+| Surface | Hover / pressed | Selected | Focus ring color |
+| --- | --- | --- | --- |
+| `background.primary` or `background.secondary` | `interaction.hover` / `interaction.pressed` | `interaction.active-brand` | `interaction.focus` |
+| any `background.faint.*` | `interaction.hover` / `interaction.pressed` | `interaction.active` | `interaction.focus` |
+| `background.medium.*` | `interaction.on-medium-background.*` | `interaction.on-medium-background.active` | `interaction.on-medium-background.focus` |
+| `background.bold.*` | `interaction.on-bold-background.*` | `interaction.on-bold-background.active` | `interaction.on-bold-background.focus` |
+| `background.strong.*` | `interaction.on-strong-background.*` | `interaction.on-strong-background.active` | `interaction.on-strong-background.focus` |
+| fixed or specialized context | that context's `interaction.*` family | that context's `interaction.active` when published | that context's `interaction.focus` |
+
+In interaction token names, `active` means persistent **selected** state. It does not mean the transient CSS `:active` pointer state; map CSS `:active` to the pressed token.
+
+The visual stack from bottom to top is:
+
+1. the original background,
+2. the selected overlay,
+3. inner content,
+4. the hover or pressed overlay as a sheet above both fill and content,
+5. a visible focus ring using the matching interaction focus color. `--effect-focus-ring` is the complete default brand ring for ordinary surfaces; for context-specific rings, use `--dimension-space-025` as the gap and `--dimension-stroke-width-025` as the width with the matching focus color.
+
+A positioned `::after` pseudo-element is the required reference technique for the hover/pressed top sheet, because replacing `background-color` or painting the wash behind inner content does not preserve that stack. A separate `::before` layer can carry selected state underneath content. Disabled content receives no hover or pressed overlay, and hover should be limited to hover-capable fine pointers so touch input does not latch it after a tap.
+
+Literal `color-color-intent` surfaces publish hover, pressed, and focus states for each tone, but do not yet publish selected-state tokens. Do not invent one; selected-state coverage is tracked in [issue #117](https://github.com/zainadeel/tokomo/issues/117).
+
+If a background does not publish or document a matching interaction family, do not assume that background is intended for interactive UI.
 
 Interaction tokens should preserve the underlying semantic meaning of the surface they sit on. They are state overlays, not an alternate surface-color system.
 
@@ -122,13 +184,13 @@ Border tokens should be treated as surface-adjacent colors. They are the right c
 
 The three neutral steps are tuned for different jobs, and the difference is a contrast decision rather than a taste one:
 
-1. `border.tertiary` is decorative chrome: container edges and other structure on a surface that is already distinguishable without the stroke,
+1. `border.tertiary` is decorative, non-interactive chrome: container edges and other structure on a surface that is already distinguishable without the stroke,
 2. `border.secondary` is the default for controls that contain their own identifying content, such as a text field with a label or placeholder inside it,
 3. `border.primary` is reserved for small non-text controls where the stroke itself is the only thing identifying the control, such as an unchecked checkbox, a radio ring, or a toggle track.
 
 Do not reach for `border.primary` simply because a stroke should look stronger. It is the only neutral step that clears the $3{:}1$ non-text contrast threshold, so spending it on ordinary chrome removes the one option available when a control genuinely needs it. See Section 7.4 for the measured values and the reasoning.
 
-`border.tertiary` is the lowest-emphasis border option. It is best for subtle container hints, inactive outlines, and other edges that should be visible but not prominent. In practice it is intentionally very dim, so it should not be used when the border itself needs to carry strong affordance or attention.
+`border.tertiary` is the lowest-emphasis border option. It is best for subtle non-interactive container hints and other decorative edges that should be visible but not prominent. It should not be used for an interactive control. In practice it is intentionally very dim, so it cannot carry affordance or attention.
 
 Divider tokens are narrower in purpose. Use them only when drawing a horizontal or vertical rule inside a surface to create separation between elements or blocks of information. Do not treat divider tokens as the default border color for every component edge.
 
@@ -142,7 +204,7 @@ More generally, fixed-context themes and subthemes should be treated as rare exc
 
 Introduce them only when a region must remain visually distinct from the surrounding theme or must preserve a deliberately fixed visual environment. They should not become a general escape hatch from the main semantic theme system.
 
-### 3.4 Semantic Tone Selection
+### 3.5 Semantic Tone Selection
 
 When multiple semantic intensities exist, choose the one that matches the amount of emphasis required.
 
@@ -157,7 +219,14 @@ In practice:
 2. subtle contextual surface: `background.faint.positive`
 3. colored text over faint surface: `foreground.bold.brand`
 
-When a surface uses a strong semantic background, pair it with the matching on-background content token rather than reusing normal foreground tokens.
+Default surface/content selection is:
+
+1. faint background: ordinary `foreground.primary` or `foreground.secondary`,
+2. medium background: the matching `foreground.on-medium-background.*`,
+3. bold background: the matching `foreground.on-bold-background.*`,
+4. strong background: the matching `foreground.on-strong-background.*`.
+
+When an explicitly tinted relationship is desired, the reciprocal semantic tone pairs are faint with bold and medium with strong. In either direction, keep both tokens on the same intent. These pairings are optional; the ordinary foreground hierarchy remains the default on faint surfaces.
 
 ## 4. Data Colors
 
@@ -166,6 +235,8 @@ When a surface uses a strong semantic background, pair it with the matching on-b
 Data tokens are for visualization encoding. They help users distinguish series, categories, ranges, and outcomes inside charts and maps.
 
 Data tokens are not general UI colors. They should usually appear inside the visualization itself, while surrounding labels, panels, controls, and layout surfaces remain semantic.
+
+`data-intent.*` mirrors the meaning of the corresponding semantic intent only inside data marks. The absence of AI, guide, and walkthrough data-intent tokens is intentional.
 
 ### 4.2 When To Use Data Colors
 
@@ -306,15 +377,24 @@ The token name should stay stable while the underlying reference alias may chang
 
 For text, labels, supporting typography, and most icon usage, prefer the explicit foreground/background pairs the system defines for you.
 
-The default combinations are:
+The documented combinations are:
 
 1. `background.primary` with `foreground.primary` or `foreground.secondary`,
-2. `background.strong.*` with `foreground.on-strong-background.primary` or `foreground.on-strong-background.secondary`,
-3. `background.bold.*` with `foreground.on-bold-background.primary` or `foreground.on-bold-background.secondary`.
+2. `background.medium.*`, `background.bold.*`, or `background.strong.*` with the corresponding `foreground.on-*-background.primary` or `foreground.on-*-background.secondary`,
+3. a fixed-context background with the `foreground.primary` or `foreground.secondary` from that same context family.
 
 These are the safest defaults because they encode the intended contrast relationship directly into the token system. They are the right choice for most text-first UI work.
 
-Current exported tokens verify that all of those primary and secondary pairings clear the AA $4.5{:}1$ threshold in both themes. The lowest verified floors are:
+The foreground hierarchy and its contrast contract are:
+
+| Step | Minimum on its documented background | Default role |
+| --- | --- | --- |
+| `*.foreground.primary` | $4.5{:}1$ | titles, key values, selected labels, and other high-emphasis content |
+| `*.foreground.secondary` | $4.5{:}1$ | most body copy, descriptions, routine labels, and ordinary UI text |
+| `*.foreground.tertiary` | $3{:}1$ | de-emphasized large text and meaningful icons; never normal-size body text |
+| `*.foreground.quaternary` | below $3{:}1$ | disabled hints, washes, and ornament; never readable content |
+
+Current exported tokens verify that every documented primary and secondary pairing clears the AA $4.5{:}1$ threshold in both themes, and every documented tertiary pairing clears its $3{:}1$ floor. The lowest verified secondary floors include:
 
 1. `background.primary` with `foreground.secondary`: about $5.74{:}1$ in light and $6.13{:}1$ in dark,
 2. `background.strong.*` with `foreground.on-strong-background.secondary`: about $4.96{:}1$ in light (`caution`) and $5.21{:}1$ in dark (`negative`),
@@ -565,19 +645,23 @@ Avoid these patterns:
 1. choosing a token only because the hue looks visually convenient,
 2. using semantic status colors as a general-purpose chart palette,
 3. using data colors for ordinary UI text or surface hierarchy,
-4. mixing reference tokens directly into product code,
+4. choosing a reference token before confirming a semantic gap and making an explicit design decision,
 5. pairing strong semantic backgrounds with regular foreground tokens instead of on-background tokens,
 6. using `divider.*` as a generic border token instead of as an internal rule,
 7. changing token meaning across screens without a strong product reason,
 8. communicating a status only through color, with no icon, label, or other redundant cue,
 9. using `border.primary` for ordinary chrome or container edges because it looks stronger, which spends the only neutral step that clears $3{:}1$ and leaves nothing for controls that need it,
-10. relying on `border.secondary` or `border.tertiary` to identify a control that has no internal text or other affordance.
+10. using `border.tertiary` for an interactive control,
+11. relying on `border.secondary` to identify a control that has no internal text or other affordance,
+12. defaulting all readable text to `foreground.primary`, which flattens the hierarchy and leaves no stronger neutral step for titles and important UI text,
+13. using `foreground.tertiary` for normal-size body text or `foreground.quaternary` for any readable content.
 
 ## 10. Maintenance Rule
 
 If semantic or data usage needs a new token:
 
 1. first confirm the need cannot be solved by an existing semantic or data token,
-2. add or update the semantic or data alias rather than shipping a one-off raw color,
-3. keep the alias relationship to the reference palette intact,
-4. update this guide if the usage pattern becomes standard.
+2. if a reference token must be used temporarily, record the semantic gap and make the exception explicit,
+3. prefer adding or updating the semantic or data alias rather than leaving a one-off raw color in consumer code,
+4. keep the alias relationship to the reference palette intact,
+5. update this guide and the agent manifest when the usage pattern becomes standard.

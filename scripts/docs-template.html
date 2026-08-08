@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <title>TokoMo — Token Browser</title>
+  <title>TokoMo — Tokens</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -67,12 +67,20 @@
       white-space: nowrap;
     }
 
+    .primary-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .primary-nav a { text-decoration: none; }
+
     /* ── Search ───────────────────────────────────────────────────────── */
     .search-wrap {
       display: inline-flex;
       align-items: center;
       gap: 8px;
     }
+    .search-wrap.hidden { display: none; }
     .search {
       width: 0; /* driven by JS sizer */
       padding: 0;
@@ -160,12 +168,200 @@
       flex-shrink: 0;
     }
     .sub-btn.active { color: var(--fg); }
+    .sub-separator {
+      width: 1px;
+      height: 12px;
+      background: var(--divider);
+      flex: 0 0 auto;
+    }
     /* While searching, tabs are bypassed — hide the sub-toolbar entirely. */
     .sub-toolbar.searching { display: none; }
 
     /* ── Content ──────────────────────────────────────────────────────── */
     #content {
       padding: 10px 12px 64px;
+    }
+
+    /* ── Documentation ────────────────────────────────────────────────── */
+    #content.documentation {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+    .doc-hero {
+      max-width: 760px;
+      padding-bottom: 48px;
+    }
+    .doc-kicker {
+      color: var(--fg-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .doc-hero h1 {
+      margin-top: 12px;
+      font-size: 36px;
+      line-height: 42px;
+      letter-spacing: -0.03em;
+    }
+    .doc-hero p {
+      margin-top: 16px;
+      color: var(--fg-muted);
+      font-size: 15px;
+      line-height: 24px;
+    }
+    .doc-section {
+      scroll-margin-top: 112px;
+      border-top: 1px solid var(--divider);
+      padding: 40px 0 56px;
+    }
+    .doc-section-header {
+      max-width: 760px;
+      margin-bottom: 24px;
+    }
+    .doc-section h2 {
+      margin-top: 8px;
+      font-size: 24px;
+      line-height: 32px;
+      letter-spacing: -0.02em;
+    }
+    .doc-section-header > p,
+    .doc-card > p,
+    .doc-recipe > p {
+      margin-top: 8px;
+      color: var(--fg-muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .doc-card,
+    .doc-recipe {
+      border: 1px solid var(--divider);
+      padding: 18px;
+      min-width: 0;
+    }
+    .doc-card h3,
+    .doc-recipe h3 {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .doc-pill {
+      border: 1px solid var(--divider);
+      padding: 2px 6px;
+      color: var(--fg-muted);
+      font-size: 10px;
+      line-height: 16px;
+    }
+    .doc-card h4,
+    .doc-recipe h4 {
+      margin-top: 18px;
+      color: var(--fg-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .doc-list {
+      margin: 8px 0 0 18px;
+      color: var(--fg-muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .doc-list li + li { margin-top: 5px; }
+    .doc-token-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .doc-token-list code,
+    .doc-assignment code,
+    .doc-code {
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 10px;
+    }
+    .doc-token-list code {
+      padding: 3px 6px;
+      background: var(--divider);
+      overflow-wrap: anywhere;
+    }
+    .doc-recipe { margin-top: 12px; }
+    .doc-recipe:first-of-type { margin-top: 0; }
+    .doc-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+    .doc-variants {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .doc-variant {
+      background: color-mix(in srgb, var(--divider) 45%, transparent);
+      padding: 12px;
+    }
+    .doc-variant-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .doc-variant-title span {
+      color: var(--fg-muted);
+      font-size: 10px;
+      font-weight: 400;
+    }
+    .doc-assignment {
+      display: grid;
+      grid-template-columns: minmax(84px, auto) 1fr;
+      gap: 8px;
+      margin-top: 7px;
+      color: var(--fg-muted);
+      font-size: 10px;
+      line-height: 15px;
+    }
+    .doc-assignment code {
+      color: var(--fg);
+      overflow-wrap: anywhere;
+    }
+    .doc-code {
+      margin-top: 10px;
+      padding: 12px;
+      overflow-x: auto;
+      white-space: pre;
+      background: var(--divider);
+      color: var(--fg);
+      line-height: 16px;
+    }
+    .doc-reference {
+      color: var(--fg);
+      text-underline-offset: 2px;
+    }
+
+    @media (max-width: 760px) {
+      .toolbar { grid-template-columns: auto 1fr; gap: 12px; padding: 0 12px; }
+      .primary-nav { justify-self: end; }
+      .controls { display: none; }
+      .sub-toolbar { padding-inline: 12px; }
+      #content.documentation { padding: 32px 16px 72px; }
+      .doc-hero h1 { font-size: 28px; line-height: 34px; }
+      .doc-columns { grid-template-columns: 1fr; }
     }
 
     /* ── Color grid ───────────────────────────────────────────────────── */
@@ -550,33 +746,30 @@
 <nav class="toolbar" role="banner">
   <span class="logo">@@PACKAGE_LABEL@@</span>
 
-  <div class="search-wrap">
-    <input
-      class="search"
-      type="search"
-      id="search"
-      placeholder=""
-      autocomplete="off"
-      spellcheck="false"
-      aria-label="Search tokens"
-    >
-    <span class="search-count" id="search-count" aria-live="polite"></span>
+  <div class="primary-nav" id="primary-nav" aria-label="Primary">
+    <button class="toggle-btn" data-view="browser">Browser</button>
+    <button class="toggle-btn" data-view="documentation">Documentation</button>
+    <a class="toggle-btn" href="./tool/">Color Tool</a>
   </div>
 
   <div class="controls">
-    <div class="text-toggle" id="section-toggle" role="group" aria-label="Token section">
-      <button class="toggle-btn" data-section="colors">Colors</button>
-      <button class="toggle-btn" data-section="dimensions">Dimensions</button>
-      <button class="toggle-btn" data-section="typography">Typography</button>
-      <button class="toggle-btn" data-section="effects">Effects</button>
+    <div class="search-wrap" id="search-wrap">
+      <input
+        class="search"
+        type="search"
+        id="search"
+        placeholder=""
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Search tokens"
+      >
+      <span class="search-count" id="search-count" aria-live="polite"></span>
     </div>
     <div class="vdivider" aria-hidden="true"></div>
     <div class="text-toggle" role="group" aria-label="Color theme">
       <button class="toggle-btn" id="theme-light-btn">Light</button>
       <button class="toggle-btn" id="theme-dark-btn">Dark</button>
     </div>
-    <div class="vdivider" aria-hidden="true"></div>
-    <a class="toggle-btn" href="./tool/" style="text-decoration: none;">Color tool</a>
   </div>
 </nav>
 
@@ -624,8 +817,23 @@ const GROUPS = {
   ],
 };
 
+const SECTIONS = [
+  { id: 'colors', label: 'Colors' },
+  { id: 'dimensions', label: 'Dimensions' },
+  { id: 'typography', label: 'Typography' },
+  { id: 'effects', label: 'Effects' },
+];
+
+const DOC_SECTIONS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'intents', label: 'Color intents' },
+  { id: 'families', label: 'Token families' },
+  { id: 'recipes', label: 'Recipes' },
+];
+
 // ── State ─────────────────────────────────────────────────────────────────────
 
+let view     = localStorage.getItem('tokomo-view') || 'browser';
 let section  = localStorage.getItem('tokomo-section') || 'colors';
 let group    = 'all';
 let query    = '';
@@ -636,6 +844,8 @@ let theme    = localStorage.getItem('tokomo-theme') || 'light';
 const contentEl    = document.getElementById('content');
 const searchEl     = document.getElementById('search');
 const searchCount  = document.getElementById('search-count');
+const searchWrap   = document.getElementById('search-wrap');
+const primaryNav   = document.getElementById('primary-nav');
 const subToolbar   = document.getElementById('sub-toolbar');
 const toast        = document.getElementById('toast');
 const themeLightBtn = document.getElementById('theme-light-btn');
@@ -666,13 +876,24 @@ applyTheme(theme);
 themeLightBtn.addEventListener('click', () => { applyTheme('light'); localStorage.setItem('tokomo-theme', 'light'); });
 themeDarkBtn.addEventListener('click',  () => { applyTheme('dark');  localStorage.setItem('tokomo-theme', 'dark'); });
 
-// ── Section toggle ────────────────────────────────────────────────────────────
+// ── View and section navigation ───────────────────────────────────────────────
 
-document.getElementById('section-toggle').addEventListener('click', e => {
-  const btn = e.target.closest('[data-section]');
+primaryNav.addEventListener('click', e => {
+  const btn = e.target.closest('[data-view]');
   if (!btn) return;
-  switchSection(btn.dataset.section);
+  switchView(btn.dataset.view);
 });
+
+function switchView(nextView) {
+  view = nextView;
+  localStorage.setItem('tokomo-view', view);
+  primaryNav.querySelectorAll('[data-view]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+  searchWrap.classList.toggle('hidden', view !== 'browser');
+  updateSubToolbar();
+  render();
+}
 
 function switchSection(s) {
   section = s;
@@ -680,10 +901,6 @@ function switchSection(s) {
   query = '';
   searchEl.value = '';
   localStorage.setItem('tokomo-section', s);
-
-  document.querySelectorAll('#section-toggle .toggle-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.section === s);
-  });
 
   updateSubToolbar();
   updateSearchPlaceholder();
@@ -694,9 +911,38 @@ function switchSection(s) {
 // ── Sub-toolbar ───────────────────────────────────────────────────────────────
 
 function updateSubToolbar() {
-  const groups = GROUPS[section] || [];
   subToolbar.innerHTML = '';
-  subToolbar.style.display = groups.length ? '' : 'none';
+  subToolbar.classList.remove('searching');
+
+  if (view === 'documentation') {
+    subToolbar.setAttribute('aria-label', 'Documentation sections');
+    for (const item of DOC_SECTIONS) {
+      const btn = document.createElement('button');
+      btn.className = 'sub-btn';
+      btn.textContent = item.label;
+      btn.addEventListener('click', () => document.getElementById(`docs-${item.id}`)?.scrollIntoView());
+      subToolbar.appendChild(btn);
+    }
+    return;
+  }
+
+  subToolbar.setAttribute('aria-label', 'Token section and group filter');
+  for (const item of SECTIONS) {
+    const btn = document.createElement('button');
+    btn.className = 'sub-btn' + (item.id === section ? ' active' : '');
+    btn.textContent = item.label;
+    btn.dataset.section = item.id;
+    btn.addEventListener('click', () => switchSection(item.id));
+    subToolbar.appendChild(btn);
+  }
+
+  const groups = GROUPS[section] || [];
+  if (groups.length) {
+    const separator = document.createElement('span');
+    separator.className = 'sub-separator';
+    separator.setAttribute('aria-hidden', 'true');
+    subToolbar.appendChild(separator);
+  }
   for (const g of groups) {
     const btn = document.createElement('button');
     btn.className = 'sub-btn' + (g.id === group ? ' active' : '');
@@ -751,6 +997,13 @@ function updateCount(n, total) {
 }
 
 function render() {
+  if (view === 'documentation') {
+    searchCount.classList.remove('visible');
+    subToolbar.classList.remove('searching');
+    renderDocumentation();
+    return;
+  }
+
   const all = TOKEN_DATA[section] || [];
   const filtered = getFilteredTokens();
   updateCount(filtered.length, all.length);
@@ -768,6 +1021,161 @@ function render() {
     case 'typography': renderTypography(filtered); break;
     case 'effects':    renderEffects(filtered); break;
   }
+}
+
+// ── Documentation ─────────────────────────────────────────────────────────────
+
+function renderDocumentation() {
+  const familyGroups = new Map();
+  for (const family of TOKEN_GUIDANCE.families) {
+    if (!familyGroups.has(family.category)) familyGroups.set(family.category, []);
+    familyGroups.get(family.category).push(family);
+  }
+
+  contentEl.className = 'documentation';
+  contentEl.innerHTML = `
+    <header class="doc-hero" id="docs-overview">
+      <div class="doc-kicker">Selection guidance · ${escHtml(TOKEN_GUIDANCE.schemaVersion)}</div>
+      <h1>Use the tokens as a system</h1>
+      <p>TokoMo describes how its token families work together without assuming a framework or component library. Start with meaning and rendering context, then choose a documented family or recipe. The Browser remains the source for token values; this guide intentionally uses token names only.</p>
+    </header>
+
+    <section class="doc-section" aria-labelledby="docs-principles-title">
+      <div class="doc-section-header">
+        <div class="doc-kicker">Decision model</div>
+        <h2 id="docs-principles-title">Principles</h2>
+      </div>
+      <div class="doc-grid">
+        ${TOKEN_GUIDANCE.principles.map(principle => `
+          <article class="doc-card">
+            <div class="doc-kicker">${escHtml(principle.id.replace('principle:', ''))}</div>
+            <p>${escHtml(principle.summary)}</p>
+          </article>`).join('')}
+      </div>
+    </section>
+
+    <section class="doc-section" id="docs-intents" aria-labelledby="docs-intents-title">
+      <div class="doc-section-header">
+        <div class="doc-kicker">Colors</div>
+        <h2 id="docs-intents-title">Core semantic intents</h2>
+        <p>Choose the intent that describes meaning—not the hue it currently resolves to. Status and consequence generally outrank provenance or experience identity. When one region carries multiple meanings, separate them instead of blending their colors.</p>
+      </div>
+      <div class="doc-grid">
+        ${TOKEN_GUIDANCE.intents.map(renderIntentCard).join('')}
+      </div>
+      <article class="doc-card" style="margin-top:12px">
+        <div class="doc-kicker">Not a semantic intent</div>
+        <h3>Literal color intent</h3>
+        <p><code>--color-color-intent-*</code> is deliberately hue-based and semantically meaningless. Use it only when the color itself is the requested identity; never substitute it for brand, AI, status, guide, walkthrough, or data meaning.</p>
+      </article>
+    </section>
+
+    <section class="doc-section" id="docs-families" aria-labelledby="docs-families-title">
+      <div class="doc-section-header">
+        <div class="doc-kicker">Selection</div>
+        <h2 id="docs-families-title">Token families</h2>
+        <p>Each card explains when a family is a direct choice, a recipe part, or a last-resort foundation input.</p>
+      </div>
+      ${['color', 'typography', 'dimension', 'effect'].map(category => `
+        <div style="margin-top:${category === 'color' ? 0 : 40}px">
+          <div class="doc-kicker">${escHtml(category)}</div>
+          <div class="doc-grid" style="margin-top:12px">
+            ${(familyGroups.get(category) || []).map(renderFamilyCard).join('')}
+          </div>
+        </div>`).join('')}
+    </section>
+
+    <section class="doc-section" id="docs-recipes" aria-labelledby="docs-recipes-title">
+      <div class="doc-section-header">
+        <div class="doc-kicker">Composition</div>
+        <h2 id="docs-recipes-title">Recommended recipes</h2>
+        <p>Recipes define which public tokens belong together. They are framework-neutral and remain useful whether you build your own components or adopt an existing library.</p>
+      </div>
+      ${TOKEN_GUIDANCE.recipes.map(renderRecipe).join('')}
+    </section>`;
+}
+
+function renderIntentCard(intent) {
+  return `
+    <article class="doc-card">
+      <div class="doc-kicker">${escHtml(intent.id.replace('intent:', ''))}</div>
+      <h3>${escHtml(humanizeId(intent.id.replace('intent:', '')))}</h3>
+      <p>${escHtml(intent.summary)}</p>
+      <div class="doc-meta">
+        <span class="doc-pill">${intent.optional ? 'optional' : 'core'}</span>
+      </div>
+      <h4>Use when</h4>${renderStringList(intent.useWhen)}
+      <h4>Avoid when</h4>${renderStringList(intent.avoidWhen)}
+      ${intent.precedence ? `<h4>Precedence</h4>${renderStringList(intent.precedence)}` : ''}
+    </article>`;
+}
+
+function renderFamilyCard(family) {
+  return `
+    <article class="doc-card">
+      <div class="doc-kicker">${escHtml(family.id.replace('token-family:', ''))}</div>
+      <h3>${escHtml(humanizeId(family.id.replace('token-family:', '')))}</h3>
+      <p>${escHtml(family.summary)}</p>
+      <div class="doc-meta">
+        <span class="doc-pill">${escHtml(family.selectionRole)}</span>
+        <span class="doc-pill">${escHtml(family.audience)}</span>
+      </div>
+      <div class="doc-token-list">${family.tokenPatterns.map(pattern => `<code>${escHtml(pattern)}</code>`).join('')}</div>
+      <h4>Use when</h4>${renderStringList(family.useWhen)}
+      <h4>Avoid when</h4>${renderStringList(family.avoidWhen)}
+      <h4>Constraints</h4>${renderStringList(family.constraints)}
+      ${family.accessibility ? `<h4>Accessibility</h4>${renderStringList(family.accessibility)}` : ''}
+      ${renderReferences(family.references)}
+    </article>`;
+}
+
+function renderRecipe(recipe) {
+  return `
+    <article class="doc-recipe">
+      <div class="doc-kicker">${escHtml(recipe.id.replace('token-recipe:', ''))}</div>
+      <h3>${escHtml(humanizeId(recipe.id.replace('token-recipe:', '')))}</h3>
+      <p>${escHtml(recipe.summary)}</p>
+      <div class="doc-columns">
+        <div><h4>Use when</h4>${renderStringList(recipe.useWhen)}</div>
+        <div><h4>Avoid when</h4>${renderStringList(recipe.avoidWhen)}</div>
+      </div>
+      <h4>Composition rules</h4>${renderStringList(recipe.compositionRules)}
+      ${recipe.stateOwnership ? `<h4>State ownership</h4>${renderStringList(recipe.stateOwnership)}` : ''}
+      <h4>Variants</h4>
+      <div class="doc-variants">
+        ${recipe.variants.map(variant => `
+          <div class="doc-variant">
+            <div class="doc-variant-title">${escHtml(variant.label)}<span>${escHtml(variant.modifier || variant.id)}</span></div>
+            ${variant.when ? `<p style="margin-top:6px;color:var(--fg-muted);font-size:10px;line-height:15px">${escHtml(variant.when)}</p>` : ''}
+            ${variant.assignments.map(assignment => `
+              <div class="doc-assignment">
+                <span>${escHtml(assignment.property)}</span>
+                <code>${escHtml(assignment.token || assignment.tokenPattern || assignment.value)}</code>
+              </div>`).join('')}
+            ${variant.notes ? renderStringList(variant.notes) : ''}
+          </div>`).join('')}
+      </div>
+      ${recipe.accessibility ? `<h4>Accessibility</h4>${renderStringList(recipe.accessibility)}` : ''}
+      ${recipe.examples?.length ? `<h4>Framework-neutral example</h4>${recipe.examples.map(example => `<pre class="doc-code"><code>${escHtml(example.content)}</code></pre>`).join('')}` : ''}
+      ${renderReferences(recipe.references)}
+    </article>`;
+}
+
+function renderStringList(items) {
+  return `<ul class="doc-list">${items.map(item => `<li>${escHtml(item)}</li>`).join('')}</ul>`;
+}
+
+function renderReferences(references) {
+  if (!references?.length) return '';
+  return `<h4>References</h4><ul class="doc-list">${references.map(reference => {
+    const href = reference.path.startsWith('docs/') ? `./${reference.path.slice('docs/'.length)}` : reference.path;
+    const external = href.startsWith('http') ? ' target="_blank" rel="noreferrer"' : '';
+    return `<li><a class="doc-reference" href="${escHtml(href)}"${external}>${escHtml(reference.label)}</a></li>`;
+  }).join('')}</ul>`;
+}
+
+function humanizeId(id) {
+  return id.split(/[.-]/).map(word => word === 'ai' ? 'AI' : word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
 // ── Colors ────────────────────────────────────────────────────────────────────
@@ -1019,17 +1427,14 @@ function makeGroupNote(html) {
 
 function makeTextstyleNote() {
   return makeGroupNote(
-    'Reference spec — these are <strong>not</strong> CSS classes in this package. '
-    + 'Composite text styles are implemented by <code>ds-text</code> in <code>@ds-mo/ui</code>, '
-    + 'where <code>emphasis</code> is a boolean modifier on every size variant. '
-    + 'Copy a row to get the <code>ds-text</code> usage.'
+    'Recommended framework-neutral composites — these are <strong>not</strong> CSS classes. '
+    + 'Every style has a regular and emphasis recipe; emphasis changes weight and tracking while size and line-height stay fixed. '
+    + 'Copy a row to get its token-driven CSS declarations.'
   );
 }
 
-// Text styles are documented here but implemented by `ds-text` in @ds-mo/ui —
-// there are no `.text-*` classes in this stylesheet to apply. The preview is
-// composed inline from the same primitive tokens the component uses, so it stays
-// token-driven and theme-accurate without shipping a competing implementation.
+// TokoMo ships primitives rather than `.text-*` classes. The preview is composed
+// from the validated framework-neutral recipe in @ds-mo/tokens/agent.
 function makeTextstyleRow(t) {
   const row = document.createElement('div');
   row.className = 'textstyle-row';
@@ -1038,7 +1443,7 @@ function makeTextstyleRow(t) {
   row.setAttribute('aria-label', `${t.snippet} — click to copy`);
 
   const style = [
-    `font-family:var(--typography-font-family)`,
+    `font-family:var(${t.family})`,
     `font-size:var(--typography-fontsize-${t.size})`,
     `line-height:var(--typography-lineheight-${t.line})`,
     `font-weight:var(--typography-weight-${t.weight})`,
@@ -1049,7 +1454,7 @@ function makeTextstyleRow(t) {
   row.innerHTML = `
     <div class="textstyle-sample" style="${escHtml(style)}">${escHtml(textstyleSample(t.name))}</div>
     <div class="textstyle-meta">
-      <span class="textstyle-variant">${escHtml(t.name)}${t.emphasis ? ' <em>emphasis</em>' : ''}</span>
+      <span class="textstyle-variant">${escHtml(t.name)} <em>${t.emphasis ? 'emphasis' : 'regular'}</em></span>
       <span class="textstyle-spec">${escHtml(`${t.size} / ${t.line} · ${t.weight} · ${t.tracking}`)}</span>
     </div>`;
   addCopyHandler(row, t.snippet, t.label);
@@ -1142,6 +1547,13 @@ function fxGroupNote(g, maxTime) {
       + 'deviation from it is the easing character.'
     );
   }
+  if (g === 'elevation') {
+    return makeGroupNote(
+      'Each suffix exposes a public outer <code>shadow</code> part, inset <code>highlight</code> part, '
+      + 'and combined <code>elevation</code> value. Default to the combined token; keep the same suffix '
+      + 'when separate layers need different clipping or paint behavior.'
+    );
+  }
   return null;
 }
 
@@ -1223,7 +1635,12 @@ function fxDisplayValue(t) {
   if (t.group === 'easing') return t.value || '';
   if (t.group === 'blur') return t.value || '';
   if (t.group === 'motion') return t.value || '';
-  if (t.group === 'elevation') return t.subgroup === 'atom' ? (t.value || '') : '(multi-layer)';
+  if (t.group === 'elevation') {
+    if (t.subgroup === 'atom') return t.value || '';
+    if (t.subgroup === 'shadow') return '(outer shadow part)';
+    if (t.subgroup === 'highlight') return '(inset highlight part)';
+    return '(combined layers)';
+  }
   if (t.group === 'transition') {
     // Shorten verbose transition values
     const short = t.label.replace('transition-interaction-', '').replace('--effect-', '');
@@ -1286,11 +1703,12 @@ function escHtml(str) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
-// Apply saved section button state
-document.querySelectorAll('#section-toggle .toggle-btn').forEach(btn => {
-  btn.classList.toggle('active', btn.dataset.section === section);
+// Apply saved primary view state
+primaryNav.querySelectorAll('[data-view]').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.view === view);
 });
 
+searchWrap.classList.toggle('hidden', view !== 'browser');
 updateSubToolbar();
 updateSearchPlaceholder();
 syncSearchWidth();

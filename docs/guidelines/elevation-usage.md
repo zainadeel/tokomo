@@ -4,9 +4,38 @@
 
 This document explains how elevation styles should be used in product UI.
 
-**CSS variables** use the prefix `--effect-elevation-{name}` (see `src/effects.css`). TokoMo also exposes split `--effect-shadow-*` and `--effect-highlight-*` tokens when you need overflow-safe clipping.
+Each elevation suffix exposes three public CSS variables (see `src/effects.css`):
 
-## 2. Quick Decision Rule
+1. `--effect-shadow-{suffix}` for the outer depth layer,
+2. `--effect-highlight-{suffix}` for the inset edge-light layer,
+3. `--effect-elevation-{suffix}` for both layers in one `box-shadow` value.
+
+## 2. Composition And Clipping
+
+Default to the combined `--effect-elevation-*` token. It is the complete one-element recipe and keeps its shadow and highlight aligned automatically.
+
+The split tokens are public recipe parts for layouts that must paint the outer and inset layers on different elements. Keep all parts on the same suffix:
+
+| Suffix | Outer layer | Inset layer | Combined default |
+| --- | --- | --- | --- |
+| `{suffix}` | `--effect-shadow-{suffix}` | `--effect-highlight-{suffix}` | `--effect-elevation-{suffix}` |
+
+A common split is an unclipped frame that paints the outer shadow around an inner region that clips its contents:
+
+```css
+.surface-frame {
+  box-shadow: var(--effect-shadow-elevated-sm);
+}
+
+.surface-content {
+  overflow: hidden;
+  box-shadow: var(--effect-highlight-elevated-sm);
+}
+```
+
+This split is needed when an ancestor or inner clipping boundary would cut a descendant's outer shadow, while the content still needs clipping and an inset highlight. An element's own `overflow: hidden` does not automatically mean its own box shadow must be split; the deciding factor is the actual paint and ancestor-clipping hierarchy. Use the combined token unless the rendered layout demonstrates a need for separate layers.
+
+## 3. Quick Decision Rule
 
 Use this rule first:
 
@@ -18,7 +47,7 @@ Use this rule first:
 
 In practice, panel elevations are for surfaces that touch at least three sides of the container they live in, or otherwise read as edge-attached.
 
-## 3. Panel Elevations
+## 4. Panel Elevations
 
 Panel elevations are for surfaces that are attached to the boundary of the area they sit inside.
 
@@ -42,7 +71,7 @@ Use the panel direction that matches the aligned edge of the surface:
 
 Do not use panel elevations on floating cards or standalone containers.
 
-## 4. Non-Panel Elevations
+## 5. Non-Panel Elevations
 
 `elevated-sm`, `elevated-md`, and `elevated-floating` are for surfaces that do not touch surrounding boundaries on all four sides.
 
@@ -56,7 +85,7 @@ Typical use cases: cards, free-standing containers, inset UI with clearance on a
 
 Do not use `elevated-floating` just because an element needs more lift than `elevated-md`.
 
-## 5. Depressed Elevation
+## 6. Depressed Elevation
 
 `depressed-sm` and `depressed-md` are for elements that should appear embedded within a surrounding surface.
 
@@ -67,11 +96,11 @@ Do not use `elevated-floating` just because an element needs more lift than `ele
 
 Typical use cases: text inputs, embedded fields, inset control regions.
 
-## 6. None
+## 7. None
 
 `elevated-none` (`--effect-elevation-elevated-none`) is for cases where elevation is part of the component model but the visual result should be flat.
 
-## 7. Anti-Patterns
+## 8. Anti-Patterns
 
 Avoid these patterns:
 
@@ -80,12 +109,16 @@ Avoid these patterns:
 3. choosing a panel direction that does not match the aligned edge,
 4. using `depressed-*` for elements meant to read as raised,
 5. using `elevated-floating` on a normal card that is not meant to hover above other content,
-6. leaving elevation unspecified when the component API expects a named elevation style.
+6. mixing a shadow from one suffix with a highlight from another,
+7. splitting the two layers without an actual paint or clipping reason,
+8. leaving elevation unspecified when the surrounding system expects a named elevation style.
 
-## 8. Practical Summary
+## 9. Practical Summary
 
 If the surface is attached to the boundary of its container, use a panel elevation (`elevated-panel-*`).
 
 If the surface has clearance on all four sides, use `elevated-sm` or `elevated-md` for raised surfaces, `elevated-floating` for overlays, and `depressed-sm` / `depressed-md` for inset surfaces.
 
-If the component needs an elevation value but should render flat, use `elevated-none`.
+If a surface needs an elevation value but should render flat, use `elevated-none`.
+
+Use the combined `--effect-elevation-*` token by default. If a clipping hierarchy requires separate paint layers, use the same-suffix `--effect-shadow-*` on the outer layer and `--effect-highlight-*` on the inset layer.

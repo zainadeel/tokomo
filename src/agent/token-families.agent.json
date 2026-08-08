@@ -1,42 +1,1536 @@
 {
-  "schemaVersion": "1.0.0",
+  "$schema": "../../agent/schemas/token-agent.schema.json",
+  "schemaVersion": "2.0.0",
   "kind": "tokens",
-  "entries": [
+  "principles": [
     {
-      "id": "token-family:color.background",
-      "status": "stable",
-      "summary": "Semantic fills for page, component, interaction, and contrast surfaces.",
-      "tokenPatterns": ["--color-background-*"],
-      "useWhen": ["Setting the fill of a page, panel, control, selected state, or semantic surface."],
-      "avoidWhen": ["Coloring text, icons, borders, or data marks.", "A reference palette value appears visually similar."],
-      "constraints": ["Pair content with a foreground token intended for the resulting surface contrast.", "Use semantic tokens in product UI; reference colors are foundation inputs only."]
+      "id": "principle:semantic-first",
+      "summary": "Choose semantic tokens by meaning and context before considering a literal hue or reference-palette token."
     },
     {
-      "id": "token-family:dimension.space",
-      "status": "stable",
-      "summary": "Spacing scale for gaps, padding, margins, and layout separation.",
-      "tokenPatterns": ["--dimension-space-*"],
-      "useWhen": ["Separating or padding layout elements on the design-system spacing grid."],
-      "avoidWhen": ["Sizing controls, icons, strokes, or semantic component dimensions."],
-      "constraints": ["Prefer the smallest scale step that preserves the intended hierarchy.", "Use component-specific dimension tokens when one exists."]
+      "id": "principle:compose-families",
+      "summary": "Treat backgrounds, foregrounds, borders, interactions, typography primitives, and elevation layers as related recipes rather than isolated visual values."
     },
     {
-      "id": "token-family:typography.text",
+      "id": "principle:context-before-value",
+      "summary": "Choose a token from the surface or product context where it will render; never choose by its current light-theme value."
+    },
+    {
+      "id": "principle:theme-automatic",
+      "summary": "Use the same semantic token names in light and dark modes. Their mode-aware values are the theming contract."
+    },
+    {
+      "id": "principle:meaning-needs-more-than-color",
+      "summary": "When a distinction carries status, severity, selection, or other meaning, provide a non-color cue as well."
+    }
+  ],
+  "intents": [
+    {
+      "id": "intent:neutral",
       "status": "stable",
-      "summary": "Font, size, weight, line-height, and text recipe tokens.",
+      "optional": false,
+      "summary": "Information or state with no positive, negative, risk, product-identity, or experience-specific meaning.",
+      "useWhen": [
+        "Showing general information, an unavailable state, or a not-applicable state whose semantic meaning is neutral."
+      ],
+      "avoidWhen": [
+        "The state has a clearer success, risk, failure, brand, guide, AI, or reserved product meaning.",
+        "Styling ordinary disabled or de-emphasized content; use the ordinary foreground hierarchy and disabled behavior instead."
+      ]
+    },
+    {
+      "id": "intent:brand",
+      "status": "stable",
+      "optional": false,
+      "summary": "Product identity and the default accent for ordinary primary actions, links, selection, and optionally in-progress activity.",
+      "useWhen": [
+        "Expressing product identity, an ordinary primary action, a link, a default selected state, or a product-colored in-progress state."
+      ],
+      "avoidWhen": [
+        "A semantic outcome, risk, failure, or specialized experience is the more important meaning."
+      ],
+      "precedence": [
+        "Status and consequence outrank brand identity when both are present."
+      ]
+    },
+    {
+      "id": "intent:ai",
+      "status": "stable",
+      "optional": true,
+      "summary": "Optional identity for in-product AI-generated, AI-assisted, or AI-entry experiences.",
+      "useWhen": [
+        "A product intentionally gives its AI-generated, AI-assisted, or AI-entry experience a distinct visual identity."
+      ],
+      "avoidWhen": [
+        "Ordinary automation that is not presented as an AI experience.",
+        "A success, caution, warning, or negative outcome is the meaning the user must understand first."
+      ],
+      "precedence": [
+        "Status and consequence outrank AI provenance.",
+        "Provide a non-color cue when identifying AI provenance matters."
+      ]
+    },
+    {
+      "id": "intent:negative",
+      "status": "stable",
+      "optional": false,
+      "summary": "Errors, failures, invalid or broken states, destructive actions, and consequential unavailability.",
+      "useWhen": [
+        "Communicating an error, failure, invalid value, destructive action, expired state, disconnection, or broken condition."
+      ],
+      "avoidWhen": [
+        "The situation only calls for attention, is still pending, or is unavailable without negative consequence."
+      ]
+    },
+    {
+      "id": "intent:warning",
+      "status": "stable",
+      "optional": false,
+      "summary": "A rare, stronger risk distinction used only when caution is not enough to communicate the consequence.",
+      "useWhen": [
+        "A materially higher-risk condition must be distinguished from the system's normal attention state."
+      ],
+      "avoidWhen": [
+        "The state is pending, ongoing, upcoming, merely needs attention, or is an ordinary urgent notice; default to caution.",
+        "An error, failure, or destructive consequence has already occurred; use negative."
+      ],
+      "precedence": [
+        "Default to caution and use warning only when the stronger distinction is genuinely necessary.",
+        "Warning does not imply that action is always required."
+      ]
+    },
+    {
+      "id": "intent:caution",
+      "status": "stable",
+      "optional": false,
+      "summary": "The default attention state for pending, ongoing, upcoming, urgent, or later-action conditions.",
+      "useWhen": [
+        "Something is happening, is pending, is urgent, or may need the user's attention now or later."
+      ],
+      "avoidWhen": [
+        "A rare stronger-risk distinction is essential, or the state is already an error or failure."
+      ],
+      "precedence": [
+        "Choose caution before warning unless the product has a meaningful need for both levels."
+      ]
+    },
+    {
+      "id": "intent:positive",
+      "status": "stable",
+      "optional": false,
+      "summary": "Successful, complete, valid, healthy, improved, or favourable actions and outcomes.",
+      "useWhen": [
+        "Communicating success, completion, validity, health, improvement, or a favourable result."
+      ],
+      "avoidWhen": [
+        "Styling the ordinary action that may lead to success; for example, Save remains brand until it has a positive outcome."
+      ]
+    },
+    {
+      "id": "intent:guide",
+      "status": "stable",
+      "optional": false,
+      "summary": "Help, onboarding, and temporary guidance UI, including instructional tooltips, rings, and multi-step coaching.",
+      "useWhen": [
+        "Guiding a user through a feature, showing contextual help, or presenting an onboarding sequence."
+      ],
+      "avoidWhen": [
+        "The UI is ordinary information, a permanent product accent, or Motive's reserved Walkthrough product experience."
+      ]
+    },
+    {
+      "id": "intent:walkthrough",
+      "status": "stable",
+      "optional": true,
+      "summary": "Reserved optional intent for Motive's Walkthrough product experience.",
+      "useWhen": [
+        "Implementing Motive's explicitly defined Walkthrough product concept or a directly equivalent concept defined by another product."
+      ],
+      "avoidWhen": [
+        "Implementing onboarding, coaching, tooltips, or ordinary guidance; use guide.",
+        "The consumer has not explicitly defined an equivalent product concept."
+      ]
+    }
+  ],
+  "families": [
+    {
+      "id": "token-family:color.semantic-core",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Mode-aware backgrounds, foregrounds, borders, and dividers for ordinary and semantic UI.",
+      "tokenPatterns": [
+        "--color-background-*",
+        "--color-foreground-*",
+        "--color-border-*",
+        "--color-divider-*"
+      ],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Choosing a surface and the content or boundaries that belong on it.",
+        "Communicating one of the documented semantic intents."
+      ],
+      "avoidWhen": [
+        "Drawing data visualizations, choosing a literal hue, or styling a specialized context with its own family."
+      ],
+      "constraints": [
+        "Select the semantic intent before selecting a tone tier.",
+        "Faint surfaces default to ordinary primary or secondary foregrounds; medium, bold, and strong surfaces use their matching on-background foregrounds.",
+        "Default most ordinary text and UI labels to the secondary foreground step; reserve primary for titles, key values, selected labels, and other high-emphasis content.",
+        "Use tertiary only for deliberately de-emphasized content, large text, or meaningful icons; use quaternary only for disabled hints and ornament that does not carry content.",
+        "Use tertiary borders only for decorative non-interactive structure, secondary borders for controls with another identifying affordance, and primary borders when the stroke itself must identify the control.",
+        "Do not infer a token from its current rendered hue."
+      ],
+      "recipes": [
+        "token-recipe:foreground-hierarchy",
+        "token-recipe:neutral-border-hierarchy",
+        "token-recipe:semantic-color-pairing",
+        "token-recipe:interaction-layers"
+      ],
+      "accessibility": [
+        "Primary and secondary foregrounds clear 4.5:1 on their documented backgrounds; tertiary foregrounds clear 3:1 but are not normal-text defaults.",
+        "Primary neutral borders clear 3:1 on their documented surfaces; secondary and tertiary borders are not control-identifying strokes.",
+        "Use documented foreground/background pairings and provide a non-color cue when meaning matters."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-family:color.interaction",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Translucent hover, pressed, selected, and focus colors chosen for the surface beneath them.",
+      "tokenPatterns": ["--color-interaction-*"],
+      "selectionRole": "recipe-part",
+      "useWhen": [
+        "Adding pointer, selection, and focus feedback to an interactive surface."
+      ],
+      "avoidWhen": [
+        "The surface has a specialized interaction family, or the element is disabled.",
+        "Using the selected token as the CSS :active pointer state."
+      ],
+      "constraints": [
+        "Primary and secondary surfaces use the base hover and pressed tokens and active-brand for selection.",
+        "Faint semantic surfaces use base hover and pressed tokens and active for selection.",
+        "Medium, bold, and strong surfaces use the matching on-background family.",
+        "If a background has no matching interaction family, do not assume that background is intended for interactive UI."
+      ],
+      "recipes": ["token-recipe:interaction-layers"],
+      "accessibility": [
+        "Use the matching focus token as the focus-ring color; focus must not rely on a fill change alone."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-family:color.fixed-contexts",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "specialized",
+      "status": "stable",
+      "summary": "Complete foreground, border, divider, and interaction families for fixed or specialized surfaces.",
+      "tokenPatterns": [
+        "--color-always-dark-*",
+        "--color-inverted-*",
+        "--color-media-*",
+        "--color-navigation-*",
+        "--color-translucent-*"
+      ],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Rendering content inside the matching always-dark, inverted, media, navigation, or translucent context."
+      ],
+      "avoidWhen": [
+        "The element is on an ordinary primary, secondary, or semantic-intent surface."
+      ],
+      "constraints": [
+        "Keep foregrounds, borders, dividers, and interaction states within the same context family.",
+        "A context name describes its rendering environment, not a light- or dark-theme override."
+      ],
+      "recipes": [
+        "token-recipe:foreground-hierarchy",
+        "token-recipe:neutral-border-hierarchy",
+        "token-recipe:interaction-layers"
+      ],
+      "accessibility": [
+        "Primary and secondary foregrounds clear 4.5:1 on the matching context background; tertiary foregrounds clear 3:1.",
+        "Primary borders clear 3:1 on the matching context background; secondary and tertiary borders are decorative.",
+        "Do not mix an ordinary foreground with a fixed-context background unless that pairing is explicitly verified."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-family:color.literal-intent",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "specialized",
+      "status": "stable",
+      "summary": "Hue-based color-intent families whose intent is the literal color itself rather than a semantic meaning.",
+      "tokenPatterns": ["--color-color-intent-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "A consumer intentionally needs a stable named hue family while retaining mode-aware tone pairings."
+      ],
+      "avoidWhen": [
+        "Communicating brand, status, risk, success, AI, guide, walkthrough, or data meaning."
+      ],
+      "constraints": [
+        "Treat blue, red, green, and the other names as literal hues with no semantic meaning.",
+        "Selected-state tokens are not yet shipped for these interaction families; do not invent them.",
+        "Use the matching tone-specific interaction family for hover, pressed, and focus."
+      ],
+      "recipes": ["token-recipe:semantic-color-pairing", "token-recipe:interaction-layers"],
+      "accessibility": [
+        "Literal hue never establishes meaning or contrast suitability by itself."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" },
+        { "label": "Selected-state follow-up", "path": "https://github.com/zainadeel/tokomo/issues/117" }
+      ]
+    },
+    {
+      "id": "token-family:color.data",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "specialized",
+      "status": "stable",
+      "summary": "Categorical, sequential, diverging, and domain palettes exclusively for data visualization marks.",
+      "tokenPatterns": ["--color-data-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Encoding categories, order, divergence, status, or domain meaning in charts and data visualizations."
+      ],
+      "avoidWhen": [
+        "Styling ordinary UI surfaces, text, controls, borders, or status chrome."
+      ],
+      "constraints": [
+        "UI semantic colors never substitute for data tokens, and data tokens never substitute for UI semantic colors.",
+        "Data-intent meanings mirror the semantic intents only inside visualization marks.",
+        "The absence of AI, guide, and walkthrough data intents is intentional."
+      ],
+      "accessibility": [
+        "Provide labels, shapes, patterns, or another non-color encoding whenever the data distinction matters."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-family:color.reference",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "foundation",
+      "status": "stable",
+      "summary": "Raw palette values that resolve semantic and data tokens; they are not the first choice for product UI.",
+      "tokenPatterns": ["--color-reference-*"],
+      "selectionRole": "last-resort",
+      "useWhen": [
+        "A reviewed semantic-token gap has been identified and the team has made an explicit design decision to use or add a reference-backed value.",
+        "Authoring or validating the token system itself."
+      ],
+      "avoidWhen": [
+        "A semantic, data, literal-intent, or specialized-context token represents the intended meaning."
+      ],
+      "constraints": [
+        "Agents must not choose reference colors before exhausting semantic families.",
+        "A current hue match is not evidence that a reference token is appropriate."
+      ],
+      "accessibility": [
+        "Reference palette values carry no standalone contrast or semantic guarantee."
+      ],
+      "references": [
+        { "label": "Color generation", "path": "docs/guidelines/color-generation.md" },
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-family:color.elevation",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Theme-aware shadow and highlight colors used by the elevation recipes.",
+      "tokenPatterns": ["--color-elevation-*"],
+      "selectionRole": "recipe-part",
+      "useWhen": [
+        "Composing or inspecting an elevation style."
+      ],
+      "avoidWhen": [
+        "Choosing an ordinary foreground, background, border, or data color."
+      ],
+      "constraints": [
+        "Use these through the documented shadow/highlight/elevation recipes unless implementing the layers separately for a deliberate paint or clipping reason."
+      ],
+      "recipes": ["token-recipe:elevation-composition"],
+      "references": [
+        { "label": "Elevation usage", "path": "docs/guidelines/elevation-usage.md" }
+      ]
+    },
+    {
+      "id": "token-family:color.product-contexts",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "specialized",
+      "status": "stable",
+      "summary": "Domain-specific families for driver status, map entities and locations, safety score, and settings profile contexts.",
+      "tokenPatterns": [
+        "--color-driver-status-*",
+        "--color-entity-cluster-marker-*",
+        "--color-entity-marker-*",
+        "--color-location-marker-*",
+        "--color-safety-score-*",
+        "--color-settings-profile-*"
+      ],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Implementing the exact domain concept named by the family."
+      ],
+      "avoidWhen": [
+        "Implementing a visually similar but semantically different general-purpose concept."
+      ],
+      "constraints": [
+        "Do not generalize product-domain names into reusable UI semantics.",
+        "Use a family's own foreground and interaction tokens when it provides them."
+      ],
+      "recipes": ["token-recipe:interaction-layers"],
+      "accessibility": [
+        "Domain states need a non-color cue when the distinction affects decisions or tasks."
+      ]
+    },
+    {
+      "id": "token-family:color.shimmer",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Theme-aware shimmer colors for ordinary and strong, bold, or medium background contexts.",
+      "tokenPatterns": ["--color-shimmer-*"],
+      "selectionRole": "recipe-part",
+      "useWhen": [
+        "Creating a neutral shimmer or skeleton loading treatment on a documented surface context."
+      ],
+      "avoidWhen": [
+        "Communicating progress status with semantic meaning or styling ordinary surfaces."
+      ],
+      "constraints": [
+        "Use shimmer on ordinary surfaces and the matching shimmer-on-background token on strong, bold, or medium surfaces."
+      ]
+    },
+    {
+      "id": "token-family:dimension.bases",
+      "kind": "token-family",
+      "category": "dimension",
+      "audience": "foundation",
+      "status": "stable",
+      "summary": "Independent scale roots for spacing, radius, size, and stroke width, all resolving to 8px by default.",
+      "tokenPatterns": [
+        "--dimension-base",
+        "--dimension-space-base",
+        "--dimension-radius-base",
+        "--dimension-size-base",
+        "--dimension-stroke-width-base"
+      ],
+      "selectionRole": "recipe-part",
+      "useWhen": [
+        "Configuring a whole scale at the design-system boundary."
+      ],
+      "avoidWhen": [
+        "Choosing a concrete spacing, radius, size, or stroke value in product UI."
+      ],
+      "constraints": [
+        "The four category bases alias dimension-base by default but may be overridden independently.",
+        "Changing dimension-base affects only the category scales that still alias it; fixed layout dimensions, z-index, unitless scale, and radius-half do not scale from it."
+      ]
+    },
+    {
+      "id": "token-family:dimension.space-offset",
+      "kind": "token-family",
+      "category": "dimension",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Positive and negative grid steps for separation, padding, alignment, and deliberate positional offsets.",
+      "tokenPatterns": ["--dimension-space-*", "--dimension-offset-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Creating layout gaps or padding from the spacing scale, or applying a deliberate positional offset from the offset scale."
+      ],
+      "avoidWhen": [
+        "Sizing content, defining a radius, or substituting spacing for a semantic fixed-layout token."
+      ],
+      "constraints": [
+        "Prefer the smallest scale step that preserves the intended hierarchy.",
+        "Use negative values only for deliberate overlap or optical adjustment, not to repair an unclear layout model."
+      ]
+    },
+    {
+      "id": "token-family:dimension.radius-stroke",
+      "kind": "token-family",
+      "category": "dimension",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Corner-radius and stroke-width scales with independent category bases.",
+      "tokenPatterns": ["--dimension-radius-*", "--dimension-stroke-width-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Defining corner shape or border, divider, outline, and ring thickness."
+      ],
+      "avoidWhen": [
+        "Using radius-half as an ordinary large-radius step; it is the fully rounded/pill option."
+      ],
+      "constraints": [
+        "Choose by structural role and hierarchy, not by trying arbitrary nearby values.",
+        "radius-half is a fixed fully rounded value and does not inherit radius-base."
+      ]
+    },
+    {
+      "id": "token-family:dimension.size-iconography",
+      "kind": "token-family",
+      "category": "dimension",
+      "audience": "general",
+      "status": "stable",
+      "summary": "General square sizing steps and named iconography sizes.",
+      "tokenPatterns": ["--dimension-size-*", "--dimension-iconography-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Sizing a generic square region or selecting an icon size from the documented icon hierarchy."
+      ],
+      "avoidWhen": [
+        "A named fixed-layout dimension expresses the intended constraint more clearly."
+      ],
+      "constraints": [
+        "Use iconography tokens for icons and size tokens for general dimensions; matching current values do not make the roles interchangeable."
+      ]
+    },
+    {
+      "id": "token-family:dimension.layout",
+      "kind": "token-family",
+      "category": "dimension",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Named width and height constraints for recurring layout regions.",
+      "tokenPatterns": [
+        "--dimension-card-*",
+        "--dimension-modal-*",
+        "--dimension-form-*",
+        "--dimension-table-column-*",
+        "--dimension-menu-*",
+        "--dimension-tooltip-*",
+        "--dimension-panel-*"
+      ],
+      "selectionRole": "direct",
+      "useWhen": [
+        "The layout region matches the named constraint and benefits from a consistent bounded width or height."
+      ],
+      "avoidWhen": [
+        "The name does not describe the region, or responsive content should determine the size without a fixed constraint."
+      ],
+      "constraints": [
+        "These are fixed semantic dimensions and do not scale from dimension-base.",
+        "Treat fill as a container-filling option rather than a numeric scale step."
+      ]
+    },
+    {
+      "id": "token-family:dimension.layering-transform",
+      "kind": "token-family",
+      "category": "dimension",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Named unitless transform scales and z-index layers.",
+      "tokenPatterns": ["--dimension-scale-*", "--dimension-z-index-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Applying the subtle system transform or placing content in a named stacking layer."
+      ],
+      "avoidWhen": [
+        "Inventing an intermediate z-index or treating the tokens as pixel dimensions."
+      ],
+      "constraints": [
+        "Choose the lowest named layer that satisfies the stacking requirement.",
+        "These unitless values do not scale from dimension-base."
+      ]
+    },
+    {
+      "id": "token-family:typography.primitives",
+      "kind": "token-family",
+      "category": "typography",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Font family, size, line height, weight, letter spacing, and paragraph spacing primitives assembled into documented text recipes.",
       "tokenPatterns": ["--typography-*"],
-      "useWhen": ["Implementing typography through a documented ds-text recipe or component-owned text style."],
-      "avoidWhen": ["Inventing a one-off type scale or using viewport width to scale text."],
-      "constraints": ["Prefer ds-text variants over assembling individual font tokens in application code."]
+      "selectionRole": "recipe-part",
+      "useWhen": [
+        "Implementing a documented text recipe or deliberately creating a new system-level typography recipe."
+      ],
+      "avoidWhen": [
+        "Selecting each primitive independently without considering the intended composite style."
+      ],
+      "constraints": [
+        "Start from a documented text recipe and use its emphasis variant when stronger hierarchy is needed.",
+        "Emphasis changes both weight and letter spacing, and the target weight differs across display, title, body, and caption styles.",
+        "Do not scale text with viewport width."
+      ],
+      "recipes": ["token-recipe:typography-composites"],
+      "accessibility": [
+        "Preserve the recipe's line height and allow user-agent text resizing and reflow."
+      ],
+      "references": [
+        { "label": "Typography usage", "path": "docs/guidelines/typography-usage.md" }
+      ]
     },
     {
-      "id": "token-family:effect.motion",
+      "id": "token-family:effect.opacity",
+      "kind": "token-family",
+      "category": "effect",
+      "audience": "general",
       "status": "stable",
-      "summary": "Combined interaction duration and easing recipes.",
-      "tokenPatterns": ["--effect-motion-*"],
-      "useWhen": ["Defining a CSS transition that needs both a system duration and easing curve."],
-      "avoidWhen": ["JavaScript needs a numeric duration; use an animation-duration token and resolve it at runtime."],
-      "constraints": ["Use short motion for direct interactions and medium motion for larger structural changes.", "Respect the global reduced-motion behavior."]
+      "summary": "Named opacity levels for deliberate translucent treatments.",
+      "tokenPatterns": ["--effect-opacity-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "A treatment intentionally needs one of the system's low, medium, or high opacity levels."
+      ],
+      "avoidWhen": [
+        "De-emphasizing text that should use the foreground hierarchy, disabling interaction, or choosing an interaction overlay."
+      ],
+      "constraints": [
+        "Opacity affects the entire rendered element, including its descendants; choose a semantic color token when only color should change."
+      ],
+      "accessibility": [
+        "Verify that essential content remains perceivable after opacity is applied."
+      ]
+    },
+    {
+      "id": "token-family:effect.blur",
+      "kind": "token-family",
+      "category": "effect",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Blur radii for deliberate visual treatments.",
+      "tokenPatterns": ["--effect-blur-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "A blur treatment is part of the intended visual hierarchy."
+      ],
+      "avoidWhen": [
+        "Trying to create elevation, disabled appearance, or legibility by blurring content."
+      ],
+      "constraints": [
+        "Use the lowest blur step that achieves the treatment."
+      ]
+    },
+    {
+      "id": "token-family:effect.animation",
+      "kind": "token-family",
+      "category": "effect",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Atomic duration, delay, and easing values for animation timelines.",
+      "tokenPatterns": ["--effect-animation-*"],
+      "selectionRole": "recipe-part",
+      "useWhen": [
+        "Building an animation whose duration, delay, or easing must be controlled separately."
+      ],
+      "avoidWhen": [
+        "A shipped motion or transition shorthand already represents the interaction."
+      ],
+      "constraints": [
+        "Use short timing for direct feedback, medium timing for larger structural change, and long timing only for deliberately extended motion."
+      ],
+      "accessibility": [
+        "Respect reduced-motion preferences and avoid motion that is required to understand state."
+      ]
+    },
+    {
+      "id": "token-family:effect.motion-transition",
+      "kind": "token-family",
+      "category": "effect",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Combined duration/easing motion values and property-specific interaction transition shorthands.",
+      "tokenPatterns": ["--effect-motion-*", "--effect-transition-interaction-*"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Applying a standard motion curve or a complete transition for background, color, opacity, border color, or transform."
+      ],
+      "avoidWhen": [
+        "The animation needs independent timeline control or affects an unsupported property."
+      ],
+      "constraints": [
+        "Choose the transition family that matches the CSS property being changed.",
+        "Instant is a deliberate no-duration choice, not a fallback for missing guidance."
+      ],
+      "accessibility": [
+        "Respect reduced-motion preferences; use the instant option where motion should be removed."
+      ]
+    },
+    {
+      "id": "token-family:effect.elevation",
+      "kind": "token-family",
+      "category": "effect",
+      "audience": "general",
+      "status": "stable",
+      "summary": "Public shadow, highlight, and combined elevation styles that describe one elevation system.",
+      "tokenPatterns": ["--effect-shadow-*", "--effect-highlight-*", "--effect-elevation-*"],
+      "selectionRole": "recipe-part",
+      "useWhen": [
+        "Expressing elevated, depressed, floating, or edge-attached depth."
+      ],
+      "avoidWhen": [
+        "Using a shadow as decoration without a depth relationship."
+      ],
+      "constraints": [
+        "Choose the semantic elevation level first, then use its combined token or its same-suffix shadow and highlight parts together.",
+        "The parts remain public because a layout may need to paint or clip outer shadow and inset highlight separately."
+      ],
+      "recipes": ["token-recipe:elevation-composition"],
+      "references": [
+        { "label": "Elevation usage", "path": "docs/guidelines/elevation-usage.md" }
+      ]
+    },
+    {
+      "id": "token-family:effect.focus-ring",
+      "kind": "token-family",
+      "category": "effect",
+      "audience": "general",
+      "status": "stable",
+      "summary": "A complete default brand focus-ring box-shadow for ordinary surfaces.",
+      "tokenPatterns": ["--effect-focus-ring"],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Rendering the default brand focus indicator on an ordinary surface."
+      ],
+      "avoidWhen": [
+        "Using focus styling as hover, selection, or an error boundary.",
+        "A colored or specialized surface needs its own interaction focus color."
+      ],
+      "constraints": [
+        "This token includes both geometry and its default brand color.",
+        "For a context-specific ring, reproduce the standard gap and width with --dimension-space-025 and --dimension-stroke-width-025, then use the interaction focus color for that surface."
+      ],
+      "recipes": ["token-recipe:interaction-layers"],
+      "accessibility": [
+        "The focus indicator must remain visible and distinguishable in forced-colors modes."
+      ]
+    }
+  ],
+  "recipes": [
+    {
+      "id": "token-recipe:foreground-hierarchy",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Choose a foreground step by content emphasis, then keep it paired with the surface family it was designed for.",
+      "useWhen": [
+        "Choosing text, icon, or other content color within an ordinary, semantic, or fixed rendering context."
+      ],
+      "avoidWhen": [
+        "Choosing a chart mark, decorative wash, background, border, divider, or interaction overlay."
+      ],
+      "tokenRoles": [
+        {
+          "id": "primary",
+          "summary": "High-emphasis foreground content.",
+          "tokenPatterns": [
+            "--color-foreground-primary",
+            "--color-foreground-on-*-background-primary",
+            "--color-*-foreground-primary"
+          ],
+          "required": false
+        },
+        {
+          "id": "secondary",
+          "summary": "Default foreground for most ordinary readable content.",
+          "tokenPatterns": [
+            "--color-foreground-secondary",
+            "--color-foreground-on-*-background-secondary",
+            "--color-*-foreground-secondary"
+          ],
+          "required": false
+        },
+        {
+          "id": "tertiary",
+          "summary": "Deliberately de-emphasized foreground content.",
+          "tokenPatterns": [
+            "--color-foreground-tertiary",
+            "--color-foreground-on-*-background-tertiary",
+            "--color-*-foreground-tertiary"
+          ],
+          "required": false
+        },
+        {
+          "id": "surface",
+          "summary": "The documented background paired with the chosen foreground family.",
+          "tokenPatterns": ["--color-background-*", "--color-*-background"],
+          "required": true
+        }
+      ],
+      "compositionRules": [
+        "Default most body copy, descriptions, routine labels, and ordinary UI text to the secondary step.",
+        "Reserve primary for titles, key values, selected labels, and other text or icons whose high emphasis is important to the hierarchy.",
+        "Use tertiary only for deliberately de-emphasized or inactive content; it can carry large text and meaningful icons but is not a normal-size body-text color.",
+        "Use quaternary only for disabled hints, washes, and ornament; it must never carry readable text or a meaningful icon.",
+        "On medium, bold, or strong semantic surfaces, use the corresponding on-background hierarchy rather than an ordinary foreground.",
+        "Inside a fixed context, keep the foreground and background in that same context family."
+      ],
+      "variants": [
+        {
+          "id": "foreground-standard-primary",
+          "label": "Standard primary foreground",
+          "modifier": "high emphasis",
+          "when": "A title, key value, selected label, or other important content sits on the primary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "primary", "property": "color", "token": "--color-foreground-primary" }
+          ],
+          "notes": ["The documented pairing clears 4.5:1 in light and dark themes."]
+        },
+        {
+          "id": "foreground-standard-secondary",
+          "label": "Standard secondary foreground",
+          "modifier": "default content",
+          "when": "Most body copy, descriptions, routine labels, and ordinary UI text sit on the primary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "secondary", "property": "color", "token": "--color-foreground-secondary" }
+          ],
+          "notes": ["The documented pairing clears 4.5:1 in light and dark themes."]
+        },
+        {
+          "id": "foreground-standard-tertiary",
+          "label": "Standard tertiary foreground",
+          "modifier": "de-emphasized",
+          "when": "Inactive or intentionally de-emphasized large text or meaningful icons sit on the primary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "tertiary", "property": "color", "token": "--color-foreground-tertiary" }
+          ],
+          "notes": ["The documented pairing clears 3:1, not 4.5:1; do not use it for normal-size body text."]
+        },
+        {
+          "id": "foreground-on-background-primary",
+          "label": "On-background primary foreground",
+          "modifier": "high emphasis",
+          "when": "High-emphasis content sits on its matching medium, bold, or strong semantic surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
+            { "role": "primary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-primary" }
+          ],
+          "notes": ["Keep the tone name in both assignments aligned; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-on-background-secondary",
+          "label": "On-background secondary foreground",
+          "modifier": "default content",
+          "when": "Ordinary readable content sits on its matching medium, bold, or strong semantic surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
+            { "role": "secondary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-secondary" }
+          ],
+          "notes": ["Keep the tone name in both assignments aligned; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-on-background-tertiary",
+          "label": "On-background tertiary foreground",
+          "modifier": "de-emphasized",
+          "when": "De-emphasized large text or meaningful icons sit on their matching medium, bold, or strong semantic surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
+            { "role": "tertiary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-tertiary" }
+          ],
+          "notes": ["Keep the tone name in both assignments aligned; the documented pairings clear 3:1 but are not normal-text defaults."]
+        },
+        {
+          "id": "foreground-context-primary",
+          "label": "Context primary foreground",
+          "modifier": "high emphasis",
+          "when": "High-emphasis content sits inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "primary", "property": "color", "tokenPattern": "--color-*-foreground-primary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-context-secondary",
+          "label": "Context secondary foreground",
+          "modifier": "default content",
+          "when": "Ordinary readable content sits inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "secondary", "property": "color", "tokenPattern": "--color-*-foreground-secondary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; the documented pairings clear 4.5:1."]
+        },
+        {
+          "id": "foreground-context-tertiary",
+          "label": "Context tertiary foreground",
+          "modifier": "de-emphasized",
+          "when": "De-emphasized large text or meaningful icons sit inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "tertiary", "property": "color", "tokenPattern": "--color-*-foreground-tertiary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; the documented pairings clear 3:1 but are not normal-text defaults."]
+        }
+      ],
+      "accessibility": [
+        "Every documented primary and secondary foreground pairing clears WCAG 2.x AA 4.5:1 in both themes.",
+        "Every documented tertiary foreground pairing clears 3:1 in both themes, which supports large text and meaningful icons but not normal-size text.",
+        "A foreground guarantee applies only on the documented ordinary, matching on-background, or same-context surface."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-recipe:neutral-border-hierarchy",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Choose a neutral border step by whether the stroke is decorative, supports another affordance, or must identify an interactive control.",
+      "useWhen": [
+        "Choosing neutral container, field, or control boundaries on ordinary or fixed-context surfaces."
+      ],
+      "avoidWhen": [
+        "Communicating a semantic status, drawing an internal divider, or choosing a border for a colored surface with its own matching border family."
+      ],
+      "tokenRoles": [
+        {
+          "id": "primary",
+          "summary": "Control-identifying neutral stroke.",
+          "tokenPatterns": ["--color-border-primary", "--color-*-border-primary"],
+          "required": false
+        },
+        {
+          "id": "secondary",
+          "summary": "Default interactive boundary when another affordance identifies the control.",
+          "tokenPatterns": ["--color-border-secondary", "--color-*-border-secondary"],
+          "required": false
+        },
+        {
+          "id": "tertiary",
+          "summary": "Decorative non-interactive structural edge.",
+          "tokenPatterns": ["--color-border-tertiary", "--color-*-border-tertiary"],
+          "required": false
+        },
+        {
+          "id": "surface",
+          "summary": "The ordinary or matching fixed-context surface beneath the border.",
+          "tokenPatterns": ["--color-background-*", "--color-*-background"],
+          "required": true
+        }
+      ],
+      "compositionRules": [
+        "Use tertiary for decorative, non-interactive container edges and structure that remains understandable without the stroke.",
+        "Use secondary as the default resting boundary for an interactive control that also has a label, value, fill, shape, or other identifying affordance.",
+        "Use primary only when the stroke itself must identify the interactive control or state, such as an unchecked checkbox, radio ring, or toggle track.",
+        "Do not use tertiary for interactive controls, and do not rely on secondary when the control has no other identifying affordance.",
+        "A semantic state such as invalid, focused, or disabled needs its documented semantic or interaction treatment and must not rely on the resting neutral border alone."
+      ],
+      "variants": [
+        {
+          "id": "neutral-border-primary",
+          "label": "Primary neutral border",
+          "modifier": "control-identifying",
+          "when": "The stroke itself is required to identify an interactive control on an ordinary surface.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "primary", "property": "border-color", "token": "--color-border-primary" }
+          ],
+          "notes": ["This border clears 3:1 on primary, secondary, and faint ordinary surfaces in both themes."]
+        },
+        {
+          "id": "neutral-border-secondary",
+          "label": "Secondary neutral border",
+          "modifier": "interactive default",
+          "when": "A control is already identifiable through content, fill, shape, or another affordance.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "secondary", "property": "border-color", "token": "--color-border-secondary" }
+          ],
+          "notes": ["This border is intentionally below 3:1 and cannot be the sole visual information identifying the control."]
+        },
+        {
+          "id": "neutral-border-tertiary",
+          "label": "Tertiary neutral border",
+          "modifier": "decorative only",
+          "when": "A non-interactive container edge or structural hint remains understandable without the stroke.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "tertiary", "property": "border-color", "token": "--color-border-tertiary" }
+          ],
+          "notes": ["This border is decorative, intentionally below 3:1, and should not be used for interactive controls."]
+        },
+        {
+          "id": "context-border-primary",
+          "label": "Context primary border",
+          "modifier": "control-identifying",
+          "when": "The stroke itself identifies a control inside an always-dark, inverted, media, navigation, or translucent context.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "primary", "property": "border-color", "tokenPattern": "--color-*-border-primary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; documented primary context borders clear 3:1."]
+        },
+        {
+          "id": "context-border-secondary",
+          "label": "Context secondary border",
+          "modifier": "interactive default",
+          "when": "A control inside a fixed context has another identifying affordance.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "secondary", "property": "border-color", "tokenPattern": "--color-*-border-secondary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; this border cannot be the sole control identifier."]
+        },
+        {
+          "id": "context-border-tertiary",
+          "label": "Context tertiary border",
+          "modifier": "decorative only",
+          "when": "A non-interactive edge inside a fixed context remains understandable without the stroke.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
+            { "role": "tertiary", "property": "border-color", "tokenPattern": "--color-*-border-tertiary" }
+          ],
+          "notes": ["Keep both assignments in the same context family; do not use this border for interactive controls."]
+        }
+      ],
+      "accessibility": [
+        "Every documented primary neutral border pairing clears WCAG 1.4.11 non-text contrast at 3:1 in both themes.",
+        "Secondary and tertiary neutral borders are intentionally below 3:1 and may be used only when the border does not carry the information required to identify a control or state."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-recipe:semantic-color-pairing",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Choose a semantic intent, then combine its tone with the foreground and border intended for that surface.",
+      "useWhen": [
+        "Building a mode-aware semantic surface or a literal color-intent surface."
+      ],
+      "avoidWhen": [
+        "Styling chart marks or a fixed context with its own complete token family."
+      ],
+      "tokenRoles": [
+        {
+          "id": "surface",
+          "summary": "The background tone carrying an intent.",
+          "tokenPatterns": ["--color-background-*", "--color-color-intent-*-background"],
+          "required": true
+        },
+        {
+          "id": "content",
+          "summary": "The readable foreground hierarchy for the selected surface.",
+          "tokenPatterns": ["--color-foreground-*", "--color-color-intent-*-foreground"],
+          "required": true
+        },
+        {
+          "id": "boundary",
+          "summary": "An optional matching border or divider.",
+          "tokenPatterns": ["--color-border-*", "--color-divider-*", "--color-color-intent-*-border"],
+          "required": false
+        }
+      ],
+      "compositionRules": [
+        "Pick intent from meaning, never from hue.",
+        "On a faint semantic surface, default ordinary content to foreground-secondary rather than a chromatic intent foreground; use foreground-primary only when high emphasis is warranted.",
+        "On medium, bold, or strong surfaces, use the corresponding on-background foreground hierarchy.",
+        "For optional chromatic tinting, pair faint with bold and medium with strong in either direction.",
+        "Apply the same default foreground rules to literal color-intent backgrounds; when tinting them, keep background and foreground on the same hue.",
+        "Use the same semantic names in light and dark modes."
+      ],
+      "variants": [
+        {
+          "id": "faint",
+          "label": "Faint semantic surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-faint-*" },
+            { "role": "content", "property": "color", "token": "--color-foreground-secondary" },
+            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-faint-*" }
+          ],
+          "notes": ["Use foreground-primary only for titles, key values, selected labels, and other high-emphasis content."]
+        },
+        {
+          "id": "medium",
+          "label": "Medium semantic surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-medium-*" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-secondary" },
+            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-medium-*" }
+          ]
+        },
+        {
+          "id": "bold",
+          "label": "Bold semantic surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-bold-*" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-secondary" },
+            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-bold-*" }
+          ]
+        },
+        {
+          "id": "strong",
+          "label": "Strong semantic surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-strong-*" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-secondary" },
+            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-strong-*" }
+          ]
+        },
+        {
+          "id": "tinted-faint-bold",
+          "label": "Optional faint/bold tint pair",
+          "when": "A consumer explicitly wants chromatic content instead of the default ordinary foreground on a faint surface.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-faint-*" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-foreground-bold-*" }
+          ]
+        },
+        {
+          "id": "tinted-medium-strong",
+          "label": "Optional medium/strong tint pair",
+          "when": "A consumer explicitly wants a same-intent tinted pairing.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-medium-*" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-foreground-strong-*" }
+          ]
+        },
+        {
+          "id": "tinted-bold-faint",
+          "label": "Optional bold/faint tint pair",
+          "when": "A consumer explicitly wants the reciprocal chromatic pairing on a bold surface.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-bold-*" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-foreground-faint-*" }
+          ]
+        },
+        {
+          "id": "tinted-strong-medium",
+          "label": "Optional strong/medium tint pair",
+          "when": "A consumer explicitly wants the reciprocal chromatic pairing on a strong surface.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-background-strong-*" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-foreground-medium-*" }
+          ]
+        },
+        {
+          "id": "literal-faint",
+          "label": "Literal faint surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-faint-background" },
+            { "role": "content", "property": "color", "token": "--color-foreground-secondary" }
+          ],
+          "notes": ["Use foreground-primary only for titles, key values, selected labels, and other high-emphasis content."]
+        },
+        {
+          "id": "literal-medium",
+          "label": "Literal medium surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-medium-background" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-secondary" }
+          ]
+        },
+        {
+          "id": "literal-bold",
+          "label": "Literal bold surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-bold-background" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-secondary" }
+          ]
+        },
+        {
+          "id": "literal-strong",
+          "label": "Literal strong surface",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-strong-background" },
+            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-secondary" }
+          ]
+        },
+        {
+          "id": "literal-tinted-faint-bold",
+          "label": "Optional literal faint/bold tint pair",
+          "when": "Chromatic tinting is explicitly requested.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-faint-background" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-bold-foreground" }
+          ],
+          "notes": ["Keep both patterns on the same literal hue."]
+        },
+        {
+          "id": "literal-tinted-medium-strong",
+          "label": "Optional literal medium/strong tint pair",
+          "when": "Chromatic tinting is explicitly requested.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-medium-background" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-strong-foreground" }
+          ],
+          "notes": ["Keep both patterns on the same literal hue."]
+        },
+        {
+          "id": "literal-tinted-bold-faint",
+          "label": "Optional literal bold/faint tint pair",
+          "when": "Chromatic tinting is explicitly requested.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-bold-background" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-faint-foreground" }
+          ],
+          "notes": ["Keep both patterns on the same literal hue."]
+        },
+        {
+          "id": "literal-tinted-strong-medium",
+          "label": "Optional literal strong/medium tint pair",
+          "when": "Chromatic tinting is explicitly requested.",
+          "assignments": [
+            { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-strong-background" },
+            { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-medium-foreground" }
+          ],
+          "notes": ["Keep both patterns on the same literal hue."]
+        }
+      ],
+      "accessibility": [
+        "Treat these as selection rules, not a substitute for testing the actual rendered context.",
+        "Provide a non-color cue for semantic meaning."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-recipe:interaction-layers",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Layer selected, hover, pressed, and focus feedback over the existing surface without replacing its base color.",
+      "useWhen": [
+        "Adding state feedback to any interactive surface that has a documented interaction family."
+      ],
+      "avoidWhen": [
+        "The element is disabled, or the background has no matching interaction family."
+      ],
+      "tokenRoles": [
+        {
+          "id": "selected",
+          "summary": "Persistent selected-state wash; active in token names means selected, not pointer-active.",
+          "tokenPatterns": ["--color-interaction-*-active", "--color-*-interaction-active", "--color-interaction-active", "--color-interaction-active-brand"],
+          "required": false
+        },
+        {
+          "id": "hover",
+          "summary": "Transient pointer-hover wash.",
+          "tokenPatterns": ["--color-interaction-*-hover", "--color-*-interaction-hover", "--color-interaction-hover"],
+          "required": true
+        },
+        {
+          "id": "pressed",
+          "summary": "Transient pointer-pressed wash.",
+          "tokenPatterns": ["--color-interaction-*-pressed", "--color-*-interaction-pressed", "--color-interaction-pressed"],
+          "required": true
+        },
+        {
+          "id": "focus",
+          "summary": "Color for the visible focus ring on this surface.",
+          "tokenPatterns": ["--color-interaction-*-focus", "--color-*-interaction-focus", "--color-interaction-focus"],
+          "required": true
+        },
+        {
+          "id": "focus-gap",
+          "summary": "Standard clear gap between the target and a context-specific ring.",
+          "tokenPatterns": ["--dimension-space-025"],
+          "required": true
+        },
+        {
+          "id": "focus-width",
+          "summary": "Standard context-specific ring thickness.",
+          "tokenPatterns": ["--dimension-stroke-width-025"],
+          "required": true
+        },
+        {
+          "id": "default-focus-ring",
+          "summary": "Complete default brand ring for ordinary surfaces.",
+          "tokenPatterns": ["--effect-focus-ring"],
+          "required": false
+        }
+      ],
+      "compositionRules": [
+        "Keep the element's original background as the bottom layer.",
+        "Paint selected state above the background and below the inner content.",
+        "Paint hover and pressed washes as a top sheet above both the fill and inner content; a positioned ::after pseudo-element is the required reference technique for this stacking behavior.",
+        "Keep the focus ring visually distinct from the fill layers and use the focus color for the current surface.",
+        "The complete --effect-focus-ring token is the default brand ring. For a context-specific ring, combine the documented gap and width dimensions with the matching focus color instead of trying to recolor that complete token.",
+        "Do not apply hover or pressed layers when disabled.",
+        "On touch input, pressed feedback remains useful but hover should only be enabled for hover-capable fine pointers."
+      ],
+      "variants": [
+        {
+          "id": "primary-secondary",
+          "label": "Primary or secondary surface",
+          "assignments": [
+            { "role": "selected", "property": "selected overlay", "token": "--color-interaction-active-brand" },
+            { "role": "hover", "property": "hover overlay", "token": "--color-interaction-hover" },
+            { "role": "pressed", "property": "pressed overlay", "token": "--color-interaction-pressed" },
+            { "role": "focus", "property": "focus-ring color", "token": "--color-interaction-focus" },
+            { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
+            { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
+          ]
+        },
+        {
+          "id": "faint",
+          "label": "Faint semantic surface",
+          "assignments": [
+            { "role": "selected", "property": "selected overlay", "token": "--color-interaction-active" },
+            { "role": "hover", "property": "hover overlay", "token": "--color-interaction-hover" },
+            { "role": "pressed", "property": "pressed overlay", "token": "--color-interaction-pressed" },
+            { "role": "focus", "property": "focus-ring color", "token": "--color-interaction-focus" },
+            { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
+            { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
+          ]
+        },
+        {
+          "id": "medium",
+          "label": "Medium semantic surface",
+          "assignments": [
+            { "role": "selected", "property": "selected overlay", "token": "--color-interaction-on-medium-background-active" },
+            { "role": "hover", "property": "hover overlay", "token": "--color-interaction-on-medium-background-hover" },
+            { "role": "pressed", "property": "pressed overlay", "token": "--color-interaction-on-medium-background-pressed" },
+            { "role": "focus", "property": "focus-ring color", "token": "--color-interaction-on-medium-background-focus" },
+            { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
+            { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
+          ]
+        },
+        {
+          "id": "bold",
+          "label": "Bold semantic surface",
+          "assignments": [
+            { "role": "selected", "property": "selected overlay", "token": "--color-interaction-on-bold-background-active" },
+            { "role": "hover", "property": "hover overlay", "token": "--color-interaction-on-bold-background-hover" },
+            { "role": "pressed", "property": "pressed overlay", "token": "--color-interaction-on-bold-background-pressed" },
+            { "role": "focus", "property": "focus-ring color", "token": "--color-interaction-on-bold-background-focus" },
+            { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
+            { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
+          ]
+        },
+        {
+          "id": "strong",
+          "label": "Strong semantic surface",
+          "assignments": [
+            { "role": "selected", "property": "selected overlay", "token": "--color-interaction-on-strong-background-active" },
+            { "role": "hover", "property": "hover overlay", "token": "--color-interaction-on-strong-background-hover" },
+            { "role": "pressed", "property": "pressed overlay", "token": "--color-interaction-on-strong-background-pressed" },
+            { "role": "focus", "property": "focus-ring color", "token": "--color-interaction-on-strong-background-focus" },
+            { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
+            { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
+          ]
+        },
+        {
+          "id": "specialized-context",
+          "label": "Specialized context",
+          "when": "The background family publishes its own interaction tokens.",
+          "assignments": [
+            { "role": "selected", "property": "selected overlay", "tokenPattern": "--color-*-interaction-active" },
+            { "role": "hover", "property": "hover overlay", "tokenPattern": "--color-*-interaction-hover" },
+            { "role": "pressed", "property": "pressed overlay", "tokenPattern": "--color-*-interaction-pressed" },
+            { "role": "focus", "property": "focus-ring color", "tokenPattern": "--color-*-interaction-focus" },
+            { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
+            { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
+          ]
+        },
+        {
+          "id": "literal-color-intent",
+          "label": "Literal color-intent surface",
+          "when": "The surface uses a color-color-intent tone.",
+          "assignments": [
+            { "role": "hover", "property": "hover overlay", "tokenPattern": "--color-color-intent-interaction-on-*-background-hover" },
+            { "role": "pressed", "property": "pressed overlay", "tokenPattern": "--color-color-intent-interaction-on-*-background-pressed" },
+            { "role": "focus", "property": "focus-ring color", "tokenPattern": "--color-color-intent-interaction-on-*-background-focus" },
+            { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
+            { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
+          ],
+          "notes": ["No selected-state token is currently shipped for literal color-intent surfaces; do not invent one."]
+        }
+      ],
+      "stateOwnership": [
+        "The consuming implementation determines hover, pointer press, persistent selection, focus visibility, and disabled state.",
+        "The token named active represents persistent selected state; CSS :active maps to the pressed token."
+      ],
+      "accessibility": [
+        "Selection needs a non-color cue in forced-colors mode.",
+        "Focus must remain visible independently of hover and selection."
+      ],
+      "examples": [
+        {
+          "language": "css",
+          "content": ".interactive { position: relative; z-index: 0; }\n.interactive::before, .interactive::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }\n.interactive::before { z-index: 1; }\n.interactive__content { position: relative; z-index: 2; }\n.interactive::after { z-index: 3; }\n.interactive[aria-selected='true']::before { background: var(--color-interaction-active-brand); }\n@media (hover: hover) and (pointer: fine) { .interactive:hover:not(:disabled)::after { background: var(--color-interaction-hover); } }\n.interactive:active:not(:disabled)::after { background: var(--color-interaction-pressed); }"
+        }
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
+      "id": "token-recipe:typography-composites",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Framework-neutral text styles assembled from TokoMo typography primitives, each with a style-specific emphasis option.",
+      "useWhen": [
+        "Choosing a coherent display, title, body, or caption style."
+      ],
+      "avoidWhen": [
+        "Assembling primitives independently without a documented reason."
+      ],
+      "tokenRoles": [
+        { "id": "family", "summary": "Shared font family.", "tokenPatterns": ["--typography-font-family"], "required": true },
+        { "id": "size", "summary": "Font size for the style.", "tokenPatterns": ["--typography-fontsize-*"], "required": true },
+        { "id": "line-height", "summary": "Matching line height.", "tokenPatterns": ["--typography-lineheight-*"], "required": true },
+        { "id": "weight", "summary": "Regular or emphasis weight for the style.", "tokenPatterns": ["--typography-weight-*"], "required": true },
+        { "id": "tracking", "summary": "Regular or emphasis letter spacing for the style.", "tokenPatterns": ["--typography-letterspacing-*"], "required": true },
+        { "id": "transform", "summary": "Optional non-token text transform.", "literal": true, "required": false }
+      ],
+      "compositionRules": [
+        "Use font-family, font-size, line-height, font-weight, and letter-spacing together as one style.",
+        "Use emphasis as the documented weight-and-letter-spacing change, not as a blanket jump to bold.",
+        "Display and title emphasis use heavier target weights than body emphasis; caption remains uppercase in both variants.",
+        "Choose smaller body styles for dense supporting content and larger title/display styles only when the hierarchy warrants them."
+      ],
+      "variants": [
+        { "id": "text-display-medium", "label": "Display Medium", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-3xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-3xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
+        ] },
+        { "id": "text-display-medium-emphasis", "label": "Display Medium", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-3xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-3xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-bold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
+        ] },
+        { "id": "text-display-small", "label": "Display Small", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-2xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-2xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
+        ] },
+        { "id": "text-display-small-emphasis", "label": "Display Small", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-2xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-2xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-bold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
+        ] },
+        { "id": "text-title-large", "label": "Title Large", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
+        ] },
+        { "id": "text-title-large-emphasis", "label": "Title Large", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
+        ] },
+        { "id": "text-title-medium", "label": "Title Medium", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
+        ] },
+        { "id": "text-title-medium-emphasis", "label": "Title Medium", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
+        ] },
+        { "id": "text-title-small", "label": "Title Small", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
+        ] },
+        { "id": "text-title-small-emphasis", "label": "Title Small", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
+        ] },
+        { "id": "text-body-large", "label": "Body Large", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
+        ] },
+        { "id": "text-body-large-emphasis", "label": "Body Large", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
+        ] },
+        { "id": "text-body-medium", "label": "Body Medium", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
+        ] },
+        { "id": "text-body-medium-emphasis", "label": "Body Medium", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
+        ] },
+        { "id": "text-body-small", "label": "Body Small", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-sm" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-sm" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-none" }
+        ] },
+        { "id": "text-body-small-emphasis", "label": "Body Small", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-sm" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-sm" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
+        ] },
+        { "id": "text-caption", "label": "Caption", "modifier": "regular", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xs" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xs" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-positive" }, { "role": "transform", "property": "text-transform", "value": "uppercase" }
+        ] },
+        { "id": "text-caption-emphasis", "label": "Caption", "modifier": "emphasis", "assignments": [
+          { "role": "family", "property": "font-family", "token": "--typography-font-family" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xs" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xs" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-positive" }, { "role": "transform", "property": "text-transform", "value": "uppercase" }
+        ] }
+      ],
+      "accessibility": [
+        "Preserve the line-height pairing and allow text to resize and reflow.",
+        "Do not use size or weight alone as the only cue for essential meaning."
+      ],
+      "examples": [
+        {
+          "language": "css",
+          "content": ".text-body-medium {\n  font-family: var(--typography-font-family);\n  font-size: var(--typography-fontsize-md);\n  line-height: var(--typography-lineheight-md);\n  font-weight: var(--typography-weight-regular);\n  letter-spacing: var(--typography-letterspacing-negative-half);\n}"
+        }
+      ],
+      "references": [
+        { "label": "Typography usage", "path": "docs/guidelines/typography-usage.md" }
+      ]
+    },
+    {
+      "id": "token-recipe:elevation-composition",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Each elevation suffix publishes an outer-shadow part, an inset-highlight part, and a combined box-shadow value.",
+      "useWhen": [
+        "Applying system depth or separating the two paint layers to accommodate clipping and overflow behavior."
+      ],
+      "avoidWhen": [
+        "Using shadow as decoration without a semantic depth relationship."
+      ],
+      "tokenRoles": [
+        { "id": "shadow", "summary": "Outer depth layer.", "tokenPatterns": ["--effect-shadow-*"], "required": true },
+        { "id": "highlight", "summary": "Inset edge highlight layer.", "tokenPatterns": ["--effect-highlight-*"], "required": true },
+        { "id": "combined", "summary": "Shadow and highlight layers in one box-shadow value.", "tokenPatterns": ["--effect-elevation-*"], "required": true },
+        { "id": "shadow-color", "summary": "Theme-aware shadow color.", "tokenPatterns": ["--color-elevation-shadow"], "required": true },
+        { "id": "highlight-color", "summary": "Theme-aware highlight color.", "tokenPatterns": ["--color-elevation-highlight"], "required": true }
+      ],
+      "compositionRules": [
+        "Choose one semantic elevation suffix and keep shadow, highlight, and combined tokens on that same suffix.",
+        "Use the combined token for the normal one-element case.",
+        "When a layout requires different clipping or paint behavior for outer and inset layers, apply the same-suffix shadow and highlight tokens to deliberate separate layers.",
+        "Do not mix a shadow from one elevation level with a highlight from another."
+      ],
+      "variants": [
+        { "id": "elevated-none", "label": "Elevated none", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-none" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-none" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-none" }
+        ] },
+        { "id": "elevated-sm", "label": "Elevated small", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-sm" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-sm" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-sm" }
+        ] },
+        { "id": "elevated-md", "label": "Elevated medium", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-md" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-md" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-md" }
+        ] },
+        { "id": "elevated-floating", "label": "Elevated floating", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-floating" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-floating" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-floating" }
+        ] },
+        { "id": "depressed-sm", "label": "Depressed small", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-depressed-sm" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-depressed-sm" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-depressed-sm" }
+        ] },
+        { "id": "depressed-md", "label": "Depressed medium", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-depressed-md" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-depressed-md" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-depressed-md" }
+        ] },
+        { "id": "elevated-panel-top", "label": "Elevated panel top", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-top" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-top" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-top" }
+        ] },
+        { "id": "elevated-panel-right", "label": "Elevated panel right", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-right" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-right" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-right" }
+        ] },
+        { "id": "elevated-panel-bottom", "label": "Elevated panel bottom", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-bottom" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-bottom" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-bottom" }
+        ] },
+        { "id": "elevated-panel-left", "label": "Elevated panel left", "assignments": [
+          { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-left" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-left" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-left" }
+        ] }
+      ],
+      "examples": [
+        { "language": "css", "content": ".surface { box-shadow: var(--effect-elevation-elevated-sm); }" },
+        { "language": "css", "content": ".outer-depth { box-shadow: var(--effect-shadow-elevated-sm); }\n.inner-edge { box-shadow: var(--effect-highlight-elevated-sm); }" }
+      ],
+      "references": [
+        { "label": "Elevation usage", "path": "docs/guidelines/elevation-usage.md" }
+      ]
     }
   ]
 }

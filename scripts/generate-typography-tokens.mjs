@@ -16,8 +16,8 @@
  *
  * What this deliberately does NOT generate: text style classes.
  * Composite text styles (display/title/body/caption × regular/emphasis) are
- * owned by `@ds-mo/ui` and implemented by the `ds-text` component. TokoMo ships
- * the primitives and documents the recipes; it does not ship a competing set of
+ * defined as framework-neutral recipes in src/agent/token-families.agent.json.
+ * TokoMo ships the primitives and documents the combinations, but does not ship
  * `.text-*` utility classes. See docs/guidelines/typography-usage.md.
  */
 

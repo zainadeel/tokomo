@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.1.0](https://github.com/zainadeel/tokomo/compare/v6.0.2...v6.1.0) (2026-08-08)
+
+
+### Added
+
+* **docs:** publish generalized token usage guidance ([#118](https://github.com/zainadeel/tokomo/issues/118)) ([44dcbfd](https://github.com/zainadeel/tokomo/commit/44dcbfd65d98f43c1a78f9919ade90cb7372e810))
+
 ## [6.0.2](https://github.com/zainadeel/tokomo/compare/v6.0.1...v6.0.2) (2026-08-05)
 
 

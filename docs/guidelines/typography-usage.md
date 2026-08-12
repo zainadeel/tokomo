@@ -8,14 +8,14 @@ These guidelines apply to both mobile and web. The exact size values differ by p
 
 ### Where text recipes live
 
-`@ds-mo/tokens` ships typography **primitives** only — `--typography-fontsize-*`, `--typography-lineheight-*`, `--typography-weight-*`, `--typography-letterspacing-*`, `--typography-paragraphspacing-*`, `--typography-font-family`, and `--typography-font-family-code`.
+`@ds-mo/tokens` ships typography **primitives** only — `--typography-fontsize-*`, `--typography-lineheight-*`, `--typography-weight-*`, `--typography-letterspacing-*`, `--typography-paragraphspacing-*`, `--typography-font-family-ui`, and `--typography-font-family-code`.
 
 TokoMo also defines the recommended **composite text recipes** in its single machine-readable guidance contract, exported as `@ds-mo/tokens/agent`. The Documentation tab and typography previews are generated from that same contract. TokoMo does not ship `.text-*` utility classes, so consumers can implement these recipes in any framework or component system without inheriting an implementation.
 
 For example, the regular `text-body-medium` recipe is:
 
 ```css
-font-family: var(--typography-font-family);
+font-family: var(--typography-font-family-ui);
 font-size: var(--typography-fontsize-md);
 line-height: var(--typography-lineheight-md);
 font-weight: var(--typography-weight-regular);

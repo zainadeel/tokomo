@@ -5,7 +5,7 @@
  * Output: src/typography.css
  *
  * What this generates (from Figma):
- *   --typography-font-family        ('ui' family, quoted + generic fallback)
+ *   --typography-font-family-ui     ('ui' family, quoted + generic fallback)
  *   --typography-font-family-code   ('code' family, quoted + generic fallback)
  *   --typography-weight-*           (font weights, unitless numbers)
  *   --typography-fontsize-*         (px)
@@ -39,7 +39,7 @@ const titleCase = value => value.replace(/\b\w/g, char => char.toUpperCase());
 // fallback and CSS custom property suffix aren't Figma variables, so they're
 // mapped by family key here.
 const FONT_FAMILY_META = {
-  ui: { cssName: '--typography-font-family', fallback: 'sans-serif' },
+  ui: { cssName: '--typography-font-family-ui', fallback: 'sans-serif' },
   code: { cssName: '--typography-font-family-code', fallback: 'monospace' },
 };
 

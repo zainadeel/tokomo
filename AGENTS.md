@@ -73,7 +73,7 @@ src/
   dimensions.css       # Spacing/sizing token CSS
   typography.css       # Font family/size/weight/line-height token CSS
   effects.css          # Animation, motion, blur, shadow, elevation tokens
-  globals.css          # App base styles (Inter import, focus rings, reduced-motion)
+  globals.css          # App base styles (focus rings, reduced-motion) — ships no font @import
   reset.css            # CSS reset
   utilities.css        # Utility classes
   themes/

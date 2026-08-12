@@ -1,4 +1,28 @@
 {
+  "font-family": {
+    "ui": {
+      "$type": "string",
+      "$value": "inter",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:20311:6",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.type": "string"
+      }
+    },
+    "code": {
+      "$type": "string",
+      "$value": "fira code",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:20311:7",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ],
+        "com.figma.type": "string"
+      }
+    }
+  },
   "weight": {
     "regular": {
       "$type": "number",

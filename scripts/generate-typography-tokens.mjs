@@ -5,14 +5,13 @@
  * Output: src/typography.css
  *
  * What this generates (from Figma):
+ *   --typography-font-family        ('ui' family, quoted + generic fallback)
+ *   --typography-font-family-code   ('code' family, quoted + generic fallback)
  *   --typography-weight-*           (font weights, unitless numbers)
  *   --typography-fontsize-*         (px)
  *   --typography-lineheight-*       (px)
  *   --typography-letterspacing-*    (px, float-noise rounded to 2dp)
  *   --typography-paragraphspacing-* (px)
- *
- * What stays HAND-AUTHORED:
- *   --typography-font-family        (not a Figma variable in this export)
  *
  * What this deliberately does NOT generate: text style classes.
  * Composite text styles (display/title/body/caption × regular/emphasis) are
@@ -34,9 +33,28 @@ const OUTPUT  = path.join(PKG_ROOT, 'src/typography.css');
 
 const roundTo2dp = value => Math.round(value * 100) / 100;
 
+const titleCase = value => value.replace(/\b\w/g, char => char.toUpperCase());
+
+// Figma stores the bare typeface name (e.g. "fira code"); the generic
+// fallback and CSS custom property suffix aren't Figma variables, so they're
+// mapped by family key here.
+const FONT_FAMILY_META = {
+  ui: { cssName: '--typography-font-family', fallback: 'sans-serif' },
+  code: { cssName: '--typography-font-family-code', fallback: 'monospace' },
+};
+
 const generate = () => {
   const json = JSON.parse(readFileSync(SOURCE, 'utf8'));
   const lines = [];
+
+  // ── font family ───────────────────────────────────────────────────────────
+  lines.push('  /* Font families */');
+  for (const [key, token] of Object.entries(json['font-family'])) {
+    const meta = FONT_FAMILY_META[key];
+    if (!meta) throw new Error(`generate-typography-tokens: no CSS mapping for font-family.${key}`);
+    lines.push(`  ${meta.cssName}: '${titleCase(token.$value)}', ${meta.fallback};`);
+  }
+  lines.push('');
 
   // ── font weight (unitless number) ─────────────────────────────────────────
   lines.push('  /* Font weights */');
@@ -73,24 +91,13 @@ const generate = () => {
     lines.push(`  --typography-paragraphspacing-${key}: ${roundTo2dp(token.$value)}px;`);
   }
 
-  // ── hand-authored: font family ─────────────────────────────────────────────
-  const fontFamily = `
-  /* ─────────────────────────────────────────────────────────────────────────
-     HAND-AUTHORED — Font family.
-     Not exported as a Figma variable in this collection. Override here to
-     swap the entire typeface across every consumer.
-     ───────────────────────────────────────────────────────────────────────── */
-  --typography-font-family: 'Inter', sans-serif;
-}`;
-
-  // The hand-authored block adds the font-family inside :root {} and closes it.
   const output = [
-    '/* AUTO-GENERATED + HAND-AUTHORED. See scripts/generate-typography-tokens.mjs */',
-    '/* Generated section: from src/json/typography/typography.tokens.json         */',
+    '/* AUTO-GENERATED. See scripts/generate-typography-tokens.mjs */',
+    '/* Source: src/json/typography/typography.tokens.json          */',
     '',
     ':root {',
     ...lines,
-    fontFamily,
+    '}',
     '',
   ].join('\n');
 

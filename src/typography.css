@@ -3,7 +3,7 @@
 
 :root {
   /* Font families */
-  --typography-font-family: 'Inter', sans-serif;
+  --typography-font-family-ui: 'Inter', sans-serif;
   --typography-font-family-code: 'Fira Code', monospace;
 
   /* Font weights */

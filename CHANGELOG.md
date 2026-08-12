@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.2.1](https://github.com/zainadeel/tokomo/compare/v6.2.0...v6.2.1) (2026-08-12)
+
+
+### Fixed
+
+* rename ui font-family token to --typography-font-family-ui ([#122](https://github.com/zainadeel/tokomo/issues/122)) ([529898b](https://github.com/zainadeel/tokomo/commit/529898b0bcdff0a8c95e001556e438e5baf69b25))
+
 ## [6.2.0](https://github.com/zainadeel/tokomo/compare/v6.1.0...v6.2.0) (2026-08-12)
 
 

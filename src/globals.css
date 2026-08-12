@@ -2,8 +2,13 @@
  * TokoMo — Global Styles
  *
  * Base styles that consuming apps should import alongside tokens.
- * Includes font loading, color scheme, reduced-motion support,
- * focus ring defaults, button press effects, and theme transitions.
+ * Includes color scheme, reduced-motion support, focus ring defaults,
+ * button press effects, and theme transitions.
+ *
+ * This package does not self-host or @import any typefaces — it only ships
+ * the `--typography-font-family*` name + fallback-stack values. Loading
+ * (or self-hosting) the actual font files is each consuming application's
+ * responsibility, so TokoMo never initiates a runtime font request.
  *
  * Usage:
  *   @import '@tokomo/tokens';
@@ -11,9 +16,6 @@
  *   @import '@tokomo/tokens/reset';     // optional
  *   @import '@tokomo/tokens/utilities'; // optional
  */
-
-/* Inter font — design system typeface */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block');
 
 :root {
   color-scheme: light;
@@ -37,7 +39,7 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--typography-font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;

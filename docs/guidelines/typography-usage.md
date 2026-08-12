@@ -8,7 +8,7 @@ These guidelines apply to both mobile and web. The exact size values differ by p
 
 ### Where text recipes live
 
-`@ds-mo/tokens` ships typography **primitives** only — `--typography-fontsize-*`, `--typography-lineheight-*`, `--typography-weight-*`, `--typography-letterspacing-*`, `--typography-paragraphspacing-*`, and `--typography-font-family`.
+`@ds-mo/tokens` ships typography **primitives** only — `--typography-fontsize-*`, `--typography-lineheight-*`, `--typography-weight-*`, `--typography-letterspacing-*`, `--typography-paragraphspacing-*`, `--typography-font-family`, and `--typography-font-family-code`.
 
 TokoMo also defines the recommended **composite text recipes** in its single machine-readable guidance contract, exported as `@ds-mo/tokens/agent`. The Documentation tab and typography previews are generated from that same contract. TokoMo does not ship `.text-*` utility classes, so consumers can implement these recipes in any framework or component system without inheriting an implementation.
 

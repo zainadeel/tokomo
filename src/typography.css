@@ -1,7 +1,11 @@
-/* AUTO-GENERATED + HAND-AUTHORED. See scripts/generate-typography-tokens.mjs */
-/* Generated section: from src/json/typography/typography.tokens.json         */
+/* AUTO-GENERATED. See scripts/generate-typography-tokens.mjs */
+/* Source: src/json/typography/typography.tokens.json          */
 
 :root {
+  /* Font families */
+  --typography-font-family: 'Inter', sans-serif;
+  --typography-font-family-code: 'Fira Code', monospace;
+
   /* Font weights */
   --typography-weight-regular: 400;
   --typography-weight-medium: 500;
@@ -38,11 +42,4 @@
   --typography-paragraphspacing-sm: 4px;
   --typography-paragraphspacing-md: 8px;
   --typography-paragraphspacing-lg: 16px;
-
-  /* ─────────────────────────────────────────────────────────────────────────
-     HAND-AUTHORED — Font family.
-     Not exported as a Figma variable in this collection. Override here to
-     swap the entire typeface across every consumer.
-     ───────────────────────────────────────────────────────────────────────── */
-  --typography-font-family: 'Inter', sans-serif;
 }

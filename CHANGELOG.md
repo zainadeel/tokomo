@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.2.2](https://github.com/zainadeel/tokomo/compare/v6.2.1...v6.2.2) (2026-08-14)
+
+
+### Documentation
+
+* refactor token guidance pages ([#124](https://github.com/zainadeel/tokomo/issues/124)) ([5a7a9c1](https://github.com/zainadeel/tokomo/commit/5a7a9c1ab2866d4b97dace5786ebd0f656a7d701))
+
 ## [6.2.1](https://github.com/zainadeel/tokomo/compare/v6.2.0...v6.2.1) (2026-08-12)
 
 

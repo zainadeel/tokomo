@@ -5,7 +5,7 @@
   "principles": [
     {
       "id": "principle:semantic-first",
-      "summary": "Choose semantic tokens by meaning and context before considering a literal hue or reference-palette token."
+      "summary": "Choose by meaning and context: use documented semantic intents for system meanings, literal color-intent tokens when the hue itself is the intended user- or product-defined identity, and never choose reference-palette tokens directly."
     },
     {
       "id": "principle:compose-families",
@@ -272,23 +272,27 @@
       "category": "color",
       "audience": "specialized",
       "status": "stable",
-      "summary": "Hue-based color-intent families whose intent is the literal color itself rather than a semantic meaning.",
+      "summary": "Mode-aware hue families for consumer-defined identities where the chosen color itself carries the intended meaning.",
       "tokenPatterns": ["--color-color-intent-*"],
       "selectionRole": "direct",
       "useWhen": [
-        "A consumer intentionally needs a stable named hue family while retaining mode-aware tone pairings."
+        "A consumer intentionally needs a stable named hue family while retaining mode-aware tone pairings.",
+        "A user or product assigns a color identity to a custom tag, label, category, map marker, or similar classification."
       ],
       "avoidWhen": [
-        "Communicating brand, status, risk, success, AI, guide, walkthrough, or data meaning."
+        "A documented brand, status, risk, success, AI, guide, or walkthrough intent already describes the meaning.",
+        "Encoding analytical chart series, quantitative sequences, or diverging data; use the data-color families."
       ],
       "constraints": [
-        "Treat blue, red, green, and the other names as literal hues with no semantic meaning.",
+        "Blue, red, green, and the other names have no predefined TokoMo meaning; their semantic association comes from the stable assignment made by the user or consuming product.",
+        "Keep an assigned hue stable wherever that custom identity recurs.",
         "Selected-state tokens are not yet shipped for these interaction families; do not invent them.",
         "Use the matching tone-specific interaction family for hover, pressed, and focus."
       ],
       "recipes": ["token-recipe:semantic-color-pairing", "token-recipe:interaction-layers"],
       "accessibility": [
-        "Literal hue never establishes meaning or contrast suitability by itself."
+        "When users must identify or distinguish the assigned category, pair its hue with a label, icon, pattern, or other non-color cue.",
+        "Use the documented tone pairings; a literal hue assignment does not establish contrast suitability by itself."
       ],
       "references": [
         { "label": "Color usage", "path": "docs/guidelines/color-usage.md" },

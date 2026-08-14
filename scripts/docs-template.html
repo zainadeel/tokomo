@@ -72,7 +72,7 @@
       align-items: center;
       gap: 12px;
     }
-    .primary-nav a { text-decoration: none; }
+    .toolbar a.toggle-btn { text-decoration: none; }
 
     /* ── Search ───────────────────────────────────────────────────────── */
     .search-wrap {
@@ -184,13 +184,17 @@
 
     /* ── Documentation ────────────────────────────────────────────────── */
     #content.documentation {
-      max-width: 1120px;
-      margin: 0 auto;
+      max-width: 900px;
+      margin: 0;
       padding: 48px 24px 96px;
     }
-    .doc-hero {
-      max-width: 760px;
+    .doc-page-header {
       padding-bottom: 48px;
+    }
+    .doc-page-header > .doc-kicker,
+    .doc-page-header > h1,
+    .doc-page-header > p {
+      max-width: 760px;
     }
     .doc-kicker {
       color: var(--fg-muted);
@@ -199,13 +203,13 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-    .doc-hero h1 {
+    .doc-page-header h1 {
       margin-top: 12px;
       font-size: 36px;
       line-height: 42px;
       letter-spacing: -0.03em;
     }
-    .doc-hero p {
+    .doc-page-header p {
       margin-top: 16px;
       color: var(--fg-muted);
       font-size: 15px;
@@ -215,6 +219,10 @@
       scroll-margin-top: 112px;
       border-top: 1px solid var(--divider);
       padding: 40px 0 56px;
+    }
+    #content.documentation > .doc-section:first-child {
+      border-top: 0;
+      padding-top: 0;
     }
     .doc-section-header {
       max-width: 760px;
@@ -238,6 +246,365 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 12px;
+    }
+    .doc-grid-two-columns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .doc-flow {
+      list-style: none;
+      border-top: 1px solid var(--divider);
+    }
+    .doc-flow li {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 16px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+    .doc-flow-index {
+      color: var(--fg-muted);
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 10px;
+    }
+    .doc-flow h3 {
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .doc-flow p {
+      margin-top: 4px;
+      color: var(--fg-muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .doc-axis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .doc-axis-card {
+      border: 1px solid var(--divider);
+      padding: 18px;
+    }
+    .doc-axis-card h3,
+    .doc-tone-card h3,
+    .doc-callout h3 {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .doc-axis-card p,
+    .doc-tone-card p,
+    .doc-callout p {
+      margin-top: 8px;
+      color: var(--fg-muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .doc-tone-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .doc-tone-card {
+      border: 1px solid var(--divider);
+      padding: 16px;
+      min-width: 0;
+    }
+    .doc-tone-note {
+      margin-top: 16px;
+      color: var(--fg-muted);
+      font-size: 12px;
+      line-height: 19px;
+    }
+    .doc-distinction-list {
+      border-top: 1px solid var(--divider);
+    }
+    .doc-distinction {
+      display: grid;
+      grid-template-columns: minmax(160px, 0.35fr) minmax(0, 1fr);
+      gap: 24px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+    .doc-distinction h3 {
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .doc-distinction p {
+      color: var(--fg-muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .doc-intent-group + .doc-intent-group { margin-top: 40px; }
+    .doc-intent-group-header {
+      max-width: 760px;
+      margin-bottom: 12px;
+    }
+    .doc-intent-group-header h3 {
+      font-size: 17px;
+      line-height: 24px;
+    }
+    .doc-intent-group-header p {
+      margin-top: 4px;
+      color: var(--fg-muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .doc-callout {
+      border: 1px solid var(--divider);
+      padding: 18px;
+    }
+    .doc-role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .doc-role-card {
+      border: 1px solid var(--divider);
+      padding: 18px;
+    }
+    .doc-role-card h3 {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .doc-role-card p {
+      margin-top: 8px;
+      color: var(--fg-muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .doc-category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .doc-category-card {
+      min-width: 0;
+      border: 1px solid var(--divider);
+      border-radius: 0;
+      padding: 16px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      appearance: none;
+    }
+    .doc-category-card:hover { border-color: var(--fg-muted); }
+    .doc-category-card.active { border-color: var(--fg); }
+    .doc-category-card:focus-visible {
+      outline: 1px solid var(--fg);
+      outline-offset: 2px;
+    }
+    .doc-category-card h3 {
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .doc-category-card p {
+      margin-top: 6px;
+      color: var(--fg-muted);
+      font-size: 11px;
+      line-height: 17px;
+    }
+    .doc-category-count {
+      display: block;
+      margin-top: 12px;
+      color: var(--fg-muted);
+      font: 10px 'SF Mono', ui-monospace, monospace;
+    }
+    .doc-family-reference {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--divider);
+    }
+    .doc-family-reference > .doc-callout { margin-bottom: 32px; }
+    .doc-family-group + .doc-family-group { margin-top: 40px; }
+    .doc-family-group-header {
+      max-width: 760px;
+      margin-bottom: 12px;
+    }
+    .doc-family-group-header h3 {
+      font-size: 17px;
+      line-height: 24px;
+    }
+    .doc-family-group-header p {
+      margin-top: 4px;
+      color: var(--fg-muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .doc-family-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+    .doc-family-card {
+      min-width: 0;
+      border: 1px solid var(--divider);
+      padding: 18px;
+    }
+    .doc-family-card h3 {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .doc-family-card > p {
+      margin-top: 8px;
+      color: var(--fg-muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .doc-family-card h4 {
+      margin-top: 18px;
+      color: var(--fg-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .doc-family-recipes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .doc-family-recipes button,
+    .doc-inline-action {
+      border: 1px solid var(--divider);
+      border-radius: 0;
+      padding: 4px 7px;
+      background: transparent;
+      color: var(--fg);
+      font: inherit;
+      font-size: 10px;
+      cursor: pointer;
+      appearance: none;
+    }
+    .doc-family-recipes button:hover,
+    .doc-inline-action:hover { border-color: var(--fg-muted); }
+    .doc-inline-action { margin-top: 14px; }
+    .doc-recipe-category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .doc-recipe-browser {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--divider);
+    }
+    .doc-recipe-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .doc-recipe-selector {
+      min-width: 0;
+      border: 1px solid var(--divider);
+      border-radius: 0;
+      padding: 16px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      appearance: none;
+    }
+    .doc-recipe-selector:hover { border-color: var(--fg-muted); }
+    .doc-recipe-selector.active { border-color: var(--fg); }
+    .doc-recipe-selector:focus-visible {
+      outline: 1px solid var(--fg);
+      outline-offset: 2px;
+    }
+    .doc-recipe-selector h3 {
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .doc-recipe-selector p {
+      margin-top: 6px;
+      color: var(--fg-muted);
+      font-size: 11px;
+      line-height: 17px;
+    }
+    .doc-recipe-detail {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--divider);
+    }
+    .doc-recipe-browser.single .doc-recipe-detail {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+    .doc-recipe-heading {
+      max-width: 760px;
+    }
+    .doc-recipe-heading h2 {
+      margin-top: 8px;
+      font-size: 24px;
+      line-height: 32px;
+      letter-spacing: -0.02em;
+    }
+    .doc-recipe-heading p,
+    .doc-recipe-rule p {
+      margin-top: 8px;
+      color: var(--fg-muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .doc-recipe-rule {
+      margin-top: 24px;
+      border: 1px solid var(--divider);
+      padding: 18px;
+    }
+    .doc-recipe-rule h3 {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .doc-recipe-section {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--divider);
+    }
+    .doc-recipe-section > h3,
+    .doc-recipe-section .doc-columns h3,
+    .doc-recipe-variant-header h3 {
+      font-size: 17px;
+      line-height: 24px;
+    }
+    .doc-recipe-detail h4 {
+      margin-top: 18px;
+      color: var(--fg-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .doc-recipe-variant-group + .doc-recipe-variant-group { margin-top: 32px; }
+    .doc-recipe-variant-header { margin-bottom: 12px; }
+    .doc-recipe-variant-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .doc-destination {
+      width: 100%;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      appearance: none;
+      border-radius: 0;
+    }
+    .doc-destination:hover { border-color: var(--fg-muted); }
+    .doc-destination:focus-visible {
+      outline: 1px solid var(--fg);
+      outline-offset: 2px;
     }
     .doc-card,
     .doc-recipe {
@@ -304,6 +671,7 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 24px;
     }
+    .doc-columns > :only-child { grid-column: 1 / -1; }
     .doc-variants {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -360,7 +728,17 @@
       .controls { display: none; }
       .sub-toolbar { padding-inline: 12px; }
       #content.documentation { padding: 32px 16px 72px; }
-      .doc-hero h1 { font-size: 28px; line-height: 34px; }
+      .doc-page-header h1 { font-size: 28px; line-height: 34px; }
+      .doc-axis-grid,
+      .doc-tone-grid,
+      .doc-grid-two-columns,
+      .doc-role-grid,
+      .doc-category-grid,
+      .doc-family-grid,
+      .doc-recipe-category-grid,
+      .doc-recipe-selector-grid,
+      .doc-recipe-variant-grid { grid-template-columns: 1fr; }
+      .doc-distinction { grid-template-columns: 1fr; gap: 4px; }
       .doc-columns { grid-template-columns: 1fr; }
     }
 
@@ -749,7 +1127,6 @@
   <div class="primary-nav" id="primary-nav" aria-label="Primary">
     <button class="toggle-btn" data-view="browser">Browser</button>
     <button class="toggle-btn" data-view="documentation">Documentation</button>
-    <a class="toggle-btn" href="./tool/">Color Tool</a>
   </div>
 
   <div class="controls">
@@ -765,11 +1142,12 @@
       >
       <span class="search-count" id="search-count" aria-live="polite"></span>
     </div>
-    <div class="vdivider" aria-hidden="true"></div>
     <div class="text-toggle" role="group" aria-label="Color theme">
       <button class="toggle-btn" id="theme-light-btn">Light</button>
       <button class="toggle-btn" id="theme-dark-btn">Dark</button>
     </div>
+    <div class="vdivider" aria-hidden="true"></div>
+    <a class="toggle-btn" href="./tool/">Color Tool</a>
   </div>
 </nav>
 
@@ -831,10 +1209,228 @@ const DOC_SECTIONS = [
   { id: 'recipes', label: 'Recipes' },
 ];
 
+const OVERVIEW_PRINCIPLES = [
+  { id: 'principle:semantic-first', label: 'Start with semantics' },
+  { id: 'principle:context-before-value', label: 'Choose in context' },
+  { id: 'principle:compose-families', label: 'Compose related roles' },
+  { id: 'principle:theme-automatic', label: 'Let themes switch automatically' },
+  { id: 'principle:meaning-needs-more-than-color', label: 'Never rely on color alone' },
+];
+
+const INTENT_GROUPS = [
+  {
+    label: 'General and identity',
+    description: 'Information without evaluative meaning, plus ordinary product identity and accent roles.',
+    ids: ['intent:neutral', 'intent:brand'],
+  },
+  {
+    label: 'Status and outcome',
+    description: 'Success, attention, risk, failure, and other states where consequence is the primary meaning.',
+    ids: ['intent:positive', 'intent:caution', 'intent:warning', 'intent:negative'],
+    columns: 2,
+  },
+  {
+    label: 'Specialized experiences',
+    description: 'Optional or experience-specific identity, help, onboarding, and reserved product concepts.',
+    ids: ['intent:ai', 'intent:guide', 'intent:walkthrough'],
+  },
+];
+
+const INTENT_DISTINCTIONS = [
+  {
+    label: 'Caution or warning?',
+    guidance: 'Default to caution for pending, ongoing, urgent, or attention states. Use warning only when a materially stronger risk distinction is necessary.',
+  },
+  {
+    label: 'Brand or positive?',
+    guidance: 'Brand identifies the product or an ordinary primary action. Positive describes a successful or favourable outcome after it exists.',
+  },
+  {
+    label: 'Guide or walkthrough?',
+    guidance: 'Guide covers ordinary help, onboarding, and coaching. Walkthrough is reserved for an explicitly defined product experience.',
+  },
+  {
+    label: 'Neutral or disabled?',
+    guidance: 'Neutral communicates a genuinely neutral state. Disabled and de-emphasized content belong to the ordinary foreground hierarchy and interaction behavior.',
+  },
+  {
+    label: 'AI or semantic status?',
+    guidance: 'AI can identify provenance or entry into an AI experience, but success, caution, warning, and failure take precedence when consequence matters.',
+  },
+];
+
+const INTENT_TONES = [
+  { id: 'strong', description: 'Highest-emphasis semantic fill or content.' },
+  { id: 'bold', description: 'Strong emphasis with less dominance than Strong.' },
+  { id: 'medium', description: 'Mid-emphasis treatment for a visible but balanced presence.' },
+  { id: 'faint', description: 'Low-emphasis tinting and supporting treatment.' },
+];
+
+const FAMILY_CATEGORIES = [
+  {
+    id: 'color',
+    label: 'Colors',
+    description: 'Surfaces, content, interactions, identity, visualization, and color foundations.',
+  },
+  {
+    id: 'dimension',
+    label: 'Dimensions',
+    description: 'Scales and named roles for spacing, sizing, shape, layout, and layering.',
+  },
+  {
+    id: 'typography',
+    label: 'Typography',
+    description: 'Primitive type values assembled through documented typography recipes.',
+  },
+  {
+    id: 'effect',
+    label: 'Effects',
+    description: 'Opacity, blur, motion, elevation, and complete focus treatments.',
+  },
+];
+
+const FAMILY_GROUPS = {
+  color: [
+    {
+      label: 'Everyday semantic UI',
+      description: 'The ordinary surfaces, content, interaction, elevation-color, and loading treatments used across product UI.',
+      ids: ['color.semantic-core', 'color.interaction', 'color.elevation', 'color.shimmer'],
+    },
+    {
+      label: 'Consumer and product identity',
+      description: 'Stable consumer-defined hues and complete families for specialized or product-domain contexts.',
+      ids: ['color.literal-intent', 'color.fixed-contexts', 'color.product-contexts'],
+    },
+    {
+      label: 'Visualization and foundation',
+      description: 'Purpose-built analytical palettes and the raw palette layer that supports published aliases.',
+      ids: ['color.data', 'color.reference'],
+    },
+  ],
+  dimension: [
+    {
+      label: 'Scales and primitives',
+      description: 'Shared roots and direct steps for spacing, offsets, radii, strokes, sizing, and iconography.',
+      ids: ['dimension.bases', 'dimension.space-offset', 'dimension.radius-stroke', 'dimension.size-iconography'],
+    },
+    {
+      label: 'Layout and layering',
+      description: 'Named constraints and unitless values for recurring regions, transforms, and stacking order.',
+      ids: ['dimension.layout', 'dimension.layering-transform'],
+    },
+  ],
+  typography: [
+    {
+      label: 'Typography primitives',
+      description: 'Font family, size, line height, weight, letter spacing, and paragraph spacing inputs.',
+      ids: ['typography.primitives'],
+    },
+  ],
+  effect: [
+    {
+      label: 'Appearance',
+      description: 'Direct opacity and blur treatments for intentional translucent or softened rendering.',
+      ids: ['effect.opacity', 'effect.blur'],
+    },
+    {
+      label: 'Motion',
+      description: 'Atomic timeline values and combined transition treatments for interaction feedback.',
+      ids: ['effect.animation', 'effect.motion-transition'],
+    },
+    {
+      label: 'Depth and focus',
+      description: 'Elevation compositions and a complete default focus-ring treatment.',
+      ids: ['effect.elevation', 'effect.focus-ring'],
+    },
+  ],
+};
+
+const FAMILY_ROLE_LABELS = {
+  direct: 'Direct choice',
+  'recipe-part': 'Recipe part',
+  'last-resort': 'Last resort',
+};
+
+const RECIPE_CATEGORIES = [
+  {
+    id: 'color',
+    label: 'Color and interaction',
+    description: 'Content hierarchy, borders, semantic surfaces, and interaction feedback.',
+    recipeIds: [
+      'token-recipe:foreground-hierarchy',
+      'token-recipe:neutral-border-hierarchy',
+      'token-recipe:semantic-color-pairing',
+      'token-recipe:interaction-layers',
+    ],
+    defaultRecipe: 'token-recipe:semantic-color-pairing',
+  },
+  {
+    id: 'typography',
+    label: 'Typography',
+    description: 'Complete text styles assembled from the typography primitives.',
+    recipeIds: ['token-recipe:typography-composites'],
+    defaultRecipe: 'token-recipe:typography-composites',
+  },
+  {
+    id: 'elevation',
+    label: 'Elevation',
+    description: 'Combined and split shadow treatments for depth relationships.',
+    recipeIds: ['token-recipe:elevation-composition'],
+    defaultRecipe: 'token-recipe:elevation-composition',
+  },
+];
+
+const RECIPE_SELECTION_RULES = {
+  'token-recipe:foreground-hierarchy': 'Choose the foreground step from content emphasis, then keep it in the surface family where it was designed to render.',
+  'token-recipe:neutral-border-hierarchy': 'Choose the border step from what makes the element identifiable: the stroke itself, another affordance, or decorative structure only.',
+  'token-recipe:semantic-color-pairing': 'Choose the intent from meaning, choose the intensity from emphasis, then use the foreground and border intended for that surface.',
+  'token-recipe:interaction-layers': 'Choose hover, pressed, selected, and focus feedback from the surface underneath the interaction.',
+  'token-recipe:typography-composites': 'Choose the text role and size first, then choose regular or emphasis without changing the rest of the composition.',
+  'token-recipe:elevation-composition': 'Choose the depth relationship first, then keep the shadow, highlight, and combined value on the same elevation suffix.',
+};
+
+const RECIPE_VARIANT_GROUPS = {
+  'token-recipe:foreground-hierarchy': [
+    { label: 'Standard surfaces', ids: ['foreground-standard-primary', 'foreground-standard-secondary', 'foreground-standard-tertiary'] },
+    { label: 'Semantic surfaces', ids: ['foreground-on-background-primary', 'foreground-on-background-secondary', 'foreground-on-background-tertiary'] },
+    { label: 'Fixed contexts', ids: ['foreground-context-primary', 'foreground-context-secondary', 'foreground-context-tertiary'] },
+  ],
+  'token-recipe:neutral-border-hierarchy': [
+    { label: 'Standard surfaces', ids: ['neutral-border-primary', 'neutral-border-secondary', 'neutral-border-tertiary'] },
+    { label: 'Fixed contexts', ids: ['context-border-primary', 'context-border-secondary', 'context-border-tertiary'] },
+  ],
+  'token-recipe:semantic-color-pairing': [
+    { label: 'Semantic surfaces', ids: ['faint', 'medium', 'bold', 'strong'] },
+    { label: 'Optional semantic tint pairs', ids: ['tinted-faint-bold', 'tinted-medium-strong', 'tinted-bold-faint', 'tinted-strong-medium'] },
+    { label: 'Literal-hue surfaces', ids: ['literal-faint', 'literal-medium', 'literal-bold', 'literal-strong'] },
+    { label: 'Optional literal-hue tint pairs', ids: ['literal-tinted-faint-bold', 'literal-tinted-medium-strong', 'literal-tinted-bold-faint', 'literal-tinted-strong-medium'] },
+  ],
+  'token-recipe:interaction-layers': [
+    { label: 'Ordinary surfaces', ids: ['primary-secondary'] },
+    { label: 'Semantic surfaces', ids: ['faint', 'medium', 'bold', 'strong'] },
+    { label: 'Specialized and literal-hue surfaces', ids: ['specialized-context', 'literal-color-intent'] },
+  ],
+  'token-recipe:typography-composites': [
+    { label: 'Display', ids: ['text-display-medium', 'text-display-medium-emphasis', 'text-display-small', 'text-display-small-emphasis'] },
+    { label: 'Title', ids: ['text-title-large', 'text-title-large-emphasis', 'text-title-medium', 'text-title-medium-emphasis', 'text-title-small', 'text-title-small-emphasis'] },
+    { label: 'Body', ids: ['text-body-large', 'text-body-large-emphasis', 'text-body-medium', 'text-body-medium-emphasis', 'text-body-small', 'text-body-small-emphasis'] },
+    { label: 'Caption', ids: ['text-caption', 'text-caption-emphasis'] },
+  ],
+  'token-recipe:elevation-composition': [
+    { label: 'Elevated', ids: ['elevated-none', 'elevated-sm', 'elevated-md', 'elevated-floating'] },
+    { label: 'Depressed', ids: ['depressed-sm', 'depressed-md'] },
+    { label: 'Directional panels', ids: ['elevated-panel-top', 'elevated-panel-right', 'elevated-panel-bottom', 'elevated-panel-left'] },
+  ],
+};
+
 // ── State ─────────────────────────────────────────────────────────────────────
 
 let view     = localStorage.getItem('tokomo-view') || 'browser';
 let section  = localStorage.getItem('tokomo-section') || 'colors';
+let documentationSection = 'overview';
+let familyCategory = 'color';
+let recipeCategory = 'color';
+let selectedRecipe = 'token-recipe:semantic-color-pairing';
 let group    = 'all';
 let query    = '';
 let theme    = localStorage.getItem('tokomo-theme') || 'light';
@@ -885,6 +1481,9 @@ primaryNav.addEventListener('click', e => {
 });
 
 function switchView(nextView) {
+  if (nextView === 'documentation' && view !== 'documentation') {
+    documentationSection = 'overview';
+  }
   view = nextView;
   localStorage.setItem('tokomo-view', view);
   primaryNav.querySelectorAll('[data-view]').forEach(btn => {
@@ -893,6 +1492,57 @@ function switchView(nextView) {
   searchWrap.classList.toggle('hidden', view !== 'browser');
   updateSubToolbar();
   render();
+}
+
+function switchDocumentationSection(nextSection) {
+  if (nextSection === 'families' && documentationSection !== 'families') {
+    familyCategory = 'color';
+  }
+  if (nextSection === 'recipes' && documentationSection !== 'recipes') {
+    recipeCategory = 'color';
+    selectedRecipe = 'token-recipe:semantic-color-pairing';
+  }
+  documentationSection = nextSection;
+  updateSubToolbar();
+  renderDocumentation();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function switchFamilyCategory(nextCategory) {
+  familyCategory = nextCategory;
+  renderDocumentation();
+}
+
+function openFamilyCategory(nextCategory) {
+  familyCategory = nextCategory;
+  documentationSection = 'families';
+  updateSubToolbar();
+  renderDocumentation();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function switchRecipeCategory(nextCategory) {
+  const category = RECIPE_CATEGORIES.find(item => item.id === nextCategory);
+  if (!category) return;
+  recipeCategory = category.id;
+  selectedRecipe = category.defaultRecipe;
+  renderDocumentation();
+}
+
+function switchRecipeSelection(nextRecipe) {
+  selectedRecipe = nextRecipe;
+  renderDocumentation();
+}
+
+function openRecipe(nextRecipe) {
+  const category = RECIPE_CATEGORIES.find(item => item.recipeIds.includes(nextRecipe));
+  if (!category) return;
+  recipeCategory = category.id;
+  selectedRecipe = nextRecipe;
+  documentationSection = 'recipes';
+  updateSubToolbar();
+  renderDocumentation();
+  window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
 function switchSection(s) {
@@ -918,9 +1568,12 @@ function updateSubToolbar() {
     subToolbar.setAttribute('aria-label', 'Documentation sections');
     for (const item of DOC_SECTIONS) {
       const btn = document.createElement('button');
-      btn.className = 'sub-btn';
+      const isActive = item.id === documentationSection;
+      btn.className = 'sub-btn' + (isActive ? ' active' : '');
       btn.textContent = item.label;
-      btn.addEventListener('click', () => document.getElementById(`docs-${item.id}`)?.scrollIntoView());
+      btn.dataset.documentationSection = item.id;
+      if (isActive) btn.setAttribute('aria-current', 'page');
+      btn.addEventListener('click', () => switchDocumentationSection(item.id));
       subToolbar.appendChild(btn);
     }
     return;
@@ -1026,139 +1679,442 @@ function render() {
 // ── Documentation ─────────────────────────────────────────────────────────────
 
 function renderDocumentation() {
-  const familyGroups = new Map();
-  for (const family of TOKEN_GUIDANCE.families) {
-    if (!familyGroups.has(family.category)) familyGroups.set(family.category, []);
-    familyGroups.get(family.category).push(family);
+  contentEl.className = 'documentation';
+  switch (documentationSection) {
+    case 'intents': {
+      const intentById = new Map(TOKEN_GUIDANCE.intents.map(intent => [intent.id, intent]));
+      contentEl.innerHTML = `
+        <header class="doc-page-header" aria-labelledby="docs-intents-title">
+          <div class="doc-kicker">Colors</div>
+          <h1 id="docs-intents-title">Choose color by meaning</h1>
+          <p>Semantic color has two independent decisions. First choose the intent that describes what the interface means, then choose the intensity that matches how much emphasis it needs. Never choose either axis from the hue or value you happen to see in one theme.</p>
+          <div class="doc-axis-grid">
+            <article class="doc-axis-card">
+              <div class="doc-kicker">01 · Meaning</div>
+              <h3>Choose an intent</h3>
+              <p>Neutral, Brand, Positive, Caution, Warning, Negative, AI, Guide, and Walkthrough describe why color is being used.</p>
+            </article>
+            <article class="doc-axis-card">
+              <div class="doc-kicker">02 · Emphasis</div>
+              <h3>Choose an intensity</h3>
+              <p>Strong, Bold, Medium, and Faint describe how prominent that intent should be in the current composition.</p>
+            </article>
+          </div>
+        </header>
+
+        <section class="doc-section" aria-labelledby="docs-intensity-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Intensity tiers</div>
+            <h2 id="docs-intensity-title">Choose intensity after intent</h2>
+            <p>The four tiers form an emphasis ladder inside every semantic intent. They are role names, not fixed lightness values, so their rendered appearance changes with the theme.</p>
+          </div>
+          <div class="doc-tone-grid">
+            ${INTENT_TONES.map(tone => `
+              <article class="doc-tone-card">
+                <div class="doc-kicker">${escHtml(tone.id)}</div>
+                <h3>${escHtml(tone.id.charAt(0).toUpperCase() + tone.id.slice(1))}</h3>
+                <p>${escHtml(tone.description)}</p>
+              </article>`).join('')}
+          </div>
+          <p class="doc-tone-note">On Faint surfaces, ordinary <code>foreground.primary</code> or <code>foreground.secondary</code> is the default. Medium, Bold, and Strong surfaces use their matching <code>foreground.on-*-background.*</code> family. Optional tinted pairs are Faint with Bold and Medium with Strong; keep both tokens on the same intent.</p>
+        </section>
+
+        <section class="doc-section" aria-labelledby="docs-distinctions-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Common distinctions</div>
+            <h2 id="docs-distinctions-title">Resolve meaning before hue</h2>
+            <p>These are the choices most likely to produce a plausible-looking but semantically incorrect result.</p>
+          </div>
+          <div class="doc-distinction-list">
+            ${INTENT_DISTINCTIONS.map(item => `
+              <article class="doc-distinction">
+                <h3>${escHtml(item.label)}</h3>
+                <p>${escHtml(item.guidance)}</p>
+              </article>`).join('')}
+          </div>
+        </section>
+
+        <section class="doc-section" aria-labelledby="docs-reference-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Intent reference</div>
+            <h2 id="docs-reference-title">Nine semantic intents</h2>
+            <p>Status and consequence generally outrank provenance or experience identity. When one region carries multiple meanings, separate them into distinct cues instead of blending their colors.</p>
+          </div>
+          ${INTENT_GROUPS.map(group => `
+            <section class="doc-intent-group" aria-label="${escHtml(group.label)}">
+              <div class="doc-intent-group-header">
+                <h3>${escHtml(group.label)}</h3>
+                <p>${escHtml(group.description)}</p>
+              </div>
+              <div class="doc-grid${group.columns === 2 ? ' doc-grid-two-columns' : ''}">
+                ${group.ids.map(id => intentById.get(id)).filter(Boolean).map(renderIntentCard).join('')}
+              </div>
+            </section>`).join('')}
+        </section>
+
+        <section class="doc-section" aria-labelledby="docs-literal-color-title">
+          <aside class="doc-callout">
+            <div class="doc-kicker">Consumer-defined identity</div>
+            <h3 id="docs-literal-color-title">Literal hue can be the intended meaning</h3>
+            <p><code>--color-color-intent-*</code> provides mode-aware hue families for stable user- or product-defined identities—for example, a purple custom tag or a yellow custom geofence category. The hue has no predefined TokoMo meaning; its meaning comes from the assignment made by the product or user.</p>
+            <p>Do not substitute a literal hue for a documented brand, status, AI, guide, or walkthrough intent, and use data tokens for analytical visualization. When recognizing the category matters, pair its color with a label, icon, or other non-color cue.</p>
+          </aside>
+        </section>`;
+      break;
+    }
+
+    case 'families': {
+      const familyById = new Map(TOKEN_GUIDANCE.families.map(family => [family.id.replace('token-family:', ''), family]));
+      const category = FAMILY_CATEGORIES.find(item => item.id === familyCategory) || FAMILY_CATEGORIES[0];
+      const categoryGroups = FAMILY_GROUPS[category.id] || [];
+      contentEl.innerHTML = `
+        <header class="doc-page-header" aria-labelledby="docs-families-title">
+          <div class="doc-kicker">Selection</div>
+          <h1 id="docs-families-title">Token families</h1>
+          <p>Families organize tokens by the job they perform and how directly they should be selected. Start with a category, then use each family&rsquo;s role to decide whether to choose it directly, compose it through a recipe, or treat it as a foundation input.</p>
+        </header>
+
+        <section class="doc-section" aria-labelledby="docs-family-roles-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Selection roles</div>
+            <h2 id="docs-family-roles-title">Know how directly to use a family</h2>
+            <p>The role describes the family&rsquo;s place in implementation, not its importance.</p>
+          </div>
+          <div class="doc-role-grid">
+            <article class="doc-role-card">
+              <div class="doc-kicker">Direct</div>
+              <h3>Choose it directly</h3>
+              <p>The family represents a complete public role that can be selected from meaning and context.</p>
+            </article>
+            <article class="doc-role-card">
+              <div class="doc-kicker">Recipe part</div>
+              <h3>Compose it with related roles</h3>
+              <p>The family is usually one part of a documented combination rather than a standalone choice.</p>
+            </article>
+            <article class="doc-role-card">
+              <div class="doc-kicker">Last resort</div>
+              <h3>Use only at the foundation</h3>
+              <p>The family supports aliases or reviewed gaps and should not be the first choice for product UI.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="doc-section" aria-labelledby="docs-family-categories-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Browse by category</div>
+            <h2 id="docs-family-categories-title">Choose a token category</h2>
+            <p>Only the selected category is shown, keeping large families—especially Colors—from burying the rest of the system.</p>
+          </div>
+          <div class="doc-category-grid" role="group" aria-label="Token family category">
+            ${FAMILY_CATEGORIES.map(item => {
+              const count = TOKEN_GUIDANCE.families.filter(family => family.category === item.id).length;
+              const isActive = item.id === category.id;
+              return `
+                <button class="doc-category-card${isActive ? ' active' : ''}" type="button" data-family-category="${escHtml(item.id)}" aria-pressed="${isActive}">
+                  <h3>${escHtml(item.label)}</h3>
+                  <p>${escHtml(item.description)}</p>
+                  <span class="doc-category-count">${count} ${count === 1 ? 'family' : 'families'}</span>
+                </button>`;
+            }).join('')}
+          </div>
+
+          <div class="doc-family-reference" id="docs-family-reference">
+            <div class="doc-section-header">
+              <div class="doc-kicker">${escHtml(category.label)}</div>
+              <h2>${escHtml(category.label)} families</h2>
+              <p>${escHtml(category.description)}</p>
+            </div>
+            ${category.id === 'typography' ? `
+              <aside class="doc-callout">
+                <div class="doc-kicker">Composition first</div>
+                <h3>Typography primitives become styles through recipes</h3>
+                <p>The primitive family supplies type values, but the documented display, title, body, and caption combinations live in Recipes. Use those compositions instead of assembling arbitrary text styles.</p>
+                <button class="doc-inline-action" type="button" data-recipe-target="token-recipe:typography-composites">View typography recipes</button>
+              </aside>` : ''}
+            ${categoryGroups.map(group => `
+              <section class="doc-family-group" aria-label="${escHtml(group.label)}">
+                <div class="doc-family-group-header">
+                  <h3>${escHtml(group.label)}</h3>
+                  <p>${escHtml(group.description)}</p>
+                </div>
+                <div class="doc-family-grid">
+                  ${group.ids.map(id => familyById.get(id)).filter(Boolean).map(renderFamilyCard).join('')}
+                </div>
+              </section>`).join('')}
+          </div>
+        </section>`;
+      break;
+    }
+
+    case 'recipes': {
+      const recipeById = new Map(TOKEN_GUIDANCE.recipes.map(recipe => [recipe.id, recipe]));
+      const category = RECIPE_CATEGORIES.find(item => item.id === recipeCategory) || RECIPE_CATEGORIES[0];
+      const recipe = recipeById.get(selectedRecipe) || recipeById.get(category.defaultRecipe);
+      selectedRecipe = recipe.id;
+      contentEl.innerHTML = `
+        <header class="doc-page-header" aria-labelledby="docs-recipes-title">
+          <div class="doc-kicker">Composition</div>
+          <h1 id="docs-recipes-title">Compose tokens into complete treatments</h1>
+          <p>Token families identify the roles available to you. Recipes define how those roles work together as complete, framework-neutral treatments. Choose a category, select the problem you are solving, then follow the decision rule and documented variants.</p>
+        </header>
+
+        <section class="doc-section" aria-labelledby="docs-recipe-categories-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Browse recipes</div>
+            <h2 id="docs-recipe-categories-title">Choose a recipe category</h2>
+            <p>Only one complete recipe is shown at a time, keeping its variants and rules together without hiding any of its content.</p>
+          </div>
+          <div class="doc-recipe-category-grid" role="group" aria-label="Recipe category">
+            ${RECIPE_CATEGORIES.map(item => {
+              const isActive = item.id === category.id;
+              return `
+                <button class="doc-category-card${isActive ? ' active' : ''}" type="button" data-recipe-category="${escHtml(item.id)}" aria-pressed="${isActive}">
+                  <h3>${escHtml(item.label)}</h3>
+                  <p>${escHtml(item.description)}</p>
+                  <span class="doc-category-count">${item.recipeIds.length} ${item.recipeIds.length === 1 ? 'recipe' : 'recipes'}</span>
+                </button>`;
+            }).join('')}
+          </div>
+
+          <div class="doc-recipe-browser${category.recipeIds.length === 1 ? ' single' : ''}">
+            ${category.recipeIds.length > 1 ? `
+              <div class="doc-section-header">
+                <div class="doc-kicker">${escHtml(category.label)}</div>
+                <h2>Choose the problem to solve</h2>
+                <p>${escHtml(category.description)}</p>
+              </div>
+              <div class="doc-recipe-selector-grid" role="group" aria-label="Recipe">
+                ${category.recipeIds.map(recipeId => {
+                  const item = recipeById.get(recipeId);
+                  const isActive = item.id === recipe.id;
+                  return `
+                    <button class="doc-recipe-selector${isActive ? ' active' : ''}" type="button" data-recipe-selection="${escHtml(item.id)}" aria-pressed="${isActive}">
+                      <div class="doc-kicker">${item.variants.length} variants</div>
+                      <h3>${escHtml(humanizeId(item.id.replace('token-recipe:', '')))}</h3>
+                      <p>${escHtml(item.summary)}</p>
+                    </button>`;
+                }).join('')}
+              </div>
+            ` : ''}
+
+            ${renderRecipeDetail(recipe)}
+          </div>
+        </section>`;
+      break;
+    }
+
+    case 'overview':
+    default: {
+      documentationSection = 'overview';
+      const principleById = new Map(TOKEN_GUIDANCE.principles.map(principle => [principle.id, principle]));
+      const overviewPrinciples = OVERVIEW_PRINCIPLES
+        .map(item => ({ ...item, summary: principleById.get(item.id)?.summary }))
+        .filter(item => item.summary);
+      contentEl.innerHTML = `
+        <header class="doc-page-header">
+          <div class="doc-kicker">Token selection guidance</div>
+          <h1>Choose the right token for the job</h1>
+          <p>Start with what the interface needs to communicate, then choose tokens for the context where they will render. Use Color Intents to identify meaning, Token Families to select the correct role, and Recipes to compose related tokens. Use the Browser when you need exact names and values.</p>
+        </header>
+
+        <section class="doc-section" aria-labelledby="docs-principles-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Decision model</div>
+            <h2 id="docs-principles-title">From meaning to implementation</h2>
+            <p>Follow this sequence before selecting an individual token. It keeps implementation choices semantic, mode-aware, and accessible.</p>
+          </div>
+          <ol class="doc-flow">
+            ${overviewPrinciples.map((principle, index) => `
+              <li>
+                <span class="doc-flow-index">${String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3>${escHtml(principle.label)}</h3>
+                  <p>${escHtml(principle.summary)}</p>
+                </div>
+              </li>`).join('')}
+          </ol>
+        </section>
+
+        <section class="doc-section" aria-labelledby="docs-next-title">
+          <div class="doc-section-header">
+            <div class="doc-kicker">Where to go next</div>
+            <h2 id="docs-next-title">Find the guidance you need</h2>
+            <p>Each page answers a different part of the selection process. Detailed guidance stays in its dedicated section.</p>
+          </div>
+          <div class="doc-grid">
+            <button class="doc-card doc-destination" type="button" data-documentation-target="intents">
+              <div class="doc-kicker">Meaning</div>
+              <h3>Color intents</h3>
+              <p>Identify what the interface needs to communicate before choosing a color family.</p>
+            </button>
+            <button class="doc-card doc-destination" type="button" data-documentation-target="families">
+              <div class="doc-kicker">Selection</div>
+              <h3>Token families</h3>
+              <p>Choose the family that matches the role, surface, and rendering context.</p>
+            </button>
+            <button class="doc-card doc-destination" type="button" data-documentation-target="recipes">
+              <div class="doc-kicker">Composition</div>
+              <h3>Recipes</h3>
+              <p>Combine related color, interaction, typography, and elevation roles correctly.</p>
+            </button>
+          </div>
+        </section>`;
+      break;
+    }
   }
 
-  contentEl.className = 'documentation';
-  contentEl.innerHTML = `
-    <header class="doc-hero" id="docs-overview">
-      <div class="doc-kicker">Selection guidance · ${escHtml(TOKEN_GUIDANCE.schemaVersion)}</div>
-      <h1>Use the tokens as a system</h1>
-      <p>TokoMo describes how its token families work together without assuming a framework or component library. Start with meaning and rendering context, then choose a documented family or recipe. The Browser remains the source for token values; this guide intentionally uses token names only.</p>
-    </header>
-
-    <section class="doc-section" aria-labelledby="docs-principles-title">
-      <div class="doc-section-header">
-        <div class="doc-kicker">Decision model</div>
-        <h2 id="docs-principles-title">Principles</h2>
-      </div>
-      <div class="doc-grid">
-        ${TOKEN_GUIDANCE.principles.map(principle => `
-          <article class="doc-card">
-            <div class="doc-kicker">${escHtml(principle.id.replace('principle:', ''))}</div>
-            <p>${escHtml(principle.summary)}</p>
-          </article>`).join('')}
-      </div>
-    </section>
-
-    <section class="doc-section" id="docs-intents" aria-labelledby="docs-intents-title">
-      <div class="doc-section-header">
-        <div class="doc-kicker">Colors</div>
-        <h2 id="docs-intents-title">Core semantic intents</h2>
-        <p>Choose the intent that describes meaning—not the hue it currently resolves to. Status and consequence generally outrank provenance or experience identity. When one region carries multiple meanings, separate them instead of blending their colors.</p>
-      </div>
-      <div class="doc-grid">
-        ${TOKEN_GUIDANCE.intents.map(renderIntentCard).join('')}
-      </div>
-      <article class="doc-card" style="margin-top:12px">
-        <div class="doc-kicker">Not a semantic intent</div>
-        <h3>Literal color intent</h3>
-        <p><code>--color-color-intent-*</code> is deliberately hue-based and semantically meaningless. Use it only when the color itself is the requested identity; never substitute it for brand, AI, status, guide, walkthrough, or data meaning.</p>
-      </article>
-    </section>
-
-    <section class="doc-section" id="docs-families" aria-labelledby="docs-families-title">
-      <div class="doc-section-header">
-        <div class="doc-kicker">Selection</div>
-        <h2 id="docs-families-title">Token families</h2>
-        <p>Each card explains when a family is a direct choice, a recipe part, or a last-resort foundation input.</p>
-      </div>
-      ${['color', 'typography', 'dimension', 'effect'].map(category => `
-        <div style="margin-top:${category === 'color' ? 0 : 40}px">
-          <div class="doc-kicker">${escHtml(category)}</div>
-          <div class="doc-grid" style="margin-top:12px">
-            ${(familyGroups.get(category) || []).map(renderFamilyCard).join('')}
-          </div>
-        </div>`).join('')}
-    </section>
-
-    <section class="doc-section" id="docs-recipes" aria-labelledby="docs-recipes-title">
-      <div class="doc-section-header">
-        <div class="doc-kicker">Composition</div>
-        <h2 id="docs-recipes-title">Recommended recipes</h2>
-        <p>Recipes define which public tokens belong together. They are framework-neutral and remain useful whether you build your own components or adopt an existing library.</p>
-      </div>
-      ${TOKEN_GUIDANCE.recipes.map(renderRecipe).join('')}
-    </section>`;
+  contentEl.querySelectorAll('[data-family-category]').forEach(button => {
+    button.addEventListener('click', () => switchFamilyCategory(button.dataset.familyCategory));
+  });
+  contentEl.querySelectorAll('[data-family-target]').forEach(button => {
+    button.addEventListener('click', () => openFamilyCategory(button.dataset.familyTarget));
+  });
+  contentEl.querySelectorAll('[data-recipe-category]').forEach(button => {
+    button.addEventListener('click', () => switchRecipeCategory(button.dataset.recipeCategory));
+  });
+  contentEl.querySelectorAll('[data-recipe-selection]').forEach(button => {
+    button.addEventListener('click', () => switchRecipeSelection(button.dataset.recipeSelection));
+  });
+  contentEl.querySelectorAll('[data-recipe-target]').forEach(button => {
+    button.addEventListener('click', () => openRecipe(button.dataset.recipeTarget));
+  });
+  contentEl.querySelectorAll('[data-documentation-target]').forEach(button => {
+    button.addEventListener('click', () => switchDocumentationSection(button.dataset.documentationTarget));
+  });
 }
 
 function renderIntentCard(intent) {
   return `
     <article class="doc-card">
-      <div class="doc-kicker">${escHtml(intent.id.replace('intent:', ''))}</div>
+      <div class="doc-kicker">${intent.optional ? 'Optional intent' : 'Core intent'}</div>
       <h3>${escHtml(humanizeId(intent.id.replace('intent:', '')))}</h3>
       <p>${escHtml(intent.summary)}</p>
-      <div class="doc-meta">
-        <span class="doc-pill">${intent.optional ? 'optional' : 'core'}</span>
-      </div>
-      <h4>Use when</h4>${renderStringList(intent.useWhen)}
-      <h4>Avoid when</h4>${renderStringList(intent.avoidWhen)}
-      ${intent.precedence ? `<h4>Precedence</h4>${renderStringList(intent.precedence)}` : ''}
+      <h4>Use for</h4>${renderStringList(intent.useWhen)}
+      <h4>Not for</h4>${renderStringList(intent.avoidWhen)}
     </article>`;
 }
 
 function renderFamilyCard(family) {
+  const familyName = humanizeId(family.id.replace('token-family:', ''));
+  const roleLabel = FAMILY_ROLE_LABELS[family.selectionRole] || humanizeId(family.selectionRole);
   return `
-    <article class="doc-card">
-      <div class="doc-kicker">${escHtml(family.id.replace('token-family:', ''))}</div>
-      <h3>${escHtml(humanizeId(family.id.replace('token-family:', '')))}</h3>
+    <article class="doc-family-card">
+      <div class="doc-kicker">${escHtml(roleLabel)}</div>
+      <h3>${escHtml(familyName)}</h3>
       <p>${escHtml(family.summary)}</p>
-      <div class="doc-meta">
-        <span class="doc-pill">${escHtml(family.selectionRole)}</span>
-        <span class="doc-pill">${escHtml(family.audience)}</span>
-      </div>
       <div class="doc-token-list">${family.tokenPatterns.map(pattern => `<code>${escHtml(pattern)}</code>`).join('')}</div>
+      <div class="doc-meta">
+        <span class="doc-pill">${escHtml(family.audience)}</span>
+        <span class="doc-pill">${escHtml(family.status)}</span>
+      </div>
       <h4>Use when</h4>${renderStringList(family.useWhen)}
       <h4>Avoid when</h4>${renderStringList(family.avoidWhen)}
       <h4>Constraints</h4>${renderStringList(family.constraints)}
-      ${family.accessibility ? `<h4>Accessibility</h4>${renderStringList(family.accessibility)}` : ''}
+      ${family.accessibility?.length ? `<h4>Accessibility</h4>${renderStringList(family.accessibility)}` : ''}
+      ${family.recipes?.length ? `
+        <h4>Related recipes</h4>
+        <div class="doc-family-recipes">
+          ${family.recipes.map(recipe => `
+            <button type="button" data-recipe-target="${escHtml(recipe)}">${escHtml(humanizeId(recipe.replace('token-recipe:', '')))}</button>`).join('')}
+        </div>` : ''}
       ${renderReferences(family.references)}
     </article>`;
 }
 
-function renderRecipe(recipe) {
+function renderRecipeDetail(recipe) {
+  const variantById = new Map(recipe.variants.map(variant => [variant.id, variant]));
+  const configuredGroups = RECIPE_VARIANT_GROUPS[recipe.id] || [];
+  const groupedIds = new Set(configuredGroups.flatMap(group => group.ids));
+  const ungroupedVariants = recipe.variants.filter(variant => !groupedIds.has(variant.id));
+  const variantGroups = [
+    ...configuredGroups.map(group => ({
+      ...group,
+      variants: group.ids.map(id => variantById.get(id)).filter(Boolean),
+    })).filter(group => group.variants.length),
+    ...(ungroupedVariants.length ? [{ label: 'Other variants', variants: ungroupedVariants }] : []),
+  ];
+  const recipeCategoryMeta = RECIPE_CATEGORIES.find(category => category.recipeIds.includes(recipe.id));
+  const familyTarget = { color: 'color', typography: 'typography', elevation: 'effect' }[recipeCategoryMeta?.id];
+
   return `
-    <article class="doc-recipe">
-      <div class="doc-kicker">${escHtml(recipe.id.replace('token-recipe:', ''))}</div>
-      <h3>${escHtml(humanizeId(recipe.id.replace('token-recipe:', '')))}</h3>
-      <p>${escHtml(recipe.summary)}</p>
-      <div class="doc-columns">
-        <div><h4>Use when</h4>${renderStringList(recipe.useWhen)}</div>
-        <div><h4>Avoid when</h4>${renderStringList(recipe.avoidWhen)}</div>
+    <article class="doc-recipe-detail">
+      <div class="doc-recipe-heading">
+        <div class="doc-kicker">Selected recipe</div>
+        <h2>${escHtml(humanizeId(recipe.id.replace('token-recipe:', '')))}</h2>
+        <p>${escHtml(recipe.summary)}</p>
       </div>
-      <h4>Composition rules</h4>${renderStringList(recipe.compositionRules)}
-      ${recipe.stateOwnership ? `<h4>State ownership</h4>${renderStringList(recipe.stateOwnership)}` : ''}
-      <h4>Variants</h4>
-      <div class="doc-variants">
-        ${recipe.variants.map(variant => `
-          <div class="doc-variant">
-            <div class="doc-variant-title">${escHtml(variant.label)}<span>${escHtml(variant.modifier || variant.id)}</span></div>
-            ${variant.when ? `<p style="margin-top:6px;color:var(--fg-muted);font-size:10px;line-height:15px">${escHtml(variant.when)}</p>` : ''}
-            ${variant.assignments.map(assignment => `
-              <div class="doc-assignment">
-                <span>${escHtml(assignment.property)}</span>
-                <code>${escHtml(assignment.token || assignment.tokenPattern || assignment.value)}</code>
-              </div>`).join('')}
-            ${variant.notes ? renderStringList(variant.notes) : ''}
-          </div>`).join('')}
+
+      <div class="doc-recipe-rule">
+        <div class="doc-kicker">Decision rule</div>
+        <h3>Start with the choice that drives the composition</h3>
+        <p>${escHtml(RECIPE_SELECTION_RULES[recipe.id] || recipe.summary)}</p>
       </div>
-      ${recipe.accessibility ? `<h4>Accessibility</h4>${renderStringList(recipe.accessibility)}` : ''}
-      ${recipe.examples?.length ? `<h4>Framework-neutral example</h4>${recipe.examples.map(example => `<pre class="doc-code"><code>${escHtml(example.content)}</code></pre>`).join('')}` : ''}
-      ${renderReferences(recipe.references)}
+
+      <section class="doc-recipe-section" aria-label="Recipe fit">
+        <div class="doc-columns">
+          <div><h3>Use for</h3>${renderStringList(recipe.useWhen)}</div>
+          <div><h3>Not for</h3>${renderStringList(recipe.avoidWhen)}</div>
+        </div>
+      </section>
+
+      <section class="doc-recipe-section" aria-labelledby="docs-composition-rules-title">
+        <h3 id="docs-composition-rules-title">Composition rules</h3>
+        ${renderStringList(recipe.compositionRules)}
+      </section>
+
+      <section class="doc-recipe-section" aria-labelledby="docs-recipe-variants-title">
+        <h3 id="docs-recipe-variants-title">Variants</h3>
+        <div style="margin-top:16px">
+          ${variantGroups.map(group => `
+            <section class="doc-recipe-variant-group" aria-label="${escHtml(group.label)}">
+              <div class="doc-recipe-variant-header"><h3>${escHtml(group.label)}</h3></div>
+              <div class="doc-recipe-variant-grid">
+                ${group.variants.map(renderRecipeVariant).join('')}
+              </div>
+            </section>`).join('')}
+        </div>
+      </section>
+
+      ${(recipe.stateOwnership?.length || recipe.accessibility?.length) ? `
+        <section class="doc-recipe-section" aria-label="Recipe guardrails">
+          <div class="doc-columns">
+            ${recipe.stateOwnership?.length ? `<div><h3>State ownership</h3>${renderStringList(recipe.stateOwnership)}</div>` : ''}
+            ${recipe.accessibility?.length ? `<div><h3>Accessibility</h3>${renderStringList(recipe.accessibility)}</div>` : ''}
+          </div>
+        </section>` : ''}
+
+      ${recipe.examples?.length ? `
+        <section class="doc-recipe-section" aria-labelledby="docs-recipe-example-title">
+          <h3 id="docs-recipe-example-title">Framework-neutral example</h3>
+          ${recipe.examples.map(example => `<pre class="doc-code"><code>${escHtml(example.content)}</code></pre>`).join('')}
+        </section>` : ''}
+
+      <section class="doc-recipe-section" aria-label="Related guidance">
+        <h3>Related guidance</h3>
+        <div class="doc-family-recipes">
+          ${recipeCategoryMeta?.id === 'color' ? `<button type="button" data-documentation-target="intents">Color intents</button>` : ''}
+          ${familyTarget ? `<button type="button" data-family-target="${escHtml(familyTarget)}">${escHtml(recipeCategoryMeta.label)} families</button>` : ''}
+        </div>
+        ${renderReferences(recipe.references)}
+      </section>
     </article>`;
+}
+
+function renderRecipeVariant(variant) {
+  return `
+    <div class="doc-variant">
+      <div class="doc-variant-title">
+        ${escHtml(variant.label)}
+        ${variant.modifier ? `<span>${escHtml(variant.modifier)}</span>` : ''}
+      </div>
+      ${variant.when ? `<p style="margin-top:6px;color:var(--fg-muted);font-size:10px;line-height:15px">${escHtml(variant.when)}</p>` : ''}
+      ${variant.assignments.map(assignment => `
+        <div class="doc-assignment">
+          <span>${escHtml(assignment.property)}</span>
+          <code>${escHtml(assignment.token || assignment.tokenPattern || assignment.value)}</code>
+        </div>`).join('')}
+      ${variant.notes?.length ? renderStringList(variant.notes) : ''}
+    </div>`;
 }
 
 function renderStringList(items) {

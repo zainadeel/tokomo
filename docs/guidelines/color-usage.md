@@ -18,16 +18,16 @@ Semantic and data tokens should continue to alias reference tokens rather than i
 
 Use this rule first:
 
-1. use semantic colors when the color communicates UI role,
+1. use semantic colors when the color communicates a predefined system UI role,
 2. use data colors when the color differentiates or encodes data,
-3. use literal color-intent tokens only when the hue itself is the intended identity,
+3. use literal color-intent tokens when the hue itself is the intended user- or product-defined identity,
 4. use reference colors only while maintaining the token system or after a reviewed semantic-token gap and explicit design decision.
 
 Examples:
 
 1. page background, card text, button hover, error banner: semantic
 2. bar series, line series, pie slices, heatmap steps: data
-3. a deliberately hue-named treatment with no semantic meaning: literal color intent
+3. a purple custom tag or yellow custom-category map marker whose stable hue assignment is the intended identity: literal color intent
 4. palette generation, alias maintenance, or a reviewed semantic gap: reference
 
 ## 3. Semantic Colors
@@ -89,9 +89,11 @@ Semantic intent is visual meaning; it does not set assistive-technology urgency.
 
 #### Literal Color Intent
 
-`color-color-intent.*` is deliberately hue-based and semantically meaningless. Blue, green, red, and the other hue names identify the color itself, not brand, positive, negative, or any other semantic state.
+`color-color-intent.*` is deliberately hue-based and has no predefined TokoMo meaning. Blue, green, red, and the other hue names identify the color itself rather than brand, positive, negative, or another system-defined semantic state.
 
-Use a literal color-intent family only when a consumer intentionally needs a named hue while retaining TokoMo's mode-aware tones and pairings. Never substitute it for semantic status, product identity, data visualization, guide, AI, or walkthrough meaning.
+Use a literal color-intent family when the user or consuming product intentionally assigns a stable hue to a custom identity while retaining TokoMo's mode-aware tones and pairings. Examples include a purple custom tag, a yellow custom geofence category or map marker, and a user-defined label whose chosen color is expected to remain recognizable wherever that identity recurs. In these cases the color is semantic at the consuming-product level: the association comes from the assignment, not from a meaning predefined by TokoMo.
+
+Do not substitute literal hue for a documented brand, status, risk, success, AI, guide, or walkthrough intent. Use data-color families for analytical chart series, quantitative sequences, and diverging data. When users must identify or distinguish a custom category, pair its hue with a label, icon, pattern, or other non-color cue.
 
 ### 3.4 Common Semantic Families
 

@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.3.1](https://github.com/zainadeel/tokomo/compare/v6.3.0...v6.3.1) (2026-08-17)
+
+
+### Fixed
+
+* **typography:** align font sizes with Figma ([#128](https://github.com/zainadeel/tokomo/issues/128)) ([1f2e039](https://github.com/zainadeel/tokomo/commit/1f2e0391acd0da506c89d44d78e80a027c6078ea))
+
 ## [6.3.0](https://github.com/zainadeel/tokomo/compare/v6.2.2...v6.3.0) (2026-08-17)
 
 

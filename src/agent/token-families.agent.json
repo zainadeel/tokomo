@@ -286,8 +286,7 @@
       "constraints": [
         "Blue, red, green, and the other names have no predefined TokoMo meaning; their semantic association comes from the stable assignment made by the user or consuming product.",
         "Keep an assigned hue stable wherever that custom identity recurs.",
-        "Selected-state tokens are not yet shipped for these interaction families; do not invent them.",
-        "Use the matching tone-specific interaction family for hover, pressed, and focus."
+        "Use the matching tone-specific interaction family for hover, pressed, focus, and selected (active) states."
       ],
       "recipes": ["token-recipe:semantic-color-pairing", "token-recipe:interaction-layers"],
       "accessibility": [
@@ -295,8 +294,7 @@
         "Use the documented tone pairings; a literal hue assignment does not establish contrast suitability by itself."
       ],
       "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" },
-        { "label": "Selected-state follow-up", "path": "https://github.com/zainadeel/tokomo/issues/117" }
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -1222,7 +1220,7 @@
         {
           "id": "selected",
           "summary": "Persistent selected-state wash; active in token names means selected, not pointer-active.",
-          "tokenPatterns": ["--color-interaction-*-active", "--color-*-interaction-active", "--color-interaction-active", "--color-interaction-active-brand"],
+          "tokenPatterns": ["--color-interaction-*-active", "--color-*-interaction-active", "--color-interaction-active", "--color-interaction-active-brand", "--color-*-interaction-active-brand", "--color-color-intent-interaction-on-*-background-active"],
           "required": false
         },
         {
@@ -1343,20 +1341,21 @@
             { "role": "focus", "property": "focus-ring color", "tokenPattern": "--color-*-interaction-focus" },
             { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
             { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
-          ]
+          ],
+          "notes": ["Use that context's interaction.active-brand token when the selected treatment should be a brand fill rather than a wash."]
         },
         {
           "id": "literal-color-intent",
           "label": "Literal color-intent surface",
           "when": "The surface uses a color-color-intent tone.",
           "assignments": [
+            { "role": "selected", "property": "selected overlay", "tokenPattern": "--color-color-intent-interaction-on-*-background-active" },
             { "role": "hover", "property": "hover overlay", "tokenPattern": "--color-color-intent-interaction-on-*-background-hover" },
             { "role": "pressed", "property": "pressed overlay", "tokenPattern": "--color-color-intent-interaction-on-*-background-pressed" },
             { "role": "focus", "property": "focus-ring color", "tokenPattern": "--color-color-intent-interaction-on-*-background-focus" },
             { "role": "focus-gap", "property": "focus-ring gap", "token": "--dimension-space-025" },
             { "role": "focus-width", "property": "focus-ring width", "token": "--dimension-stroke-width-025" }
-          ],
-          "notes": ["No selected-state token is currently shipped for literal color-intent surfaces; do not invent one."]
+          ]
         }
       ],
       "stateOwnership": [

@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.3.0](https://github.com/zainadeel/tokomo/compare/v6.2.2...v6.3.0) (2026-08-17)
+
+
+### Added
+
+* **colors:** add selected-state tokens for color-intent surfaces ([#126](https://github.com/zainadeel/tokomo/issues/126)) ([f8a14be](https://github.com/zainadeel/tokomo/commit/f8a14be730f11fe1aa12baac73416012d589b4e3))
+
 ## [6.2.2](https://github.com/zainadeel/tokomo/compare/v6.2.1...v6.2.2) (2026-08-14)
 
 

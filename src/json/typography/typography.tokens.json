@@ -98,7 +98,7 @@
     },
     "lg": {
       "$type": "number",
-      "$value": 18,
+      "$value": 17,
       "$extensions": {
         "com.figma.variableId": "VariableID:18277:101",
         "com.figma.scopes": [
@@ -118,7 +118,7 @@
     },
     "2xl": {
       "$type": "number",
-      "$value": 32,
+      "$value": 36,
       "$extensions": {
         "com.figma.variableId": "VariableID:18277:96",
         "com.figma.scopes": [

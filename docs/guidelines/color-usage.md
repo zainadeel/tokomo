@@ -153,7 +153,8 @@ Select the family from the background underneath the interaction:
 | `background.medium.*` | `interaction.on-medium-background.*` | `interaction.on-medium-background.active` | `interaction.on-medium-background.focus` |
 | `background.bold.*` | `interaction.on-bold-background.*` | `interaction.on-bold-background.active` | `interaction.on-bold-background.focus` |
 | `background.strong.*` | `interaction.on-strong-background.*` | `interaction.on-strong-background.active` | `interaction.on-strong-background.focus` |
-| fixed or specialized context | that context's `interaction.*` family | that context's `interaction.active` when published | that context's `interaction.focus` |
+| `color-color-intent.*` faint / medium / bold / strong | `color-intent.interaction.on-*-background.hover` / `pressed` | `color-intent.interaction.on-*-background.active` | `color-intent.interaction.on-*-background.focus` |
+| fixed or specialized context | that context's `interaction.*` family | that context's `interaction.active` overlay, or `interaction.active-brand` when a brand fill is the selected treatment | that context's `interaction.focus` |
 
 In interaction token names, `active` means persistent **selected** state. It does not mean the transient CSS `:active` pointer state; map CSS `:active` to the pressed token.
 
@@ -167,7 +168,7 @@ The visual stack from bottom to top is:
 
 A positioned `::after` pseudo-element is the required reference technique for the hover/pressed top sheet, because replacing `background-color` or painting the wash behind inner content does not preserve that stack. A separate `::before` layer can carry selected state underneath content. Disabled content receives no hover or pressed overlay, and hover should be limited to hover-capable fine pointers so touch input does not latch it after a tap.
 
-Literal `color-color-intent` surfaces publish hover, pressed, and focus states for each tone, but do not yet publish selected-state tokens. Do not invent one; selected-state coverage is tracked in [issue #117](https://github.com/zainadeel/tokomo/issues/117).
+Literal `color-color-intent` surfaces publish hover, pressed, focus, and selected (`active`) states for each tone. Keep all four states on the matching `on-*-background` family; do not borrow a semantic-intent selected token for a literal hue surface.
 
 If a background does not publish or document a matching interaction family, do not assume that background is intended for interactive UI.
 

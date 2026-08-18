@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.4.0](https://github.com/zainadeel/tokomo/compare/v6.3.1...v6.4.0) (2026-08-18)
+
+
+### Added
+
+* **colors:** add selected-state contrast matrix to report:contrast ([#131](https://github.com/zainadeel/tokomo/issues/131)) ([dfd3846](https://github.com/zainadeel/tokomo/commit/dfd3846119fee3a2a52b837f2b83856d0431a02e))
+
 ## [6.3.1](https://github.com/zainadeel/tokomo/compare/v6.3.0...v6.3.1) (2026-08-17)
 
 

@@ -14,20 +14,32 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
-  compositeOverlayRgb,
   contrastFromY,
   isDisplayP3InGamut,
   isSrgbInGamut,
-  linearToEncoded,
-  oklchToXyz,
   rgbEncodedToY,
-  xyzToSrgbLinear,
 } from "../tools/color-system/oklch-utils.mjs";
 import { apcaLc, apcaThreshold } from "../tools/color-system/apca.mjs";
+import {
+  flatten,
+  makeChainResolver,
+  makeResolver,
+  parseCssColor,
+} from "./lib/token-colors.mjs";
+import {
+  buildActiveMatrix,
+  summarizeActiveMatrix,
+} from "./lib/active-contrast.mjs";
 
 const MODES_PATH = "dist/json/colors.modes.json";
 const CSS_PATH = "dist/colors.css";
 const REPORT_PATH = "reports/contrast.md";
+// The selected-state matrix is exhaustive (204 rows x 11 fields), so it gets its
+// own file rather than burying the pairing report it sits alongside.
+const ACTIVE_REPORT_PATH = "reports/active-contrast.md";
+// Machine-readable twin, so the issue #130 Gate 2 review can filter and sort the
+// inventory instead of reading 204 markdown rows by eye.
+const ACTIVE_JSON_PATH = "reports/active-contrast.json";
 
 const WCAG_AA_NORMAL = 4.5;
 // WCAG 2.x 1.4.11 Non-text Contrast, which governs strokes that identify a
@@ -66,80 +78,8 @@ const INTENTS = [
 ];
 
 // ---------------------------------------------------------------------------
-// Colour resolution
-// ---------------------------------------------------------------------------
-
-// Reference tokens are emitted only into the light map (they are theme-independent
-// custom properties in :root), so dark-mode lookups fall back to light.
-function makeResolver(modes) {
-  return function resolve(mode, name, seen = new Set()) {
-    if (seen.has(name)) throw new Error(`Circular token reference at ${name}`);
-    seen.add(name);
-
-    const token = modes[mode]?.[name] ?? modes.light?.[name];
-    if (!token) throw new Error(`Unknown token ${name} in mode ${mode}`);
-
-    const value = String(token.$value).trim();
-    const varMatch = value.match(/^var\(\s*(--[\w-]+)\s*\)$/);
-    if (varMatch) return resolve(mode, varMatch[1], seen);
-    return value;
-  };
-}
-
-// Returns { r, g, b, a } with channels as 0..1 encoded sRGB.
-function parseCssColor(value) {
-  const rgbMatch = value.match(
-    /^rgb\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+)\s*)?\)$/
-  );
-  if (rgbMatch) {
-    return {
-      r: Number(rgbMatch[1]) / 255,
-      g: Number(rgbMatch[2]) / 255,
-      b: Number(rgbMatch[3]) / 255,
-      a: rgbMatch[4] === undefined ? 1 : Number(rgbMatch[4]),
-    };
-  }
-
-  // Reference chromatic tokens ship as oklch(L% C H) — L is a percentage.
-  const oklchMatch = value.match(
-    /^oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+)\s*)?\)$/
-  );
-  if (oklchMatch) {
-    const l = Number(oklchMatch[1]) / 100;
-    const c = Number(oklchMatch[2]);
-    const h = Number(oklchMatch[3]);
-    const { x, y, z } = oklchToXyz(l, c, h);
-    const lin = xyzToSrgbLinear(x, y, z);
-    const clamp01 = (v) => Math.min(1, Math.max(0, v));
-    return {
-      r: clamp01(linearToEncoded(lin.r)),
-      g: clamp01(linearToEncoded(lin.g)),
-      b: clamp01(linearToEncoded(lin.b)),
-      a: oklchMatch[4] === undefined ? 1 : Number(oklchMatch[4]),
-    };
-  }
-
-  throw new Error(`Unsupported colour value: ${value}`);
-}
-
-// ---------------------------------------------------------------------------
 // Measurement
 // ---------------------------------------------------------------------------
-
-// Foreground tokens are frequently black/white at partial alpha, so the
-// foreground must be composited over its background before measuring — this is
-// the sRGB alpha-compositing rule in color-generation.md §4.3, and it is why the
-// figures in color-usage.md §7 are described as post-compositing.
-function flatten(foreground, background) {
-  if (foreground.a >= 1) return foreground;
-  const isBlackish = foreground.r + foreground.g + foreground.b < 1.5;
-  const composited = compositeOverlayRgb(
-    background,
-    isBlackish ? "black" : "white",
-    foreground.a
-  );
-  return { ...composited, a: 1 };
-}
 
 function measure(resolve, mode, fgToken, bgToken) {
   const background = parseCssColor(resolve(mode, bgToken));
@@ -404,9 +344,253 @@ function auditGamut(css) {
 const short = (token) => token.replace(/^--color-/, "");
 const fmt = (n) => n.toFixed(2);
 
+// ---------------------------------------------------------------------------
+// Selected-state ("active") overlay matrix — issue #130 Gate 1
+// ---------------------------------------------------------------------------
+
+// Renders the exhaustive inventory. This report MEASURES only: no token value is
+// changed and no unconfirmed threshold is decided here, because issue #130
+// requires this output to be reviewed before any token moves.
+function renderActiveMatrix(rows, summary) {
+  const lines = [];
+  const verdict = (row) => {
+    if (row.pass) return "pass";
+    if (row.activeIntroducedFailure) return "**FAIL — active introduced**";
+    return "**FAIL — base already failed**";
+  };
+
+  lines.push("# Selected-state (`active`) overlay contrast matrix");
+  lines.push("");
+  lines.push(
+    `Generated by \`npm run report:contrast\` from \`${MODES_PATH}\`. Do not edit by hand.`
+  );
+  lines.push("");
+  lines.push(
+    "Exhaustive row-level inventory of every documented selected-state combination, per the " +
+      "Interaction table in `docs/guidelines/color-usage.md` §3.4. In interaction token names " +
+      "`active` means the persistent **selected** state, not the transient CSS `:active` pointer " +
+      "state."
+  );
+  lines.push("");
+  lines.push(
+    "The documented visual stack puts the selected overlay **above** the original background and " +
+      "**below** inner content, so content is measured against `composite(active, background)` " +
+      "using sRGB alpha compositing (`color-generation.md` §4.3). Foreground tokens with alpha are " +
+      "then composited over that result."
+  );
+  lines.push("");
+  lines.push(
+    "**This report changes nothing.** It is the Gate 1 measurement for " +
+      "[issue #130](https://github.com/zainadeel/tokomo/issues/130). Tuning overlay references, " +
+      "base/foreground pairings, or palette relationships is Gate 3, and is blocked until the " +
+      "compatibility and threshold review in Gate 2 is complete."
+  );
+  lines.push("");
+  lines.push("Columns:");
+  lines.push("");
+  lines.push("- **Before** — foreground on the base background, with no overlay applied.");
+  lines.push("- **After** — foreground on the base background with the selected overlay composited beneath it.");
+  lines.push(
+    "- **Result** — `pass`, `FAIL — active introduced` (the base pairing passed and the overlay " +
+      "broke it), or `FAIL — base already failed` (the pairing was already below threshold before " +
+      "the overlay)."
+  );
+  lines.push("");
+
+  lines.push("## Summary");
+  lines.push("");
+  lines.push(`- Combinations measured: **${summary.total}** (${summary.total / 2} pairings x 2 themes)`);
+  lines.push(`- Passing: **${summary.passing}**`);
+  lines.push(`- Failing: **${summary.failing}**`);
+  lines.push(`  - Introduced by the active overlay: **${summary.introducedByActive}**`);
+  lines.push(`  - Already failing before the overlay: **${summary.baseAlreadyFailed}**`);
+  lines.push(
+    `- Rows whose applicable threshold is **not yet documented**: **${summary.unconfirmedThreshold}** ` +
+      "(measured against normal text pending the Gate 2 decision)"
+  );
+  lines.push(
+    `- Rows that are **conditional**, not a system-wide guarantee: **${summary.conditional}**`
+  );
+  lines.push("");
+
+  // Group-level orientation, explicitly labelled as non-authoritative so it is
+  // not mistaken for the inventory the issue asks for.
+  lines.push("### By family");
+  lines.push("");
+  lines.push(
+    "Orientation only. The authoritative inventory is the per-row tables below — issue #130 " +
+      "requires every failing combination listed individually, not totals by family."
+  );
+  lines.push("");
+  lines.push("| Group | Pass | Fail | Active introduced | Base already failed |");
+  lines.push("| --- | --- | --- | --- | --- |");
+  const groups = [];
+  for (const row of rows) {
+    let entry = groups.find((g) => g.title === row.group);
+    if (!entry) {
+      entry = { title: row.group, pass: 0, fail: 0, introduced: 0, base: 0, rows: [] };
+      groups.push(entry);
+    }
+    entry.rows.push(row);
+    if (row.pass) entry.pass += 1;
+    else {
+      entry.fail += 1;
+      if (row.activeIntroducedFailure) entry.introduced += 1;
+      if (row.baseAlreadyFailed) entry.base += 1;
+    }
+  }
+  for (const g of groups) {
+    lines.push(`| ${g.title} | ${g.pass} | ${g.fail} | ${g.introduced} | ${g.base} |`);
+  }
+  lines.push("");
+
+  lines.push("## Full matrix");
+  lines.push("");
+
+  for (const g of groups) {
+    lines.push(`### ${g.title}`);
+    lines.push("");
+
+    const notes = [...new Set(g.rows.map((r) => r.note).filter(Boolean))];
+    for (const note of notes) {
+      lines.push(`> ${note}`);
+      lines.push("");
+    }
+    if (g.rows.some((r) => !r.thresholdConfirmed)) {
+      lines.push(
+        "> **Threshold unconfirmed.** These rows are measured against the " +
+          `${WCAG_AA_NORMAL}:1 normal-text target because no large-text or non-text restriction is ` +
+          "documented for this family. Confirming or restricting that threshold is a Gate 2 decision."
+      );
+      lines.push("");
+    }
+
+    lines.push(
+      "| Theme | Active token | Active ref | Base background | Base ref | Foreground | Foreground ref | Before | After | Threshold | Result |"
+    );
+    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+    for (const row of [...g.rows].sort(
+      (a, b) => a.contrastAfter - b.contrastAfter || a.theme.localeCompare(b.theme)
+    )) {
+      lines.push(
+        `| ${row.theme} | \`${short(row.activeToken)}\` | \`${short(row.activeReference)}\` | ` +
+          `\`${short(row.baseToken)}\` | \`${short(row.baseReference)}\` | ` +
+          `\`${short(row.foregroundToken)}\` | \`${short(row.foregroundReference)}\` | ` +
+          `${fmt(row.contrastBefore)}:1 | ${fmt(row.contrastAfter)}:1 | ` +
+          `${fmt(row.threshold)}:1${row.thresholdConfirmed ? "" : " (unconfirmed)"} | ${verdict(row)} |`
+      );
+    }
+    lines.push("");
+  }
+
+  // Every failure, individually, as the acceptance criteria require.
+  const failures = rows.filter((row) => !row.pass);
+  lines.push("## Every failing combination");
+  lines.push("");
+  if (!failures.length) {
+    lines.push("No documented selected-state combination falls below its threshold.");
+    lines.push("");
+  } else {
+    lines.push(
+      `${failures.length} failing combinations, each listed individually and sorted by severity. ` +
+        "`Cause` separates the two fixes issue #130 distinguishes: a row the overlay broke needs an " +
+        "overlay-reference fix, a row that was already failing needs a base or foreground fix."
+    );
+    lines.push("");
+    lines.push(
+      "| Theme | Active token | Base background | Foreground | Before | After | Threshold | Cause |"
+    );
+    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- |");
+    for (const row of [...failures].sort((a, b) => a.contrastAfter - b.contrastAfter)) {
+      lines.push(
+        `| ${row.theme} | \`${short(row.activeToken)}\` | \`${short(row.baseToken)}\` | ` +
+          `\`${short(row.foregroundToken)}\` | ${fmt(row.contrastBefore)}:1 | ` +
+          `${fmt(row.contrastAfter)}:1 | ${fmt(row.threshold)}:1` +
+          `${row.thresholdConfirmed ? "" : " (unconfirmed)"} | ` +
+          `${row.activeIntroducedFailure ? "active introduced" : "base already failed"} |`
+      );
+    }
+    lines.push("");
+  }
+
+  // The explicit Gate 2 agenda.
+  lines.push("## Gate 2 review agenda");
+  lines.push("");
+  lines.push(
+    "Issue #130 requires the intended compatibility and threshold for each family to be confirmed " +
+      "before any token changes. The rows below are the ones this measurement cannot settle on its own."
+  );
+  lines.push("");
+
+  const unconfirmed = rows.filter((row) => !row.thresholdConfirmed);
+  lines.push("### Undocumented thresholds");
+  lines.push("");
+  if (!unconfirmed.length) {
+    lines.push("Every measured family has a documented threshold.");
+  } else {
+    const families = [...new Set(unconfirmed.map((row) => row.family))];
+    for (const family of families) {
+      const subset = unconfirmed.filter((row) => row.family === family);
+      const failing = subset.filter((row) => !row.pass).length;
+      lines.push(
+        `- \`${family}\` — ${subset.length} rows, ${failing} failing at ${WCAG_AA_NORMAL}:1. ` +
+          "Confirm whether this family is restricted to large text / non-text (3:1), or whether the " +
+          "base foreground choices need correction."
+      );
+    }
+  }
+  lines.push("");
+
+  const conditional = rows.filter((row) => row.conditional);
+  lines.push("### Conditional rows");
+  lines.push("");
+  if (!conditional.length) {
+    lines.push("No measured row depends on an assumed backdrop.");
+  } else {
+    lines.push(
+      "These pass only against the assumed backdrop named below. They are **not** an unconditional " +
+        "guarantee, and must not be reported as one."
+    );
+    lines.push("");
+    for (const row of conditional) {
+      lines.push(
+        `- ${row.theme} — \`${short(row.activeToken)}\` on \`${short(row.baseToken)}\` over an ` +
+          `assumed \`${short(row.baseUnderToken)}\` backdrop: ${fmt(row.contrastAfter)}:1.`
+      );
+    }
+  }
+  lines.push("");
+
+  lines.push("## Out of scope here");
+  lines.push("");
+  lines.push(
+    "- **Token changes.** Gate 3, blocked on the Gate 2 review above."
+  );
+  lines.push(
+    "- **Hover and pressed overlays.** Issue #130 defers these to a follow-up. They stack *above* " +
+      "both the selected overlay and the content, not beneath it, so the composite order differs " +
+      "from the one measured here and they need their own audit rather than a re-run of this one. " +
+      "`buildActiveMatrix()` accepts a caller-supplied combination list, and `evaluateCombination()` " +
+      "is agnostic about which overlay token it is handed, so the resolution and compositing layer " +
+      "is reusable; the enumeration and the stacking order are not."
+  );
+  lines.push(
+    "- **CompoMo.** Explicitly out of scope for both the calculation and the fix. Consumers stay on " +
+      "the correct semantic token; failures are not to be fixed by component-specific token " +
+      "substitution."
+  );
+  lines.push("");
+
+  return `${lines.join("\n")}\n`;
+}
+
+
 function run(modes, css) {
   const resolve = makeResolver(modes);
+  const resolveChain = makeChainResolver(modes);
   const groups = buildPairs();
+  const activeRows = buildActiveMatrix(resolve, resolveChain);
+  const activeSummary = summarizeActiveMatrix(activeRows);
   const lines = [];
   const skipped = [];
   const floorFailures = [];
@@ -558,6 +742,28 @@ function run(modes, css) {
     lines.push("");
   }
 
+  // Selected-state overlays are measured in their own report because the matrix
+  // is exhaustive. Surfaced here so this report does not read as complete
+  // coverage of the shipped pairings when it excludes interaction overlays.
+  lines.push("## Selected-state (`active`) overlays");
+  lines.push("");
+  lines.push(
+    `Measured separately in \`${ACTIVE_REPORT_PATH}\` (machine-readable twin at ` +
+      `\`${ACTIVE_JSON_PATH}\`), written by this same command. The pairings above are measured ` +
+      "**without** any interaction overlay applied, so a pass here does not imply a pass once the " +
+      "selected overlay is composited beneath the content."
+  );
+  lines.push("");
+  lines.push(
+    `- Combinations measured: **${activeSummary.total}**` +
+      ` — passing **${activeSummary.passing}**, failing **${activeSummary.failing}**.`
+  );
+  lines.push(
+    `- Of the failures, **${activeSummary.introducedByActive}** were introduced by the overlay and ` +
+      `**${activeSummary.baseAlreadyFailed}** were already failing at the base pairing.`
+  );
+  lines.push("");
+
   const gamut = auditGamut(css);
 
   lines.push("## Gamut audit — chromatic reference tokens");
@@ -594,21 +800,42 @@ function run(modes, css) {
     `- Pairings below their APCA floor (Lc ${APCA_BODY_MIN} text, Lc ${APCA_UI_MIN} non-text): **${apcaShortfalls}**`
   );
   if (skipped.length) lines.push(`- Skipped (translucent background): **${skipped.length}**`);
+  lines.push(
+    `- Selected-state (\`active\`) combinations failing their threshold: ` +
+      `**${activeSummary.failing}/${activeSummary.total}** (see \`${ACTIVE_REPORT_PATH}\`)`
+  );
   lines.push(`- Chromatic reference tokens outside sRGB: **${gamut.outsideSrgb.length}** (expected)`);
   lines.push(`- Chromatic reference tokens outside P3: **${gamut.outsideP3.length}**`);
   lines.push("");
 
-  return { markdown: `${lines.join("\n")}\n`, wcagFailures, apcaShortfalls, gamut };
+  return {
+    markdown: `${lines.join("\n")}\n`,
+    wcagFailures,
+    apcaShortfalls,
+    gamut,
+    activeRows,
+    activeSummary,
+    activeMarkdown: renderActiveMatrix(activeRows, activeSummary),
+  };
 }
 
 const modes = JSON.parse(await readFile(MODES_PATH, "utf8"));
 const css = await readFile(CSS_PATH, "utf8");
-const { markdown, wcagFailures, apcaShortfalls, gamut } = run(modes, css);
+const { markdown, wcagFailures, apcaShortfalls, gamut, activeRows, activeSummary, activeMarkdown } =
+  run(modes, css);
 
 await mkdir(path.dirname(REPORT_PATH), { recursive: true });
 await writeFile(REPORT_PATH, markdown, "utf8");
+await writeFile(ACTIVE_REPORT_PATH, activeMarkdown, "utf8");
+await writeFile(
+  ACTIVE_JSON_PATH,
+  `${JSON.stringify({ summary: activeSummary, rows: activeRows }, null, 2)}\n`,
+  "utf8"
+);
 
 console.log(`Wrote ${REPORT_PATH}`);
+console.log(`Wrote ${ACTIVE_REPORT_PATH}`);
+console.log(`Wrote ${ACTIVE_JSON_PATH}`);
 console.log(
   `WCAG failures vs per-group threshold (${WCAG_AA_NORMAL}:1 text, ${WCAG_UI_NONTEXT}:1 non-text): ${wcagFailures}`
 );
@@ -620,3 +847,12 @@ console.log(
 );
 console.log(`Chromatic reference tokens outside P3: ${gamut.outsideP3.length}`);
 console.log("APCA is diagnostic only — WCAG 2.x AA remains the shipped contract.");
+console.log(
+  `Selected-state (active) combinations: ${activeSummary.failing}/${activeSummary.total} failing ` +
+    `(${activeSummary.introducedByActive} introduced by the overlay, ` +
+    `${activeSummary.baseAlreadyFailed} already failing at base)`
+);
+console.log(
+  `Selected-state rows awaiting a documented threshold: ${activeSummary.unconfirmedThreshold}; ` +
+    `conditional rows: ${activeSummary.conditional}. This report changes no tokens (issue #130 Gate 1).`
+);

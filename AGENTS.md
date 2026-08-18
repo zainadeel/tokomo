@@ -103,6 +103,9 @@ scripts/
   build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation)
   docs-template.html            # Template for Browser / Documentation / Color Tool navigation
   report-contrast.mjs           # WCAG + APCA report over shipped pairings (manual, not in build)
+  lib/
+    token-colors.mjs            # Shared token resolution, CSS colour parsing, sRGB compositing
+    active-contrast.mjs         # Selected-state (`active`) overlay contrast matrix — pure, unit-tested
 docs/
   index.html            # Built GitHub Pages browser (do NOT edit by hand — regenerate)
   guidelines/           # Hand-written specs — READ THESE before changing tokens
@@ -129,16 +132,28 @@ release-please-config.json      # Release Please config (node, changelog section
 
 ```bash
 npm run build            # Full build — CSS + JSON + TypeScript
-npm run test             # Token JSON mode preservation + OKLCH/contrast math
+npm run test             # Token JSON mode preservation + OKLCH/contrast math + active-overlay matrix
 npm run build:colors     # Color tokens only (fast iteration)
 npm run build:docs       # Rebuild docs/index.html (GH Pages browser)
 npm run build:agent      # Validate and generate the unified agent guidance contract
-npm run report:contrast  # WCAG + APCA report over shipped pairings (run after palette changes)
+npm run report:contrast  # WCAG + APCA + selected-state overlay reports (run after palette changes)
 npm run dev              # Watch mode — rebuilds on src changes
 npm run clean            # Remove dist/
 ```
 
 `report:contrast` is diagnostic and gates nothing. WCAG 2.x AA is the shipped accessibility contract; APCA `Lc` is tracked alongside it as forward-looking guidance only. See `docs/guidelines/color-generation.md` §4.5.
+
+It writes three files:
+
+| File | Contents |
+| --- | --- |
+| `reports/contrast.md` | Resting-surface pairings — no interaction overlay applied |
+| `reports/active-contrast.md` | Exhaustive selected-state (`active`) overlay matrix, both themes |
+| `reports/active-contrast.json` | Machine-readable twin of the matrix, for filtering and sorting |
+
+The resting figures and the selected-state figures answer different questions. A pairing can clear $4.5{:}1$ at rest and fail once the selected overlay is composited beneath the content, so **never treat a `contrast.md` pass as coverage for an interactive element** — see `docs/guidelines/color-usage.md` §7.6.
+
+Coverage of the selected-state matrix is enforced by `tests/active-contrast.test.mjs`: if a new `interaction.*-active` token is added without being wired into `buildActiveCombinations()`, the test suite fails rather than silently omitting it. Hover, pressed, and focus overlays are not yet measured.
 
 There is no separate lint command. `npm test` covers token-mode preservation, color math, and the generated agent contract. The Build workflow re-runs the build, runs tests, verifies distributable artifacts, and asserts `src/` was not mutated.
 

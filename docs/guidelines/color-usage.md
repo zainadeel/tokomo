@@ -487,7 +487,7 @@ WCAG 1.4.11 applies to visual information *required to identify* a control. A te
 
 That reasoning does not extend to a bare checkbox, radio, or toggle. Those have no internal text, so the stroke is the only thing distinguishing the control from the surface, and $3{:}1$ does bind. Use `border.primary` there.
 
-If a field's state must be communicated — invalid, focused, disabled — that state needs its own treatment and cannot lean on the resting stroke. Use a semantic intent stroke plus a non-color cue, per Section 7.6.
+If a field's state must be communicated — invalid, focused, disabled — that state needs its own treatment and cannot lean on the resting stroke. Use a semantic intent stroke plus a non-color cue, per Section 7.7.
 
 #### Intent strokes
 
@@ -602,7 +602,48 @@ One observation worth carrying forward: every failure found across both floors w
 | `navigation.foreground.tertiary` (dark) | 1 | Fixed — `white/35`, at parity with core. |
 | `foreground.on-medium-background.secondary` | 2 | Fixed — `white/90` dark. |
 
-### 7.6 Never Rely On Color Alone
+### 7.6 Selected-State Overlay Contrast
+
+Every figure in 7.1 through 7.5 is measured on a **resting** surface, with no interaction overlay applied. That is not the whole story for an interactive element. Section 3.4 defines the selected (`active`) overlay as sitting *above* the original background and *below* inner content, so on a selected row or chip the content is not read against the base background at all — it is read against `composite(active, background)`.
+
+A pairing can therefore clear $4.5{:}1$ at rest and fail once it is selected. **A pass in 7.1 does not imply a pass when selected.**
+
+`npm run report:contrast` measures this and writes `reports/active-contrast.md`, with a machine-readable twin at `reports/active-contrast.json`. The matrix is exhaustive: every documented selected-state combination, in both themes, with the contrast before the overlay, the contrast after it, and — for each failure — whether the overlay introduced the failure or the base pairing was already below threshold. That distinction is what determines the fix: an overlay-introduced failure points at the overlay reference, while a pre-existing failure points at the base or foreground choice.
+
+#### Current state
+
+204 combinations are measured. **103 fail** at the $4.5{:}1$ normal-text target: 97 introduced by the overlay, 6 already failing at rest.
+
+| Family | Failing | Notes |
+| --- | --- | --- |
+| Core semantic — faint, strong | 0 | Both clear the target in both themes. |
+| Core semantic — medium | 1 | Dark walkthrough at $4.47{:}1$, just under the line. |
+| Core semantic — bold | 8 | All light theme, all overlay-introduced. Light negative is the only light bold intent that holds. |
+| Literal `color-intent` | 86 of 96 | All overlay-introduced. Their foreground is the reciprocal tone rather than black or white, so they must be audited separately from the semantic intents. |
+| Driver status | 8 of 10 | 6 already fail at rest; 2 more fall after the overlay. Threshold not yet confirmed — see below. |
+| Safety score | 0 | All six clear the target. |
+| Default brand-selected, always-dark, inverted, media, navigation | 0 | All measured combinations clear the target. |
+| Translucent | 0, conditionally | See the limitation below. |
+
+These figures are the measurement, not a resolution. Token values have deliberately **not** been changed on the strength of them: confirming the intended compatibility and accessibility threshold for each family comes first, because two of the families above cannot be fixed correctly without that decision.
+
+#### Driver status has no documented threshold
+
+The driver-status family publishes a single foreground for all five status fills, and nothing in these guidelines restricts it to large text or non-text use. Six of its ten combinations already fail at rest — the worst, light personal-conveyance and yard-move, sit at $1.88{:}1$ — which is too far below the target to be an overlay problem.
+
+So either the family is genuinely restricted to large-text or non-text use and that restriction belongs in this document, or the base foreground choices need correcting. The audit reports these rows against $4.5{:}1$ and marks the threshold `unconfirmed` rather than quietly assuming the $3{:}1$ that would make them pass.
+
+#### The translucent limitation
+
+`translucent.*` publishes no background token of its own. `translucent.translucent` is a **scrim**: it takes the luminance of whatever sits behind it, and the family has no universal backdrop.
+
+That means no unconditional contrast figure exists for it. The audit measures the translucent selected states over an *assumed* `background.primary` backdrop, where they clear the target, and marks those rows **conditional**. Read them as "passes over this one backdrop", never as a system-wide guarantee. On a darker or busier backdrop — imagery, video, a bold surface — the result will differ, and a translucent surface used over arbitrary content has to be verified against that content.
+
+#### Hover and pressed are not yet covered
+
+This audit covers the selected state only. Hover and pressed overlays stack *above* both the selected overlay and the content per the Section 3.4 stack, so they compound the effect measured here and need their own composited-pair audit. 54 hover, pressed, and focus tokens remain unmeasured.
+
+### 7.7 Never Rely On Color Alone
 
 Contrast is necessary but not sufficient. A status that is communicated only by hue is invisible to users with color vision deficiency, and it disappears entirely in forced-colors and monochrome rendering.
 

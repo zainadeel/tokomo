@@ -25,6 +25,26 @@ export const WCAG_LARGE_TEXT = 3;
 
 export const THEMES = ["light", "dark"];
 
+// Families deliberately OUT OF SCOPE for the selected-state contrast contract.
+//
+// This is a scope decision by the token owner, not a measurement result. It is
+// declared here rather than by omitting the families, so the coverage test can
+// still fail on an *accidental* gap: audited + excluded must equal shipped.
+//
+// Map markers are excluded. They sit over arbitrary map imagery rather than a
+// token-defined surface, so no backdrop this audit can enumerate governs them,
+// and none has a documented text-size restriction.
+//
+// Excluding them does not fix them. At the time of exclusion five marker
+// pairings failed 4.5:1 *at rest*, before any overlay — worst at 1.64:1, white
+// on a light yellow fill — and four of those five also fail a 3:1 large-text
+// restriction. Those tokens still ship. See color-usage.md §7.6.
+export const EXCLUDED_ACTIVE_TOKENS = [
+  "--color-entity-cluster-marker-interaction-active",
+  "--color-entity-marker-interaction-active",
+  "--color-location-marker-interaction-active",
+];
+
 // Semantic intents present in the strong/bold/medium/faint families.
 export const INTENTS = [
   "ai",
@@ -118,6 +138,19 @@ export function buildActiveCombinations() {
 
   // Literal color-intent surfaces. §3.4: keep all four states on the matching
   // on-*-background family; do not borrow a semantic-intent selected token.
+  //
+  // The SELECTED state on these surfaces is restricted to large-text / non-text
+  // content, so 3:1 is its applicable threshold. Confirmed decision; see
+  // color-usage.md §7.6.
+  //
+  // Why: the foreground here is the reciprocal tone of the same hue, not black or
+  // white, so it starts near its partner by design — resting contrast across all
+  // 96 combinations is 4.51-7.76:1. A black or white foreground sits at a
+  // luminance extreme and absorbs the overlay shift; a reciprocal tone does not.
+  // At 4.5:1 the shipped overlay breaks 71 of 96 and no perceptible overlay alpha
+  // fixes them (the tightest tolerates a ~= 0.0006). The restriction is the
+  // no-colour-change resolution. Note it applies to the SELECTED state only —
+  // these surfaces still carry normal text at rest.
   for (const tone of LITERAL_TONES) {
     for (const hue of LITERAL_HUES) {
       combos.push({
@@ -126,25 +159,45 @@ export function buildActiveCombinations() {
         baseToken: `--color-color-intent-${hue}-${tone}-background`,
         activeToken: `--color-color-intent-interaction-on-${tone}-background-active`,
         foregroundToken: `--color-color-intent-${hue}-${tone}-foreground`,
+        threshold: WCAG_LARGE_TEXT,
+        thresholdBasis: "large text / non-text when selected (confirmed)",
+        note:
+          "Selected state restricted to large-text / non-text content. At 4.5:1 normal text, 71 of " +
+          "96 combinations fail because the foreground is a reciprocal tone rather than black or " +
+          "white. These surfaces still carry normal text AT REST — the restriction applies only " +
+          "while the selected overlay is present.",
       });
     }
   }
 
-  // Driver status publishes ONE foreground for all five status fills, and the
-  // guidelines do not state a text-size restriction for it. Issue #130 flags this
-  // as a Gate 2 decision, so the threshold is reported as unconfirmed.
+  // Driver status publishes a foreground AND an interaction family per status,
+  // replacing the single foreground that once served all five fills. That
+  // restructure is what cleared its resting failures.
+  //
+  // The family is restricted to bold or large text, so 3:1 is its applicable
+  // threshold. Confirmed decision; see color-usage.md §7.6. Like literal
+  // color-intent, its foreground is a reciprocal tone rather than black or white,
+  // which is why the selected overlay costs it enough to matter at 4.5:1.
   for (const status of DRIVER_STATUSES) {
     combos.push({
       group: "Driver status",
-      family: "driver-status.interaction.active",
+      family: `driver-status.interaction.on-${status}.active`,
       baseToken: `--color-driver-status-background-${status}`,
-      activeToken: "--color-driver-status-interaction-active",
-      foregroundToken: "--color-driver-status-foreground",
-      thresholdConfirmed: false,
-      note: "No documented text-size restriction; measured against normal text pending review.",
+      activeToken: `--color-driver-status-interaction-on-${status}-active`,
+      foregroundToken: `--color-driver-status-foreground-${status}`,
+      threshold: WCAG_LARGE_TEXT,
+      thresholdBasis: "bold / large text (confirmed)",
+      note:
+        "Restricted to bold or large text. Six of the ten rows also point their overlay toward the " +
+        "foreground rather than away from it, which costs contrast for nothing — correcting the " +
+        "polarity would clear all ten at 4.5:1 normal text. Not required under the 3:1 restriction.",
     });
   }
 
+  // Safety score is restricted to large-text / non-text use, so 3:1 is its
+  // applicable threshold rather than 4.5:1. Confirmed in the issue #130 Gate 2
+  // review; see color-usage.md §7.6. This is why dark `good` is not a defect: it
+  // rests at 3.56:1, which clears 3:1 but not 4.5:1.
   for (const tier of SAFETY_TIERS) {
     combos.push({
       group: "Safety score",
@@ -152,6 +205,8 @@ export function buildActiveCombinations() {
       baseToken: `--color-safety-score-background-${tier}`,
       activeToken: "--color-safety-score-interaction-active",
       foregroundToken: `--color-safety-score-foreground-on-${tier}`,
+      threshold: WCAG_LARGE_TEXT,
+      thresholdBasis: "large text / non-text (confirmed, Gate 2)",
     });
   }
 
@@ -261,6 +316,8 @@ export function evaluateCombination(resolve, resolveChain, mode, combo) {
 
     threshold,
     thresholdConfirmed,
+    thresholdBasis:
+      combo.thresholdBasis ?? (thresholdConfirmed ? "normal text (default)" : "undocumented"),
     conditional: combo.conditional === true,
     note: combo.note ?? null,
 

@@ -20,8 +20,10 @@ import {
   buildActiveCombinations,
   buildActiveMatrix,
   evaluateCombination,
+  EXCLUDED_ACTIVE_TOKENS,
   summarizeActiveMatrix,
   WCAG_AA_NORMAL,
+  WCAG_LARGE_TEXT,
 } from "../scripts/lib/active-contrast.mjs";
 
 const modes = JSON.parse(
@@ -38,13 +40,24 @@ const shippedActiveTokens = Object.keys(modes.light)
   .filter((name) => /^--color-.*interaction.*-active(-brand)?$/.test(name))
   .sort();
 
-test("every shipped active interaction token is covered by the matrix", () => {
-  const audited = [...new Set(combos.map((combo) => combo.activeToken))].sort();
+test("every shipped active interaction token is audited or explicitly excluded", () => {
+  const audited = [...new Set(combos.map((combo) => combo.activeToken))];
+  const accounted = [...new Set([...audited, ...EXCLUDED_ACTIVE_TOKENS])].sort();
   assert.deepEqual(
-    audited,
+    accounted,
     shippedActiveTokens,
-    "an active overlay token is shipped but not audited (or vice versa)"
+    "an active overlay token is shipped but neither audited nor listed in EXCLUDED_ACTIVE_TOKENS"
   );
+});
+
+test("excluded tokens are out of the matrix, and only those", () => {
+  const audited = new Set(combos.map((combo) => combo.activeToken));
+  for (const token of EXCLUDED_ACTIVE_TOKENS) {
+    assert.ok(!audited.has(token), `${token} is excluded but still audited`);
+    // An exclusion must name a token that actually ships, otherwise it is a
+    // stale entry silently widening the exemption.
+    assert.ok(shippedActiveTokens.includes(token), `${token} is excluded but not shipped`);
+  }
 });
 
 test("matrix covers both themes for every combination", () => {
@@ -67,6 +80,7 @@ test("every row carries all fields issue #130 requires", () => {
       "contrastBefore",
       "contrastAfter",
       "threshold",
+      "thresholdBasis",
     ]) {
       assert.ok(
         row[field] !== undefined && row[field] !== null,
@@ -115,26 +129,52 @@ test("failure cause is attributed exactly one way", () => {
   }
 });
 
-test("translucent rows are conditional and name their assumed backdrop", () => {
-  const translucent = rows.filter((row) => row.baseToken === "--color-translucent-translucent");
-  assert.equal(translucent.length, 4);
-  for (const row of translucent) {
-    assert.equal(row.conditional, true, "translucent must never report an unconditional result");
-    assert.equal(row.baseUnderToken, "--color-background-primary");
-    assert.match(row.note, /no universal backdrop/i);
+test("rows over an assumed backdrop are marked conditional", () => {
+  // One family in scope has no opaque background of its own: the translucent
+  // scrim. (The cluster marker is the other such surface, but markers are out of
+  // scope — see EXCLUDED_ACTIVE_TOKENS.)
+  const CONDITIONAL_BASES = ["--color-translucent-translucent"];
+  for (const base of CONDITIONAL_BASES) {
+    const subset = rows.filter((row) => row.baseToken === base);
+    assert.ok(subset.length > 0, `${base} is not measured`);
+    for (const row of subset) {
+      assert.equal(row.conditional, true, `${base} must never report an unconditional result`);
+      assert.equal(row.baseUnderToken, "--color-background-primary");
+      assert.match(row.note, /assumed/i);
+    }
   }
-  // No non-translucent row should be marked conditional.
-  assert.equal(rows.filter((row) => row.conditional).length, translucent.length);
+  // Nothing else may claim a conditional result.
+  const conditional = rows.filter((row) => row.conditional);
+  for (const row of conditional) {
+    assert.ok(CONDITIONAL_BASES.includes(row.baseToken), `${row.baseToken} marked conditional`);
+  }
+  // Every conditional row must name the backdrop it assumed.
+  for (const row of conditional) assert.ok(row.baseUnderToken);
 });
 
-test("driver status threshold is reported as unconfirmed pending review", () => {
-  const driver = rows.filter((row) => row.family === "driver-status.interaction.active");
+test("driver status pairs each status fill with its own foreground and overlay", () => {
+  // The family was restructured from one shared foreground to one per status,
+  // which is what removed its resting failures. Guard the pairing so a future
+  // export cannot silently collapse it back.
+  const driver = rows.filter((row) => row.family.startsWith("driver-status.interaction.on-"));
   assert.equal(driver.length, 10);
   for (const row of driver) {
-    assert.equal(row.thresholdConfirmed, false);
-    // Gate 1 must not quietly pick 3:1 for an undocumented family.
-    assert.equal(row.threshold, WCAG_AA_NORMAL);
+    const status = row.baseToken.replace("--color-driver-status-background-", "");
+    assert.equal(row.foregroundToken, `--color-driver-status-foreground-${status}`);
+    assert.equal(row.activeToken, `--color-driver-status-interaction-on-${status}-active`);
+    // Restricted to bold / large text — a confirmed decision, not an assumption.
+    assert.equal(row.threshold, WCAG_LARGE_TEXT);
+    assert.equal(row.thresholdConfirmed, true);
+    assert.match(row.thresholdBasis, /bold \/ large text/);
+    assert.ok(row.pass, `${row.baseToken} (${row.theme}) fails 3:1 at ${row.contrastAfter}`);
   }
+});
+
+test("driver status no longer fails at rest", () => {
+  // Before the per-status split, 6 of its 10 rows failed with no overlay applied.
+  const driver = rows.filter((row) => row.family.startsWith("driver-status.interaction.on-"));
+  const restFailures = driver.filter((row) => row.contrastBefore < row.threshold);
+  assert.deepEqual(restFailures, [], "the per-status foreground split should clear all resting failures");
 });
 
 test("compositeRgb applies source-over against an opaque base", () => {
@@ -247,18 +287,123 @@ test("summary totals are internally consistent", () => {
   assert.equal(summary.introducedByActive + summary.baseAlreadyFailed, summary.failing);
 });
 
-// Regression anchors. These are the figures issue #130 reported from the
-// directional audit; they pin the compositing method, not the token values, so
-// they are expected to change when Gate 3 retunes the overlays.
-test("reproduces the figures quoted in issue #130", () => {
+// ---------------------------------------------------------------------------
+// Gate 2 review outcomes (issue #130). These lock in the threshold
+// determinations and the root-cause split, so a later palette retune cannot
+// quietly regress them.
+// ---------------------------------------------------------------------------
+
+test("safety score is measured against its confirmed 3:1 restriction", () => {
+  const safety = rows.filter((row) => row.family === "safety-score.interaction.active");
+  assert.equal(safety.length, 6);
+  for (const row of safety) {
+    assert.equal(row.threshold, WCAG_LARGE_TEXT);
+    assert.equal(row.thresholdConfirmed, true);
+    assert.match(row.thresholdBasis, /large text/);
+  }
+  // Every tier clears 3:1 both at rest and after the overlay. Dark `good` rests
+  // at 3.56:1 — below 4.5 but above its actual threshold, so not a defect.
+  for (const row of safety) {
+    assert.ok(row.contrastBefore >= WCAG_LARGE_TEXT, `${row.baseToken} fails 3:1 at rest`);
+    assert.ok(row.pass, `${row.baseToken} fails 3:1 after the overlay`);
+  }
+  const darkGood = safety.find(
+    (row) => row.theme === "dark" && row.baseToken === "--color-safety-score-background-good"
+  );
+  assert.ok(darkGood.contrastBefore < WCAG_AA_NORMAL);
+});
+
+test("nothing in scope fails at rest", () => {
+  // Every audited surface clears its threshold with no overlay applied, so every
+  // failure in the matrix is overlay-induced. If this breaks, a base or
+  // foreground pairing regressed and no overlay change will fix it.
+  const restFailures = rows.filter((row) => row.contrastBefore < row.threshold);
+  assert.deepEqual(
+    restFailures.map((row) => `${row.theme} ${row.baseToken}`),
+    [],
+    "a surface fails before any overlay is applied"
+  );
+});
+
+test("every failure is attributed to the overlay", () => {
+  const summary = summarizeActiveMatrix(rows);
+  assert.equal(summary.baseAlreadyFailed, 0);
+  assert.equal(summary.introducedByActive, summary.failing);
+});
+
+test("literal color-intent selected state is restricted to 3:1 and clears it", () => {
+  const literal = rows.filter((row) => row.baseToken.startsWith("--color-color-intent-"));
+  assert.equal(literal.length, 96);
+  for (const row of literal) {
+    assert.equal(row.threshold, WCAG_LARGE_TEXT);
+    assert.equal(row.thresholdConfirmed, true);
+    assert.match(row.thresholdBasis, /large text/);
+    assert.ok(row.pass, `${row.baseToken} (${row.theme}) fails 3:1 at ${row.contrastAfter}`);
+  }
+  // The restriction is what the decision bought, so record what it gave up: at
+  // normal-text 4.5:1 most of these combinations do not clear.
+  const wouldFailAtNormalText = literal.filter((row) => row.contrastAfter < WCAG_AA_NORMAL);
+  assert.ok(
+    wouldFailAtNormalText.length > 60,
+    `expected the restriction to be load-bearing, only ${wouldFailAtNormalText.length} rows need it`
+  );
+  // And that the restriction applies to the SELECTED state only — these surfaces
+  // still clear normal text at rest.
+  for (const row of literal) {
+    assert.ok(
+      row.contrastBefore >= WCAG_AA_NORMAL,
+      `${row.baseToken} (${row.theme}) fails normal text at rest, which the restriction does not cover`
+    );
+  }
+});
+
+test("every in-scope selected-state combination clears its threshold", () => {
+  // The contract, end to end. If this breaks, something regressed.
+  const failures = rows.filter((row) => !row.pass);
+  assert.deepEqual(
+    failures.map(
+      (row) => `${row.theme} ${row.baseToken} ${row.contrastAfter.toFixed(2)} < ${row.threshold}`
+    ),
+    []
+  );
+});
+
+test("no family is measured against an assumed threshold", () => {
+  // Every restriction in play is a recorded decision. An unconfirmed threshold
+  // means a family is being scored against a guess.
+  const unconfirmed = rows.filter((row) => !row.thresholdConfirmed);
+  assert.deepEqual([...new Set(unconfirmed.map((row) => row.family))], []);
+});
+
+test("families restricted to 3:1 are the ones documented as restricted", () => {
+  // Guard against the restriction quietly spreading to families that should be
+  // held to normal text.
+  const RESTRICTED = ["safety-score.interaction.active"];
+  const restrictedPrefixes = ["color-intent.interaction.on-", "driver-status.interaction.on-"];
+  for (const row of rows) {
+    if (row.threshold !== WCAG_LARGE_TEXT) continue;
+    const ok =
+      RESTRICTED.includes(row.family) ||
+      restrictedPrefixes.some((prefix) => row.family.startsWith(prefix));
+    assert.ok(ok, `${row.family} is scored at 3:1 but is not a documented restriction`);
+  }
+});
+
+// Regression anchors. These pin the compositing method against the shipped
+// overlay values, not the token values themselves — they are expected to move
+// whenever the overlay alphas or the palette are retuned, and updating them is
+// part of that change. Values below reflect the retune that dropped every
+// selected overlay to 5%.
+test("reproduces the shipped selected-state figures", () => {
   const find = (theme, base, active) =>
     rows.find(
       (row) => row.theme === theme && row.baseToken === base && row.activeToken === active
     );
-
   const round = (n) => Number(n.toFixed(2));
 
-  // Dark medium walkthrough sits just under the line at white-10.
+  // The three core-semantic rows that the 10% overlay used to break. Pinned
+  // because they were the tightest in the family and are the first to regress if
+  // the overlay alpha is raised again.
   assert.equal(
     round(
       find(
@@ -267,25 +412,43 @@ test("reproduces the figures quoted in issue #130", () => {
         "--color-interaction-on-medium-background-active"
       ).contrastAfter
     ),
-    4.47
+    4.91
   );
-
-  // Light bold: eight intents fail after white-15, negative is the one that holds.
-  const lightBold = (intent) =>
+  assert.equal(
     round(
       find(
         "light",
-        `--color-background-bold-${intent}`,
+        "--color-background-bold-guide",
         "--color-interaction-on-bold-background-active"
       ).contrastAfter
-    );
-  assert.equal(lightBold("guide"), 4.05);
-  assert.equal(lightBold("walkthrough"), 4.07);
-  assert.equal(lightBold("neutral"), 4.12);
-  assert.equal(lightBold("positive"), 4.12);
-  assert.equal(lightBold("caution"), 4.22);
-  assert.equal(lightBold("warning"), 4.24);
-  assert.equal(lightBold("brand"), 4.41);
-  assert.equal(lightBold("ai"), 4.43);
-  assert.equal(lightBold("negative"), 4.73);
+    ),
+    4.88
+  );
+  assert.equal(
+    round(
+      find(
+        "light",
+        "--color-background-bold-walkthrough",
+        "--color-interaction-on-bold-background-active"
+      ).contrastAfter
+    ),
+    4.91
+  );
+});
+
+test("every main interaction family clears its threshold", () => {
+  // "Main" is everything outside the two families still under review: literal
+  // color-intent and driver status. This is the contract to protect — if it
+  // breaks, a shipped interaction surface regressed.
+  const main = rows.filter(
+    (row) =>
+      !row.family.startsWith("driver-status") &&
+      !row.baseToken.startsWith("--color-color-intent-")
+  );
+  assert.equal(main.length, 98);
+  const failures = main.filter((row) => !row.pass);
+  assert.deepEqual(
+    failures.map((row) => `${row.theme} ${row.baseToken} ${row.contrastAfter.toFixed(2)}`),
+    []
+  );
 });

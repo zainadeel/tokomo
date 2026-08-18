@@ -28,6 +28,7 @@ import {
 } from "./lib/token-colors.mjs";
 import {
   buildActiveMatrix,
+  EXCLUDED_ACTIVE_TOKENS,
   summarizeActiveMatrix,
 } from "./lib/active-contrast.mjs";
 
@@ -380,10 +381,11 @@ function renderActiveMatrix(rows, summary) {
   );
   lines.push("");
   lines.push(
-    "**This report changes nothing.** It is the Gate 1 measurement for " +
-      "[issue #130](https://github.com/zainadeel/tokomo/issues/130). Tuning overlay references, " +
-      "base/foreground pairings, or palette relationships is Gate 3, and is blocked until the " +
-      "compatibility and threshold review in Gate 2 is complete."
+    "**This report changes no token values.** It is the measurement behind " +
+      "[issue #130](https://github.com/zainadeel/tokomo/issues/130). The Gate 2 review is complete — " +
+      "see `docs/guidelines/color-usage.md` §7.6 for the confirmed thresholds, the three fix classes, " +
+      "and who owns each. Palette and foreground changes are Gate 3 and are owned by the token author, " +
+      "not by this audit."
   );
   lines.push("");
   lines.push("Columns:");
@@ -396,6 +398,26 @@ function renderActiveMatrix(rows, summary) {
       "the overlay)."
   );
   lines.push("");
+
+  if (EXCLUDED_ACTIVE_TOKENS.length) {
+    lines.push("## Out of scope by decision");
+    lines.push("");
+    lines.push(
+      "Map markers are excluded from the selected-state contrast contract. They sit over arbitrary " +
+        "map imagery rather than a token-defined surface, so no backdrop this audit can enumerate " +
+        "governs them, and none has a documented text-size restriction."
+    );
+    lines.push("");
+    for (const token of EXCLUDED_ACTIVE_TOKENS) lines.push(`- \`${short(token)}\``);
+    lines.push("");
+    lines.push(
+      "This is a scope decision, not a measurement result, and it does not fix these tokens. At the " +
+        "time of exclusion five marker pairings failed 4.5:1 **at rest**, before any overlay — worst " +
+        "at 1.64:1, `white-100` on a light yellow fill — and four of those five also fail a 3:1 " +
+        "large-text restriction. Those tokens still ship. Every count below excludes them."
+    );
+    lines.push("");
+  }
 
   lines.push("## Summary");
   lines.push("");
@@ -449,6 +471,13 @@ function renderActiveMatrix(rows, summary) {
 
   for (const g of groups) {
     lines.push(`### ${g.title}`);
+    lines.push("");
+
+    const bases = [...new Set(g.rows.map((r) => r.thresholdBasis))];
+    const thresholds = [...new Set(g.rows.map((r) => r.threshold))];
+    lines.push(
+      `Threshold applied: ${thresholds.map((t) => `${fmt(t)}:1`).join(" / ")} — ${bases.join("; ")}.`
+    );
     lines.push("");
 
     const notes = [...new Set(g.rows.map((r) => r.note).filter(Boolean))];
@@ -514,35 +543,48 @@ function renderActiveMatrix(rows, summary) {
   }
 
   // The explicit Gate 2 agenda.
-  lines.push("## Gate 2 review agenda");
+  lines.push("## Failures at rest, before any overlay");
   lines.push("");
   lines.push(
-    "Issue #130 requires the intended compatibility and threshold for each family to be confirmed " +
-      "before any token changes. The rows below are the ones this measurement cannot settle on its own."
+    "Measured from the `Before` column. These are independent of the selected state — the surface " +
+      "fails its threshold with no overlay applied at all, so no overlay change can fix them."
   );
   lines.push("");
 
+  const restFailures = rows.filter((row) => row.contrastBefore < row.threshold);
+  if (!restFailures.length) {
+    lines.push("No measured surface fails its threshold at rest.");
+  } else {
+    lines.push("| Theme | Base background | Foreground | Rest | After | Threshold |");
+    lines.push("| --- | --- | --- | --- | --- | --- |");
+    for (const row of [...restFailures].sort((a, b) => a.contrastBefore - b.contrastBefore)) {
+      lines.push(
+        `| ${row.theme} | \`${short(row.baseToken)}\` | \`${short(row.foregroundToken)}\` | ` +
+          `${fmt(row.contrastBefore)}:1 | ${fmt(row.contrastAfter)}:1 | ${fmt(row.threshold)}:1 |`
+      );
+    }
+  }
+  lines.push("");
+
   const unconfirmed = rows.filter((row) => !row.thresholdConfirmed);
-  lines.push("### Undocumented thresholds");
+  lines.push("## Thresholds still undocumented");
   lines.push("");
   if (!unconfirmed.length) {
-    lines.push("Every measured family has a documented threshold.");
+    lines.push("Every measured family has a documented, confirmed threshold.");
   } else {
     const families = [...new Set(unconfirmed.map((row) => row.family))];
     for (const family of families) {
       const subset = unconfirmed.filter((row) => row.family === family);
       const failing = subset.filter((row) => !row.pass).length;
       lines.push(
-        `- \`${family}\` — ${subset.length} rows, ${failing} failing at ${WCAG_AA_NORMAL}:1. ` +
-          "Confirm whether this family is restricted to large text / non-text (3:1), or whether the " +
-          "base foreground choices need correction."
+        `- \`${family}\` — ${subset.length} rows, ${failing} failing at ${WCAG_AA_NORMAL}:1.`
       );
     }
   }
   lines.push("");
 
   const conditional = rows.filter((row) => row.conditional);
-  lines.push("### Conditional rows");
+  lines.push("## Conditional rows");
   lines.push("");
   if (!conditional.length) {
     lines.push("No measured row depends on an assumed backdrop.");
@@ -564,7 +606,9 @@ function renderActiveMatrix(rows, summary) {
   lines.push("## Out of scope here");
   lines.push("");
   lines.push(
-    "- **Token changes.** Gate 3, blocked on the Gate 2 review above."
+    "- **All colour-value changes.** Gate 3, owned by the token author. That includes the literal " +
+      "`color-intent` palette retune (86 failing rows, not fixable by overlay alpha) and the " +
+      "`driver-status` foreground split (6 rows failing at rest)."
   );
   lines.push(
     "- **Hover and pressed overlays.** Issue #130 defers these to a follow-up. They stack *above* " +
@@ -854,5 +898,6 @@ console.log(
 );
 console.log(
   `Selected-state rows awaiting a documented threshold: ${activeSummary.unconfirmedThreshold}; ` +
-    `conditional rows: ${activeSummary.conditional}. This report changes no tokens (issue #130 Gate 1).`
+    `conditional rows: ${activeSummary.conditional}. This report changes no token values — see ` +
+    "docs/guidelines/color-usage.md §7.6 for the confirmed thresholds and fix classes."
 );

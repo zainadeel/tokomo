@@ -156,6 +156,8 @@ Select the family from the background underneath the interaction:
 | `color-color-intent.*` faint / medium / bold / strong | `color-intent.interaction.on-*-background.hover` / `pressed` | `color-intent.interaction.on-*-background.active` | `color-intent.interaction.on-*-background.focus` |
 | fixed or specialized context | that context's `interaction.*` family | that context's `interaction.active` overlay, or `interaction.active-brand` when a brand fill is the selected treatment | that context's `interaction.focus` |
 
+Two families restrict what their selected state may sit behind. On literal `color-color-intent` surfaces and on `driver-status` fills, the selected state is for **bold or large text and non-text content only** — both use a reciprocal colour tone as their foreground rather than black or white, so normal text does not survive the selected overlay at AA. `safety-score` carries the same $3{:}1$ restriction. See Section 7.6.
+
 In interaction token names, `active` means persistent **selected** state. It does not mean the transient CSS `:active` pointer state; map CSS `:active` to the pressed token.
 
 The visual stack from bottom to top is:
@@ -169,6 +171,8 @@ The visual stack from bottom to top is:
 A positioned `::after` pseudo-element is the required reference technique for the hover/pressed top sheet, because replacing `background-color` or painting the wash behind inner content does not preserve that stack. A separate `::before` layer can carry selected state underneath content. Disabled content receives no hover or pressed overlay, and hover should be limited to hover-capable fine pointers so touch input does not latch it after a tap.
 
 Literal `color-color-intent` surfaces publish hover, pressed, focus, and selected (`active`) states for each tone. Keep all four states on the matching `on-*-background` family; do not borrow a semantic-intent selected token for a literal hue surface.
+
+One restriction applies to the literal families specifically: their **selected state is for large-text or non-text content only**. Their foreground is the reciprocal tone of the same hue rather than black or white, so it does not survive the selected overlay at normal-text contrast. At rest these surfaces carry normal text normally; it is only the selected treatment that is restricted. If normal text must stay readable through selection, use a black or white foreground on that surface instead of the reciprocal tone. See Section 7.6.
 
 If a background does not publish or document a matching interaction family, do not assume that background is intended for interactive UI.
 
@@ -580,58 +584,91 @@ Retuned to `white/35`, bringing it to parity with the core token rather than giv
 
 `tertiary` is documented in Section 7.3 as suitable for inactive or low-emphasis UI content, which means it is expected to be readable, so this was the most important of the four to fix.
 
-#### Current state of the two content floors
-
-| Step | Threshold | Pairings | Failing | Lowest |
-| --- | --- | --- | --- | --- |
-| `*.foreground.tertiary` | $3{:}1$ | 42 | 0 | $3.04{:}1$ |
-| `*.foreground.secondary` | $4.5{:}1$ | 42 | 0 | $4.69{:}1$ |
-
-`secondary` is the lowest step expected to carry body text, so it is held to AA $4.5{:}1$ rather than the $3{:}1$ floor. It previously failed in `foreground.on-medium-background.secondary` on `background.medium.walkthrough` ($4.36{:}1$ dark) and `positive` ($4.44{:}1$ dark), with `guide` sitting exactly on the threshold at $4.50{:}1$. Retuned to `white/90` in dark, the family now measures $4.69$–$5.35{:}1$.
-
-One observation worth carrying forward: every failure found across both floors was in `on-medium-background`. Nothing else in the system missed either threshold. A mid-lightness fill compresses contrast from both directions, so `background.medium.*` is the tightest surface family in the system and the one to re-check first whenever the medium tones move.
-
-#### Summary
-
-| Item | Pairings | Status |
-| --- | --- | --- |
-| `quaternary` steps | 42 | Intentional. Never for content. |
-| `foreground.faint.*` as content | 9 | Intentional. Wrong tone for the job. |
-| `foreground.medium.*` on standard surfaces | 9 | Usage guidance; the tone itself is correct. |
-| `foreground.on-medium-background.tertiary` | 3 | Fixed — `black/55` light, `white/65` dark. |
-| `navigation.foreground.tertiary` (dark) | 1 | Fixed — `white/35`, at parity with core. |
-| `foreground.on-medium-background.secondary` | 2 | Fixed — `white/90` dark. |
-
 ### 7.6 Selected-State Overlay Contrast
 
 Every figure in 7.1 through 7.5 is measured on a **resting** surface, with no interaction overlay applied. That is not the whole story for an interactive element. Section 3.4 defines the selected (`active`) overlay as sitting *above* the original background and *below* inner content, so on a selected row or chip the content is not read against the base background at all — it is read against `composite(active, background)`.
 
-A pairing can therefore clear $4.5{:}1$ at rest and fail once it is selected. **A pass in 7.1 does not imply a pass when selected.**
+A pairing can therefore clear its threshold at rest and fail once it is selected. **A pass in 7.1 does not imply a pass when selected.**
 
-`npm run report:contrast` measures this and writes `reports/active-contrast.md`, with a machine-readable twin at `reports/active-contrast.json`. The matrix is exhaustive: every documented selected-state combination, in both themes, with the contrast before the overlay, the contrast after it, and — for each failure — whether the overlay introduced the failure or the base pairing was already below threshold. That distinction is what determines the fix: an overlay-introduced failure points at the overlay reference, while a pre-existing failure points at the base or foreground choice.
+`npm run report:contrast` measures this and writes `reports/active-contrast.md`, with a machine-readable twin at `reports/active-contrast.json`. The matrix is exhaustive: 204 combinations — every documented selected-state pairing, in both themes — with the contrast before the overlay, the contrast after it, the applicable threshold and its basis, and for each failure whether the overlay introduced it or the base pairing already failed.
+
+#### Applicable thresholds
+
+| Family | Threshold | Basis |
+| --- | --- | --- |
+| Core semantic (faint, medium, bold, strong) | $4.5{:}1$ | Normal text. These are the 7.1/7.2 pairings. |
+| Default brand-selected, always-dark, inverted, media, navigation | $4.5{:}1$ | Normal text. |
+| Literal `color-intent` — at rest | $4.5{:}1$ | Normal text. Section 3.3 has these carrying labels, so they are text-bearing, not decorative. |
+| Literal `color-intent` — **when selected** | $3{:}1$ | **Large text / non-text.** Confirmed restriction; see below. |
+| Safety score | $3{:}1$ | **Large text / non-text.** Confirmed restriction — the score is rendered as a large numeral, not body copy. |
+| Driver status | $3{:}1$ | **Bold / large text.** Confirmed restriction; see below. |
+| Map markers | **out of scope** | Not governed by this contract; see below. |
+| Translucent | conditional | No universal backdrop; see the limitation below. |
+
+The safety-score restriction matters for reading the report. Dark `safety-score.background.good` rests at $3.56{:}1$ — below $4.5{:}1$ but above its actual threshold — so it is **not** a defect. All six safety-score combinations clear $3{:}1$ at rest and after the overlay.
+
+#### Map markers are out of scope
+
+The `entity-marker`, `location-marker`, and `entity-cluster-marker` families are **excluded** from the selected-state contrast contract. They sit over arbitrary map imagery rather than a token-defined surface, so no backdrop the audit can enumerate governs them, and none has a documented text-size restriction. `npm run report:contrast` lists them under "Out of scope by decision" and excludes them from every count.
+
+Two consequences worth stating plainly. First, this is a scope decision, not a measurement result — it can be revisited, and reversing it means re-adding the tokens to `EXCLUDED_ACTIVE_TOKENS` in `scripts/lib/active-contrast.mjs`. Second, exclusion does not fix anything: when the decision was taken, five marker pairings failed $4.5{:}1$ *at rest*, before any overlay, the worst at $1.64{:}1$ — `white-100` on `light-yellow-85-l85-c20-medium` — and four of those five also fail a $3{:}1$ large-text restriction. Those tokens still ship. If markers are ever brought under a contrast contract, that is the starting point.
+
+The audit's coverage test still requires that every shipped `interaction.*-active` token be either measured or named in the exclusion list, so this exemption cannot widen silently.
 
 #### Current state
 
-204 combinations are measured. **103 fail** at the $4.5{:}1$ normal-text target: 97 introduced by the overlay, 6 already failing at rest.
+**All 204 in-scope combinations clear their applicable threshold**, in both themes, at rest and with the selected overlay composited. No family is measured against an assumed threshold — every restriction in play is a recorded decision.
 
-| Family | Failing | Notes |
+| Family | Rows | Threshold | Failing |
+| --- | --- | --- | --- |
+| Main interaction families | 98 | $4.5{:}1$ | 0 |
+| Literal `color-intent` (when selected) | 96 | $3{:}1$ | 0 |
+| Driver status | 10 | $3{:}1$ | 0 |
+
+"Main" covers `interaction.active` on `background.faint.*`, the three `interaction.on-{medium,bold,strong}-background.active` families, `interaction.active-brand`, `safety-score`, `always-dark`, `inverted`, `translucent`, `media`, and `navigation`.
+
+Two of the three groups reach that state through a documented text-size restriction rather than through contrast alone, so the restrictions are load-bearing: at normal-text $4.5{:}1$, 71 of the 96 literal combinations and 6 of the 10 driver-status combinations would not clear. The audit asserts that both restrictions are still needed, so if a future palette change makes one redundant the test flags it rather than leaving a stale restriction in this document.
+
+#### Root cause: the foreground, not the overlay
+
+One fact explains every result in the matrix. Sorting all 204 rows by the *kind* of foreground they use:
+
+| Foreground | Rows | Failing at $4.5{:}1$ |
 | --- | --- | --- |
-| Core semantic — faint, strong | 0 | Both clear the target in both themes. |
-| Core semantic — medium | 1 | Dark walkthrough at $4.47{:}1$, just under the line. |
-| Core semantic — bold | 8 | All light theme, all overlay-introduced. Light negative is the only light bold intent that holds. |
-| Literal `color-intent` | 86 of 96 | All overlay-introduced. Their foreground is the reciprocal tone rather than black or white, so they must be audited separately from the semantic intents. |
-| Driver status | 8 of 10 | 6 already fail at rest; 2 more fall after the overlay. Threshold not yet confirmed — see below. |
-| Safety score | 0 | All six clear the target. |
-| Default brand-selected, always-dark, inverted, media, navigation | 0 | All measured combinations clear the target. |
-| Translucent | 0, conditionally | See the limitation below. |
+| `black-*` / `white-*` | 98 | **0** |
+| Reciprocal colour tone | 106 | **77** |
 
-These figures are the measurement, not a resolution. Token values have deliberately **not** been changed on the strength of them: confirming the intended compatibility and accessibility threshold for each family comes first, because two of the families above cannot be fixed correctly without that decision.
+Black and white sit at the luminance extremes, so they start with maximum headroom and a $5\%$ surface shift barely moves the ratio. A reciprocal tone is deliberately *near* its partner — that is the point of the pairing — so it starts close to the line and the overlay tips it over. Resting contrast tells the same story: reciprocal-tone rows that pass rest at $5.00$–$7.76{:}1$, and those that fail rest at $4.51$–$5.14{:}1$. Nothing about the overlay separates them, only where the pairing started.
 
-#### Driver status has no documented threshold
+Both families that have ever failed this audit — literal `color-intent` and `driver-status` — use reciprocal-tone foregrounds. They differ only in margin, which is why they resolve differently.
 
-The driver-status family publishes a single foreground for all five status fills, and nothing in these guidelines restricts it to large text or non-text use. Six of its ten combinations already fail at rest — the worst, light personal-conveyance and yard-move, sit at $1.88{:}1$ — which is too far below the target to be an overlay problem.
+#### Literal color-intent: restricted when selected
 
-So either the family is genuinely restricted to large-text or non-text use and that restriction belongs in this document, or the base foreground choices need correcting. The audit reports these rows against $4.5{:}1$ and marks the threshold `unconfirmed` rather than quietly assuming the $3{:}1$ that would make them pass.
+No overlay value fixes these. The tightest tolerates $\alpha \approx 0.0006$ against the $0.05$ shipped, and at $4.5{:}1$ the overlay breaks 71 of 96 combinations. Rather than move shipped hue values, the selected state on these surfaces is documented as **large-text / non-text only**. Every one of the 96 combinations clears $3{:}1$, the worst at $3.89{:}1$.
+
+The restriction applies **only while the selected overlay is present**. At rest these surfaces still clear normal text in every combination, the tightest at $4.51{:}1$.
+
+The cost is real and worth stating plainly: body copy on a *selected* literal color-intent surface sits below AA. If normal text must stay readable through selection, the options are a black or white foreground on that surface — which clears $4.5{:}1$ in all 96 combinations — or not using the selected treatment there.
+
+#### Driver status: restricted to bold or large text
+
+Driver status uses the same reciprocal-tone foreground pattern as literal `color-intent`, so the selected overlay costs it enough to matter at normal-text contrast: 6 of its 10 combinations sit between $4.09$ and $4.24{:}1$. It is restricted to **bold or large text**, and every one of the ten clears $3{:}1$ with room, the worst at $4.09{:}1$.
+
+Unlike literal `color-intent`, this family *could* have been resolved without a restriction. Six of the ten rows point their overlay toward the foreground's luminance rather than away from it, which costs contrast for nothing — dark `off-duty` pairs a light foreground with a white overlay and lands at $4.09{:}1$, where a black overlay gives $4.95{:}1$. Correcting the polarity clears all ten at $4.5{:}1$ normal text with no colour value changed. That is not required under the $3{:}1$ restriction, but it is available if the restriction is ever lifted.
+
+#### The overlay polarity rule
+
+A state overlay must push the surface **away** from the foreground's luminance: a light foreground needs a black overlay, a dark foreground a white one. Pointing it toward the foreground compresses contrast instead of preserving it.
+
+The polarity flips per fill *and* per theme, not per family, so a family whose fills span light and dark is easy to get wrong — check each fill in each theme rather than setting one overlay for the family.
+
+#### Foreground polarity across a family's fills
+
+A second structural failure mode, recorded because it has been hit twice.
+
+`driver-status` originally published a *single* foreground for all five status fills, which put `white-100` on `grey-l75-light-medium` and failed six rows **at rest**, the worst around $2{:}1$. Splitting it into a foreground and an interaction family per status cleared every one of those resting failures.
+
+The map-marker families still share one foreground across fills of differing lightness, which is why five of their pairings fail at rest. They are out of scope, but the pattern is the thing to watch: a single foreground spread across fills that span light and dark cannot clear a text threshold on both, and the per-fill split is the fix.
 
 #### The translucent limitation
 
@@ -641,7 +678,11 @@ That means no unconditional contrast figure exists for it. The audit measures th
 
 #### Hover and pressed are not yet covered
 
-This audit covers the selected state only. Hover and pressed overlays stack *above* both the selected overlay and the content per the Section 3.4 stack, so they compound the effect measured here and need their own composited-pair audit. 54 hover, pressed, and focus tokens remain unmeasured.
+This audit covers the selected state only. Hover and pressed overlays stack *above* both the selected overlay and the content per the Section 3.4 stack, so the composite order differs from the one measured here and they need their own audit rather than a re-run of this one. 54 hover, pressed, and focus tokens remain unmeasured.
+
+#### Coverage note
+
+Before this audit, `reports/contrast.md` did not cover the literal `color-intent`, `driver-status`, `safety-score`, or map-marker families at all. Their resting pairings had never been measured, which is why the driver-status and marker resting failures surfaced only through the selected-state work. The `Before` column of the active matrix is currently the only resting measurement for those families.
 
 ### 7.7 Never Rely On Color Alone
 

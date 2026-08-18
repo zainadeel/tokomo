@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.5.0](https://github.com/zainadeel/tokomo/compare/v6.4.0...v6.5.0) (2026-08-18)
+
+
+### Added
+
+* **colors:** resolve selected-state contrast and restructure driver-status ([#133](https://github.com/zainadeel/tokomo/issues/133)) ([4476b0e](https://github.com/zainadeel/tokomo/commit/4476b0eaeeb75923214260aaef423680e7f43063))
+
 ## [6.4.0](https://github.com/zainadeel/tokomo/compare/v6.3.1...v6.4.0) (2026-08-18)
 
 

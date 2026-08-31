@@ -123,7 +123,7 @@ dist/                   # Generated — do not edit directly
     build.yml          # PR: npm ci, build, test, build docs, verify artifacts + src unchanged
     codeql.yml         # JS/TS security scan — PR + push + weekly Sunday cron
     pr-title.yml       # Lints PR titles as conventional commits
-    release-please.yml # Opens release PRs on feat/fix; auto-publishes to npm on merge (OIDC)
+    release-please.yml # Opens release PRs for visible changelog types; auto-publishes on merge (OIDC)
     deploy.yml         # Builds + deploys the GH Pages token browser
   dependabot.yml       # Monthly bumps for github-actions + npm
 release-please-config.json      # Release Please config (node, changelog sections)
@@ -275,13 +275,13 @@ Subject must **start with a lowercase letter** (workflow enforced). Scope is opt
 
 **Version-bumping types** (trigger a release PR via release-please):
 - `feat:` → minor bump
-- `fix:` / `perf:` → patch bump
-- `feat!:` or `BREAKING CHANGE:` footer → major bump
+- `fix:` / `perf:` / `revert:` / `refactor:` / `docs:` → patch bump
+- any allowed type with `!`, or a `BREAKING CHANGE:` footer → major bump
 
 Breaking token renames require a **major** semver bump (`@ds-mo/tokens` is post-2.0).
-- `ci:` / `chore:` / `build:` / `test:` / `style:` / `docs:` / `refactor:` → **do not trigger a release** (most hidden in changelog; `docs` is visible)
+- `ci:` / `chore:` / `build:` / `test:` / `style:` → do not trigger a release by themselves because their changelog sections are hidden.
 
-See `release-please-config.json` for the type → changelog section mapping.
+Release Please defaults every visible, non-feature, non-breaking commit to a patch bump. See `release-please-config.json` for which types are visible or hidden and where they appear in the changelog.
 
 **Branch naming:** `type/short-kebab-description` (e.g. `feat/add-motion-tokens`, `ci/add-release-workflow`, `docs/agent-onboarding`).
 
@@ -306,7 +306,7 @@ Release-please handles all three automatically when it opens a release PR.
 
 **Automated path (normal case):**
 
-1. Land a `feat:` or `fix:` commit on `main` via PR.
+1. Land a commit whose type has a visible changelog section on `main` via PR.
 2. `release-please.yml` fires → opens (or updates) a release PR that bumps `package.json`, updates `CHANGELOG.md`, and updates `.release-please-manifest.json`.
 3. Review and merge the release PR.
 4. Release Please tags `vX.Y.Z`, creates the GitHub Release, and the `publish` job in the same workflow publishes to npm with `--provenance` via **OIDC Trusted Publisher** (no long-lived `NPM_TOKEN` — configured in npm under Package Settings → Trusted Publishers).
@@ -351,7 +351,7 @@ Must be done manually by the package owner once:
 | `build.yml` | PR to main | `npm ci` + build + tests + docs build + verify dist artifacts + verify `src/` not mutated |
 | `pr-title.yml` | PR opened/edited | Enforce conventional-commit PR titles (lowercase subject) |
 | `codeql.yml` | Push/PR to main, weekly Sunday | GitHub CodeQL JS/TS security scan |
-| `release-please.yml` | Push to main | Open release PR on feat/fix; publish to npm via OIDC when release PR merges |
+| `release-please.yml` | Push to main | Open release PR for visible changelog types; publish via npm OIDC when it merges |
 | `deploy.yml` | After successful npm publish (release-please), manual | Build + deploy token browser to GitHub Pages |
 | `dependabot.yml` | Monthly | Bump github-actions + npm devDependencies |
 

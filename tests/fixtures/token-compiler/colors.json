@@ -1,0 +1,110 @@
+{
+  "reference": {
+    "white": {
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 1, 1],
+          "alpha": 1,
+          "hex": "#FFFFFF"
+        },
+        "$extensions": {
+          "com.figma.variableId": "reference-white"
+        }
+      }
+    },
+    "grey": {
+      "L20": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.086, 0.086, 0.086],
+          "alpha": 1,
+          "hex": "#161616"
+        },
+        "$extensions": {
+          "com.figma.variableId": "reference-grey"
+        }
+      }
+    }
+  },
+  "semanticLight": {
+    "background": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 1, 1],
+          "alpha": 1,
+          "hex": "#FFFFFF"
+        },
+        "$extensions": {
+          "com.figma.variableId": "semantic-light",
+          "com.figma.aliasData": {
+            "targetVariableName": "white/100",
+            "targetVariableSetName": "colors-reference"
+          }
+        }
+      }
+    }
+  },
+  "semanticDark": {
+    "background": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.086, 0.086, 0.086],
+          "alpha": 1,
+          "hex": "#161616"
+        },
+        "$extensions": {
+          "com.figma.variableId": "semantic-dark",
+          "com.figma.aliasData": {
+            "targetVariableName": "grey/L20",
+            "targetVariableSetName": "colors-reference"
+          }
+        }
+      }
+    }
+  },
+  "dataLight": {
+    "data-sequence": {
+      "neutral": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 1, 1],
+          "alpha": 1,
+          "hex": "#FFFFFF"
+        },
+        "$extensions": {
+          "com.figma.aliasData": {
+            "targetVariableName": "white/100",
+            "targetVariableSetName": "colors-reference"
+          }
+        }
+      }
+    }
+  },
+  "dataDark": {
+    "data-sequence": {
+      "neutral": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.086, 0.086, 0.086],
+          "alpha": 1,
+          "hex": "#161616"
+        },
+        "$extensions": {
+          "com.figma.aliasData": {
+            "targetVariableName": "grey/L20",
+            "targetVariableSetName": "colors-reference"
+          }
+        }
+      }
+    }
+  }
+}

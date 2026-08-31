@@ -4,7 +4,7 @@
  * Generates a fully self-contained docs/index.html by:
  *   1. Reading scripts/docs-template.html
  *   2. Inlining all token CSS (colors, dimensions, typography, effects)
- *   3. Parsing token data from dist/ CSS files
+ *   3. Reading graph-derived token data from dist/json/
  *   4. Reading the validated token guidance from dist/agent.json
  *   5. Writing docs/index.html — no external assets needed
  *
@@ -36,6 +36,12 @@ const colorsCss    = readFileSync(join(distDir, 'colors.css'),     'utf8');
 const dimensionsCss = readFileSync(join(distDir, 'dimensions.css'), 'utf8');
 const typographyCss = readFileSync(join(distDir, 'typography.css'), 'utf8');
 const effectsCss    = readFileSync(join(distDir, 'effects.css'),    'utf8');
+const tokensByCategory = Object.fromEntries(
+  ['colors', 'dimensions', 'typography', 'effects'].map(category => [
+    category,
+    JSON.parse(readFileSync(join(distDir, 'json', `${category}.json`), 'utf8')),
+  ]),
+);
 
 // ── Inline token CSS (for live CSS variable resolution in browser) ──────────
 
@@ -43,20 +49,11 @@ const TOKEN_CSS = [colorsCss, dimensionsCss, typographyCss, effectsCss].join('\n
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-/**
- * Extract all CSS custom property declarations from the :root section of a
- * CSS file (stops before any data-theme override blocks).
- */
-function parseVars(css) {
-  const lightSection = css.split(':root[data-theme')[0];
-  const result = [];
-  // Values may span multiple lines (e.g. multi-layer box-shadow composites) —
-  // [\s\S] lets the value match newlines up to its terminating semicolon.
-  for (const [, name, value] of lightSection.matchAll(/^\s*(--[\w-]+)\s*:\s*([\s\S]+?)\s*;/gm)) {
-    // Collapse internal whitespace so multi-line values display cleanly.
-    result.push({ name, value: value.trim().replace(/\s+/g, ' ') });
-  }
-  return result;
+function tokenEntries(category) {
+  return Object.entries(tokensByCategory[category]).map(([name, token]) => ({
+    name,
+    value: token.$value.trim().replace(/\s+/g, ' '),
+  }));
 }
 
 /**
@@ -237,7 +234,7 @@ function getAlphaPercent(name) {
   return m ? parseInt(m[1], 10) : 0;
 }
 
-const rawColors = parseVars(colorsCss).map(({ name }) => ({
+const rawColors = tokenEntries('colors').map(({ name }) => ({
   name,
   group: getColorGroup(name),
   category: getColorCategory(name),
@@ -384,7 +381,7 @@ function getLayoutSubtype(name) {
   return m ? m[1] : '';
 }
 
-const dimensionsRaw = parseVars(dimensionsCss)
+const dimensionsRaw = tokenEntries('dimensions')
   .filter(({ name }) => name !== '--dimension-base' && !name.endsWith('-base'))
   .map(({ name, value }, i) => ({
     name,
@@ -445,7 +442,7 @@ function getTypoGroup(name) {
   return 'other';
 }
 
-const typography = parseVars(typographyCss).map(({ name, value }) => ({
+const typography = tokenEntries('typography').map(({ name, value }) => ({
   name,
   group: getTypoGroup(name),
   label: name.slice(2),
@@ -524,7 +521,7 @@ function getFxGroup(name) {
   return 'other';
 }
 
-const effects = parseVars(effectsCss)
+const effects = tokenEntries('effects')
   .map(({ name, value }) => ({
     name,
     group: getFxGroup(name),
@@ -540,7 +537,7 @@ const effects = parseVars(effectsCss)
 // Elevation atoms — the color primitives that the composite styles are built
 // from. Sourced from colors.css so designers see the same shape as text-styles:
 // atoms on top, composed styles below.
-const elevationAtoms = parseVars(colorsCss)
+const elevationAtoms = tokenEntries('colors')
   .filter(({ name }) => name === '--color-elevation-shadow' || name === '--color-elevation-highlight')
   .map(({ name, value }) => ({
     name,

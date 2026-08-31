@@ -97,13 +97,17 @@ scripts/
   generate-dimension-tokens.mjs # JSON → dimensions.css
   generate-typography-tokens.mjs# JSON → typography.css
   generate-effects-tokens.mjs   # JSON → effects.css
-  generate-json-tokens.mjs      # Merges per-category JSON → dist/tokens.json
-  generate-ts-constants.mjs     # Generates TypeScript constants from token names
+  generate-json-tokens.mjs      # Graph → legacy public JSON artifacts
+  generate-ts-constants.mjs     # Graph → TypeScript token-name constants
   generate-agent-manifest.mjs   # Validates guidance coverage + emits dist/agent.*
+  update-token-artifact-baseline.mjs # Accept intentional public artifact changes
   build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation)
   docs-template.html            # Template for Browser / Documentation / Color Tool navigation
   report-contrast.mjs           # WCAG + APCA report over shipped pairings (manual, not in build)
   lib/
+    token-compiler.mjs          # Source manifest → normalized graph → validated artifacts
+    manual-effects.mjs          # Authored compiler input for composite effect tokens
+    transactional-output.mjs    # Failure-safe generated output replacement + rollback
     token-colors.mjs            # Shared token resolution, CSS colour parsing, sRGB compositing
     active-contrast.mjs         # Selected-state (`active`) overlay contrast matrix — pure, unit-tested
 docs/
@@ -133,6 +137,7 @@ release-please-config.json      # Release Please config (node, changelog section
 ```bash
 npm run build            # Full build — CSS + JSON + TypeScript
 npm run test             # Token JSON mode preservation + OKLCH/contrast math + active-overlay matrix
+npm run test:update-compiler-baseline # Accept intentional public JSON/TS artifact changes
 npm run build:colors     # Color tokens only (fast iteration)
 npm run build:docs       # Rebuild docs/index.html (GH Pages browser)
 npm run build:agent      # Validate and generate the unified agent guidance contract
@@ -188,12 +193,18 @@ then rewrites back.
 
 ## Build pipeline (what `npm run build` does)
 
-1. **Clean** — nuke `dist/`, recreate subdirs (`dist/themes/`, `dist/json/`)
-2. **Generate CSS** — each `generate-*-tokens.mjs` reads `src/json/**` and writes **`src/*.css`** (committed source)
-3. **Copy to dist** — `scripts/build.mjs` copies `src/*.css` and `src/themes/` into `dist/`
-4. **Generate JSON** (`generate-json-tokens.mjs`) — parses **`src/*.css`** custom properties → flat default-light tokens plus explicit light/dark color modes in `dist/json/colors.modes.json`
-5. **Generate guidance** (`generate-agent-manifest.mjs`) — validates every published token has family coverage, validates recipe references/composition, copies the schema, and emits `dist/agent.json`, `.mjs`, and `.d.ts`
-6. **Generate TypeScript** (`generate-ts-constants.mjs`) — emits `dist/index.mjs`, `dist/index.cjs`, `dist/index.d.ts`
+1. **Load** — read every Figma/DTCG source declared by the authoritative manifest in `scripts/lib/token-compiler.mjs`, plus registered derived/manual tokens.
+2. **Normalize** — retain source path, type, mode, aliases, Figma extensions, provenance, and deterministic output ordering in one internal graph.
+3. **Validate globally** — reject malformed values, mode mismatches, missing/invalid aliases, dependency cycles, ignored token branches, and CSS/TypeScript name collisions.
+4. **Render in memory** — generate the four committed `src/*.css` files plus legacy JSON, token index, and TypeScript constants from the same graph.
+5. **Stage and validate guidance** — populate a temporary `dist/`, validate the agent manifest against graph-derived `tokens.json`, and emit agent artifacts.
+6. **Replace transactionally** — replace generated `src/*.css` and `dist/` only after all prior steps succeed; roll back replacements on filesystem failure.
+
+The category generator scripts remain compatibility entry points, but they delegate to the same compiler. `generate-json-tokens.mjs` and `generate-ts-constants.mjs` do not parse generated CSS. Documentation still inlines CSS for live previews, but its token inventory comes from `dist/json/`.
+
+Watch mode observes raw JSON, agent/schema/manual inputs, and authored CSS. It deliberately excludes generated `src/{colors,dimensions,typography,effects}.css` so a build cannot trigger itself.
+
+Compiler tests compare committed CSS byte-for-byte and compare public JSON, TypeScript, and agent output against checked-in SHA-256 baselines. Run `npm run test:update-compiler-baseline` only when a reviewed source-token or guidance change intentionally changes those public artifacts; include the baseline diff in the same PR.
 
 ---
 
@@ -227,11 +238,13 @@ All token values are defined as CSS custom properties. **Color** light/dark valu
 ### Adding a new token category
 
 1. Create `src/json/<category>.json` with the token definitions.
-2. Write `scripts/generate-<category>-tokens.mjs` following the pattern of existing generators.
-3. Add the new script to the build sequence in `scripts/build.mjs`.
-4. Update `scripts/generate-json-tokens.mjs` to include the new category in the merged output.
-5. Update `package.json` `exports` with the new `dist/<category>.css` entry.
-6. Update `src/index.css` to `@import` the new category.
+2. Register the source and expected groups in `TOKEN_SOURCE_MANIFEST`.
+3. Add its normalization, validation, ordering, and CSS rendering policy to `scripts/lib/token-compiler.mjs`.
+4. Include the category in the graph-derived JSON/index and TypeScript emitters.
+5. Add a thin `scripts/generate-<category>-tokens.mjs` compatibility entry point.
+6. Update `package.json` `exports` with the new `dist/<category>.css` entry.
+7. Update `src/index.css` to `@import` the new category.
+8. Add valid/invalid compiler fixtures and assert byte-for-byte artifact parity.
 
 Agent guidance belongs in the single source `src/agent/token-families.agent.json`; do not add a parallel `guidance` manifest or package export. Its schema is `agent/schemas/token-agent.schema.json`.
 
@@ -367,7 +380,9 @@ Must be done manually by the package owner once:
 | Token selection guidance and recipes | `src/agent/token-families.agent.json` |
 | Agent guidance schema | `agent/schemas/token-agent.schema.json` |
 | Effects (shadows, radii) | `src/json/effects/` |
-| Color CSS generation logic | `scripts/generate-color-tokens.mjs` |
+| Token loading, validation, and artifact generation | `scripts/lib/token-compiler.mjs` |
+| Hand-authored composite effect values | `scripts/lib/manual-effects.mjs` |
+| Category CSS compatibility entry points | `scripts/generate-*-tokens.mjs` |
 | Build orchestration | `scripts/build.mjs` |
 | TypeScript constant format | `scripts/generate-ts-constants.mjs` |
 | Token browser styling | `scripts/docs-template.html` + `scripts/build-docs.mjs` |

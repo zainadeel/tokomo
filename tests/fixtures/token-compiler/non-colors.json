@@ -1,0 +1,82 @@
+{
+  "dimensions": {
+    "space": {
+      "base": { "$type": "number", "$value": 8 },
+      "025": { "$type": "number", "$value": 2 }
+    },
+    "radius": {
+      "base": { "$type": "number", "$value": 8 },
+      "half": { "$type": "number", "$value": 9999 }
+    },
+    "size": {
+      "base": { "$type": "number", "$value": 8 },
+      "150": { "$type": "number", "$value": 12 }
+    },
+    "width-stroke": {
+      "base": { "$type": "number", "$value": 8 },
+      "025": { "$type": "number", "$value": 2 }
+    },
+    "size-icon": {
+      "sm": { "$type": "number", "$value": 16 }
+    },
+    "width-modal": {
+      "sm": { "$type": "number", "$value": 400 },
+      "fill": { "$type": "string", "$value": "100%" }
+    },
+    "offset": {
+      "negative": { "$type": "string", "$value": "-2" }
+    },
+    "scale": {
+      "subtle": { "$type": "number", "$value": 0.99 }
+    },
+    "z-index": {
+      "modal": { "$type": "number", "$value": 450 }
+    }
+  },
+  "typography": {
+    "font-family": {
+      "ui": { "$type": "string", "$value": "inter" },
+      "code": { "$type": "string", "$value": "fira code" }
+    },
+    "weight": {
+      "regular": { "$type": "number", "$value": 400 }
+    },
+    "font-size": {
+      "md": { "$type": "number", "$value": 14 }
+    },
+    "line-height": {
+      "md": { "$type": "number", "$value": 20 }
+    },
+    "letter-spacing": {
+      "negative": { "$type": "number", "$value": -0.30000001192092896 }
+    },
+    "paragraph-spacing": {
+      "md": { "$type": "number", "$value": 8 }
+    }
+  },
+  "effects": {
+    "animation": {
+      "duration": {
+        "short": {
+          "$type": "duration",
+          "$value": { "value": 100, "unit": "ms" }
+        }
+      },
+      "delay": {
+        "instant": { "$type": "number", "$value": 0 }
+      },
+      "easing": {
+        "linear": {
+          "$type": "easing",
+          "$value": "cubic-bezier(0, 0, 1, 1)"
+        }
+      }
+    },
+    "blur": {
+      "sm": { "$type": "number", "$value": 8 }
+    },
+    "opacity": {
+      "medium": { "$type": "number", "$value": 50 }
+    }
+  }
+}

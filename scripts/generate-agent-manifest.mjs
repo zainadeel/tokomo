@@ -5,11 +5,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const DIST_DIR = process.env.TOKOMO_DIST_DIR
+  ? path.resolve(process.env.TOKOMO_DIST_DIR)
+  : path.join(ROOT, 'dist');
 const SOURCE_PATH = path.join(ROOT, 'src/agent/token-families.agent.json');
 const SCHEMA_PATH = path.join(ROOT, 'agent/schemas/token-agent.schema.json');
 const pkg = JSON.parse(readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 const source = JSON.parse(readFileSync(SOURCE_PATH, 'utf8'));
-const tokens = JSON.parse(readFileSync(path.join(ROOT, 'dist/tokens.json'), 'utf8'));
+const tokens = JSON.parse(readFileSync(path.join(DIST_DIR, 'tokens.json'), 'utf8'));
 const tokenNames = Object.keys(tokens);
 
 const STATUSES = new Set(['experimental', 'stable', 'deprecated', 'removed']);
@@ -291,13 +294,13 @@ const manifest = {
   recipes: source.recipes,
 };
 
-writeFileSync(path.join(ROOT, 'dist/agent.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+writeFileSync(path.join(DIST_DIR, 'agent.json'), `${JSON.stringify(manifest, null, 2)}\n`);
 writeFileSync(
-  path.join(ROOT, 'dist/agent.mjs'),
+  path.join(DIST_DIR, 'agent.mjs'),
   `const manifest = ${JSON.stringify(manifest, null, 2)};\nexport default manifest;\n`,
 );
-copyFileSync(SCHEMA_PATH, path.join(ROOT, 'dist/agent.schema.json'));
-writeFileSync(path.join(ROOT, 'dist/agent.d.ts'), `export type GuidanceStatus = 'experimental' | 'stable' | 'deprecated' | 'removed';
+copyFileSync(SCHEMA_PATH, path.join(DIST_DIR, 'agent.schema.json'));
+writeFileSync(path.join(DIST_DIR, 'agent.d.ts'), `export type GuidanceStatus = 'experimental' | 'stable' | 'deprecated' | 'removed';
 
 export interface GuidanceReference {
   label: string;

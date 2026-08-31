@@ -16,6 +16,9 @@ test('semantic colors preserve light and dark mode values', async () => {
 
 test('explicit mode output has matching semantic token sets', async () => {
   const modes = await readJson('dist/json/colors.modes.json');
-  assert.deepEqual(Object.keys(modes.dark).sort(), Object.keys(modes.dark).filter(name => modes.light[name]).sort());
+  const lightModeTokens = Object.keys(modes.light)
+    .filter(name => !name.startsWith('--color-reference-'))
+    .sort();
+  assert.deepEqual(Object.keys(modes.dark).sort(), lightModeTokens);
   assert.ok(Object.keys(modes.dark).length > 0);
 });

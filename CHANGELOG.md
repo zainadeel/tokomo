@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.5.1](https://github.com/zainadeel/tokomo/compare/v6.5.0...v6.5.1) (2026-08-31)
+
+
+### Changed
+
+* compile tokens from normalized graph ([#136](https://github.com/zainadeel/tokomo/issues/136)) ([0a27053](https://github.com/zainadeel/tokomo/commit/0a270530be10d188ffb134bdcf8cd411444a8eef)), closes [#135](https://github.com/zainadeel/tokomo/issues/135)
+
 ## [6.5.0](https://github.com/zainadeel/tokomo/compare/v6.4.0...v6.5.0) (2026-08-18)
 
 

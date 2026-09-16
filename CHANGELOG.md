@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.5.2](https://github.com/zainadeel/tokomo/compare/v6.5.1...v6.5.2) (2026-09-16)
+
+
+### Fixed
+
+* **globals:** preserve component focus ownership ([#140](https://github.com/zainadeel/tokomo/issues/140)) ([a4d9d96](https://github.com/zainadeel/tokomo/commit/a4d9d96556965c70246ad90b919169ba34f8dad7))
+
 ## [6.5.1](https://github.com/zainadeel/tokomo/compare/v6.5.0...v6.5.1) (2026-08-31)
 
 

@@ -34,12 +34,19 @@ pnpm add file:../path/to/tokomo
 @import '@ds-mo/tokens/typography';
 @import '@ds-mo/tokens/effects';
 
-/* Optional: base styles (font loading, reduced-motion, focus rings) */
+/* Optional: base styles (reduced-motion, native focus defaults) */
 @import '@ds-mo/tokens/globals';
 
 /* Optional: CSS reset */
 @import '@ds-mo/tokens/reset';
 ```
+
+`globals` provides a zero-specificity, immediate focus outline for native buttons,
+links, and form controls using `--color-interaction-focus`. Components own their
+focus styling and transitions; arbitrary `tabindex` targets retain the browser's
+indicator unless the application supplies one. The explicit
+`data-focus-from-shortcut` opt-out suppresses an outline only while its marker is
+present; remove it before ordinary keyboard navigation resumes.
 
 ### JS / TypeScript (via bundler)
 

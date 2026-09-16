@@ -28,7 +28,7 @@
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0s !important;
     scroll-behavior: auto !important;
   }
 }
@@ -68,38 +68,26 @@ button {
   -ms-user-select: none;
 }
 
-/* Remove default browser focus outlines */
-*:focus {
-  outline: none;
-}
-
-/* Suppress focus ring when focus came from a keyboard shortcut (not Tab) */
+/* Explicit opt-out for focus moved by a keyboard shortcut (not Tab).
+ * The caller owns adding/removing this marker; ordinary focus is never reset.
+ */
 [data-focus-from-shortcut]:focus,
 [data-focus-from-shortcut]:focus-visible {
   outline: none !important;
 }
 
-/* Custom focus ring using outline with offset */
-/* Creates: 2px gap (outline-offset) + 2px ring (outline-width) */
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-[tabindex]:focus-visible {
-  outline: var(--dimension-stroke-width-025) solid var(--color-foreground-medium-brand);
+/* Native-control fallback only. Zero specificity lets component styles win
+ * regardless of import order. Custom elements and generic tabindex targets
+ * keep their own or the browser's focus indicator. Never animate focus here.
+ */
+:where(button, a[href], input, textarea, select):where(:focus-visible) {
+  outline: var(--dimension-stroke-width-025) solid var(--color-interaction-focus);
   outline-offset: var(--dimension-offset-025);
-  transition: outline var(--effect-motion-short-2);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  button:focus-visible,
-  a:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible,
-  [tabindex]:focus-visible {
-    transition: none;
+@media (forced-colors: active) {
+  :where(button, a[href], input, textarea, select):where(:focus-visible) {
+    outline-color: Highlight;
   }
 }
 

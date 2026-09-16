@@ -25,6 +25,12 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Install focus-test browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Test global focus in browsers
+        run: npm run test:browser
+
       - name: Build docs
         run: npm run build:docs
 

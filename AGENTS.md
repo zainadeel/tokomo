@@ -137,6 +137,7 @@ release-please-config.json      # Release Please config (node, changelog section
 ```bash
 npm run build            # Full build — CSS + JSON + TypeScript
 npm run test             # Token JSON mode preservation + OKLCH/contrast math + active-overlay matrix
+npm run test:browser     # Native and component focus ownership in Chromium/WebKit
 npm run test:update-compiler-baseline # Accept intentional public JSON/TS artifact changes
 npm run build:colors     # Color tokens only (fast iteration)
 npm run build:docs       # Rebuild docs/index.html (GH Pages browser)
@@ -160,7 +161,7 @@ The resting figures and the selected-state figures answer different questions. A
 
 Coverage of the selected-state matrix is enforced by `tests/active-contrast.test.mjs`: if a new `interaction.*-active` token is added without being wired into `buildActiveCombinations()`, the test suite fails rather than silently omitting it. Hover, pressed, and focus overlays are not yet measured.
 
-There is no separate lint command. `npm test` covers token-mode preservation, color math, and the generated agent contract. The Build workflow re-runs the build, runs tests, verifies distributable artifacts, and asserts `src/` was not mutated.
+There is no separate lint command. `npm test` covers token-mode preservation, color math, and the generated agent contract. The Build workflow re-runs the build, runs unit and browser tests, verifies distributable artifacts, and asserts `src/` was not mutated. Browser tests require `npx playwright install chromium webkit` locally.
 
 ---
 

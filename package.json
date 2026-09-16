@@ -76,12 +76,14 @@
     "clean": "rm -rf dist",
     "dev": "node scripts/build.mjs --watch",
     "tool:colors": "node scripts/copy-tool-assets.mjs && npx --yes serve tools/color-system -p 4040 -L",
-    "preview:docs": "npm run build && npm run build:docs && npx --yes serve docs -p 4040 -L"
+    "preview:docs": "npm run build && npm run build:docs && npx --yes serve docs -p 4040 -L",
+    "test:browser": "playwright test"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "apca-w3": "^0.1.9",
     "chokidar": "^5.0.0"
   },

@@ -30,3 +30,7 @@ reports/
 
 # Claude
 .claude/
+
+# Browser test artifacts
+playwright-report/
+test-results/

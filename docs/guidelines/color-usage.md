@@ -211,6 +211,18 @@ More generally, fixed-context themes and subthemes should be treated as rare exc
 
 Introduce them only when a region must remain visually distinct from the surrounding theme or must preserve a deliberately fixed visual environment. They should not become a general escape hatch from the main semantic theme system.
 
+#### Chrome
+
+Use `chrome.*` for floating controls — a toolbar, control bar, or overlay panel — that sits above arbitrary page, map, or media content rather than on a token-defined surface.
+
+The family publishes three surface steps and, unlike `always-dark`, follows the active theme: it is black-based in light mode and white-based in dark mode.
+
+1. `chrome.background.primary` and `chrome.background.secondary` are translucent glass. They take the luminance of whatever sits behind them, so they carry **no unconditional contrast guarantee** — the same limitation `translucent.*` has (Section 7.6).
+2. `chrome.background.theme` is the opaque step. Use it when the backdrop cannot be verified and a measurable surface is required.
+3. `chrome.foreground.*`, `chrome.border.*`, `chrome.divider`, `chrome.shimmer`, and `chrome.interaction.*` complete the family; keep them together rather than mixing in ordinary semantic tokens.
+
+`chrome.background.theme` and `chrome.foreground.theme` carry theme and brand emphasis within the chrome surface. They are not substitutes for a semantic intent, and `chrome.foreground.theme` currently misses the $3{:}1$ floor on `chrome.background.theme` in light mode — see Section 7.5, Category D.
+
 ### 3.5 Semantic Tone Selection
 
 When multiple semantic intensities exist, choose the one that matches the amount of emphasis required.
@@ -530,15 +542,15 @@ For the always-dark intent strokes, `strong` measures about $13.3$–$15.8{:}1$ 
 
 $3{:}1$ is the AA minimum for **large** text (24px, or 18.5px bold) and the 1.4.11 minimum for a meaningful icon. A content pairing below $3{:}1$ therefore cannot carry text at any size and cannot carry an icon. It is decorative only.
 
-`npm run report:contrast` measures every foreground token against this floor on the surfaces it can sit on. There are currently **60 pairings below it**: 42 `quaternary` steps, 9 `faint` tones used as content, and 9 `foreground.medium.*` on standard surfaces.
+`npm run report:contrast` measures every foreground token against this floor on the surfaces it can sit on. There are currently **62 pairings below it**: 43 `quaternary` steps, 9 `faint` tones used as content, 9 `foreground.medium.*` on standard surfaces, and 1 `chrome.foreground.theme` pairing.
 
-None of the 60 is a defect in a token. The first 51 are steps and tones that are not meant to carry content at all, and the remaining 9 are a correct token used on a surface it was not designed for. The categories below matter more than the count.
+Only one of the 62 is a defect in a token. The first 52 are steps and tones that are not meant to carry content at all, the next 9 are a correct token used on a surface it was not designed for, and the last is an open gap recorded in Category D. The categories below matter more than the count.
 
 Category C separately records four pairings that *were* genuine gaps — a token used exactly as intended and still missing the floor. All four have been fixed. They are kept here because the causes are worth understanding before the next retune.
 
-#### Category A — decorative by design (51 pairings)
+#### Category A — decorative by design (52 pairings)
 
-**All `quaternary` steps (42).** `foreground.quaternary` on all eleven neutral surfaces ($1.59$–$1.92{:}1$), all three `foreground.on-*-background.quaternary` families on their fills ($1.47$–$1.90{:}1$), and the `always-dark`, `inverted`, `media`, and `navigation` quaternary steps ($1.61$–$1.88{:}1$).
+**All `quaternary` steps (43).** `foreground.quaternary` on all eleven neutral surfaces ($1.59$–$1.92{:}1$), all three `foreground.on-*-background.quaternary` families on their fills ($1.47$–$1.90{:}1$), and the `always-dark`, `inverted`, `media`, `navigation`, and `chrome` quaternary steps ($1.59$–$1.92{:}1$).
 
 `quaternary` is the bottom of the de-emphasis ladder. It exists for washes, disabled hints, and ornament. **It must never carry text or an icon**, at any size, on any surface. That is a property of the step, not a bug to fix.
 
@@ -584,20 +596,28 @@ Retuned to `white/35`, bringing it to parity with the core token rather than giv
 
 `tertiary` is documented in Section 7.3 as suitable for inactive or low-emphasis UI content, which means it is expected to be readable, so this was the most important of the four to fix.
 
+#### Category D — open gap: `chrome.foreground.theme`
+
+One pairing is a token used exactly as intended and still missing the floor, and it has not been retuned.
+
+`chrome.foreground.theme` on `chrome.background.theme` measures $2.63{:}1$ in light mode and $4.67{:}1$ in dark. Both sides resolve to the same reference in each theme as their siblings suggest — the foreground is the brand blue `dark/blue-250/L65-C20-bold` in *both* themes, while the surface is the light neutral `grey/L93-light-faint` in light mode. A mid-lightness blue on a near-white grey is the shortfall; dark mode passes because the surface drops to `grey/L27-dark-faint`.
+
+Until the light-mode value is retuned, `chrome.foreground.theme` is **decorative in light mode**: do not use it for text at any size or for a meaningful icon on `chrome.background.theme`. Use `chrome.foreground.primary` or `chrome.foreground.secondary` for readable chrome content, and reserve the theme foreground for ornament or for the translucent glass surfaces, where it must be verified against the actual backdrop anyway.
+
 ### 7.6 Selected-State Overlay Contrast
 
 Every figure in 7.1 through 7.5 is measured on a **resting** surface, with no interaction overlay applied. That is not the whole story for an interactive element. Section 3.4 defines the selected (`active`) overlay as sitting *above* the original background and *below* inner content, so on a selected row or chip the content is not read against the base background at all — it is read against `composite(active, background)`.
 
 A pairing can therefore clear its threshold at rest and fail once it is selected. **A pass in 7.1 does not imply a pass when selected.**
 
-`npm run report:contrast` measures this and writes `reports/active-contrast.md`, with a machine-readable twin at `reports/active-contrast.json`. The matrix is exhaustive: 204 combinations — every documented selected-state pairing, in both themes — with the contrast before the overlay, the contrast after it, the applicable threshold and its basis, and for each failure whether the overlay introduced it or the base pairing already failed.
+`npm run report:contrast` measures this and writes `reports/active-contrast.md`, with a machine-readable twin at `reports/active-contrast.json`. The matrix is exhaustive: 210 combinations — every documented selected-state pairing, in both themes — with the contrast before the overlay, the contrast after it, the applicable threshold and its basis, and for each failure whether the overlay introduced it or the base pairing already failed.
 
 #### Applicable thresholds
 
 | Family | Threshold | Basis |
 | --- | --- | --- |
 | Core semantic (faint, medium, bold, strong) | $4.5{:}1$ | Normal text. These are the 7.1/7.2 pairings. |
-| Default brand-selected, always-dark, inverted, media, navigation | $4.5{:}1$ | Normal text. |
+| Default brand-selected, always-dark, inverted, media, navigation, chrome | $4.5{:}1$ | Normal text. |
 | Literal `color-intent` — at rest | $4.5{:}1$ | Normal text. Section 3.3 has these carrying labels, so they are text-bearing, not decorative. |
 | Literal `color-intent` — **when selected** | $3{:}1$ | **Large text / non-text.** Confirmed restriction; see below. |
 | Safety score | $3{:}1$ | **Large text / non-text.** Confirmed restriction — the score is rendered as a large numeral, not body copy. |
@@ -617,11 +637,11 @@ The audit's coverage test still requires that every shipped `interaction.*-activ
 
 #### Current state
 
-**All 204 in-scope combinations clear their applicable threshold**, in both themes, at rest and with the selected overlay composited. No family is measured against an assumed threshold — every restriction in play is a recorded decision.
+**All 210 in-scope combinations clear their applicable threshold**, in both themes, at rest and with the selected overlay composited. No family is measured against an assumed threshold — every restriction in play is a recorded decision.
 
 | Family | Rows | Threshold | Failing |
 | --- | --- | --- | --- |
-| Main interaction families | 98 | $4.5{:}1$ | 0 |
+| Main interaction families | 104 | $4.5{:}1$ | 0 |
 | Literal `color-intent` (when selected) | 96 | $3{:}1$ | 0 |
 | Driver status | 10 | $3{:}1$ | 0 |
 
@@ -631,11 +651,11 @@ Two of the three groups reach that state through a documented text-size restrict
 
 #### Root cause: the foreground, not the overlay
 
-One fact explains every result in the matrix. Sorting all 204 rows by the *kind* of foreground they use:
+One fact explains every result in the matrix. Sorting all 210 rows by the *kind* of foreground they use:
 
 | Foreground | Rows | Failing at $4.5{:}1$ |
 | --- | --- | --- |
-| `black-*` / `white-*` | 98 | **0** |
+| `black-*` / `white-*` | 104 | **0** |
 | Reciprocal colour tone | 106 | **77** |
 
 Black and white sit at the luminance extremes, so they start with maximum headroom and a $5\%$ surface shift barely moves the ratio. A reciprocal tone is deliberately *near* its partner — that is the point of the pairing — so it starts close to the line and the overlay tips it over. Resting contrast tells the same story: reciprocal-tone rows that pass rest at $5.00$–$7.76{:}1$, and those that fail rest at $4.51$–$5.14{:}1$. Nothing about the overlay separates them, only where the pairing started.
@@ -672,13 +692,15 @@ The map-marker families still share one foreground across fills of differing lig
 
 #### The translucent limitation
 
+The same limitation applies to `chrome.background.primary` and `chrome.background.secondary`: they are translucent glass, so the audit measures their selected states over an assumed `background.primary` backdrop and marks those four rows conditional too. `chrome.background.theme` is opaque and measures unconditionally. Eight of the 210 rows are conditional in total.
+
 `translucent.*` publishes no background token of its own. `translucent.translucent` is a **scrim**: it takes the luminance of whatever sits behind it, and the family has no universal backdrop.
 
 That means no unconditional contrast figure exists for it. The audit measures the translucent selected states over an *assumed* `background.primary` backdrop, where they clear the target, and marks those rows **conditional**. Read them as "passes over this one backdrop", never as a system-wide guarantee. On a darker or busier backdrop — imagery, video, a bold surface — the result will differ, and a translucent surface used over arbitrary content has to be verified against that content.
 
 #### Hover and pressed are not yet covered
 
-This audit covers the selected state only. Hover and pressed overlays stack *above* both the selected overlay and the content per the Section 3.4 stack, so the composite order differs from the one measured here and they need their own audit rather than a re-run of this one. 54 hover, pressed, and focus tokens remain unmeasured.
+This audit covers the selected state only. Hover and pressed overlays stack *above* both the selected overlay and the content per the Section 3.4 stack, so the composite order differs from the one measured here and they need their own audit rather than a re-run of this one. 57 hover, pressed, and focus tokens remain unmeasured.
 
 #### Coverage note
 

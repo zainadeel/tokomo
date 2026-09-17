@@ -291,6 +291,9 @@ function buildPairs() {
     ["inverted", "--color-inverted-background", INTENTS],
     ["media", "--color-media-background", []],
     ["navigation", "--color-navigation-background", ["brand"]],
+    // Chrome's primary and secondary surfaces are translucent glass with no
+    // universal backdrop, so only its opaque `theme` step is measurable here.
+    ["chrome", "--color-chrome-background-theme", ["theme"]],
   ];
 
   for (const [family, surface, intents] of SUBTHEMES) {

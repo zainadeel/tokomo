@@ -106,7 +106,7 @@ test('documentation inventory reads graph JSON instead of reparsing CSS', async 
 });
 
 test('graph preserves source semantics, aliases, modes, provenance, and metadata', () => {
-  assert.equal(production.graph.nodes.length, 1065);
+  assert.equal(production.graph.nodes.length, 1082);
   const primary = production.graph.byCssName.get('--color-background-primary');
   assert.equal(primary.sourceType, 'color');
   assert.equal(primary.publicType, 'color');

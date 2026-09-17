@@ -267,6 +267,45 @@
       ]
     },
     {
+      "id": "token-family:color.chrome",
+      "kind": "token-family",
+      "category": "color",
+      "audience": "specialized",
+      "status": "experimental",
+      "summary": "Translucent chrome surfaces and their foreground, border, divider, and interaction families for controls floating above arbitrary content.",
+      "tokenPatterns": [
+        "--color-chrome-*"
+      ],
+      "selectionRole": "direct",
+      "useWhen": [
+        "Building a floating toolbar, control bar, or overlay panel that sits above arbitrary page, map, or media content.",
+        "An opaque chrome surface is required and the backdrop cannot be verified — use chrome.background.theme."
+      ],
+      "avoidWhen": [
+        "The element is on an ordinary primary, secondary, or semantic-intent surface.",
+        "The surface is a full-bleed media or navigation region — use the media or navigation family instead."
+      ],
+      "constraints": [
+        "Keep foregrounds, borders, dividers, and interaction states within the chrome family.",
+        "chrome.background.primary and chrome.background.secondary are translucent and take the luminance of whatever sits behind them; chrome.background.theme is the opaque step.",
+        "chrome.foreground.theme and chrome.background.theme carry brand and theme emphasis; do not substitute them for a semantic intent.",
+        "Chrome polarity follows the active theme — black-based in light mode, white-based in dark mode."
+      ],
+      "recipes": [
+        "token-recipe:foreground-hierarchy",
+        "token-recipe:neutral-border-hierarchy",
+        "token-recipe:interaction-layers"
+      ],
+      "accessibility": [
+        "No unconditional contrast figure exists for the translucent chrome backgrounds; verify foreground pairings against the actual backdrop the chrome floats over.",
+        "chrome.background.theme is opaque, so its primary and secondary foreground pairings are measurable and reported in the contrast reports.",
+        "Tertiary and quaternary foregrounds are low-emphasis steps and are not for normal-size body text."
+      ],
+      "references": [
+        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      ]
+    },
+    {
       "id": "token-family:color.literal-intent",
       "kind": "token-family",
       "category": "color",

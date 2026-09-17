@@ -130,10 +130,15 @@ test("failure cause is attributed exactly one way", () => {
 });
 
 test("rows over an assumed backdrop are marked conditional", () => {
-  // One family in scope has no opaque background of its own: the translucent
-  // scrim. (The cluster marker is the other such surface, but markers are out of
-  // scope — see EXCLUDED_ACTIVE_TOKENS.)
-  const CONDITIONAL_BASES = ["--color-translucent-translucent"];
+  // Two families in scope have no opaque background of their own: the
+  // translucent scrim, and the translucent chrome glass steps. (The cluster
+  // marker is the other such surface, but markers are out of scope — see
+  // EXCLUDED_ACTIVE_TOKENS.)
+  const CONDITIONAL_BASES = [
+    "--color-translucent-translucent",
+    "--color-chrome-background-primary",
+    "--color-chrome-background-secondary",
+  ];
   for (const base of CONDITIONAL_BASES) {
     const subset = rows.filter((row) => row.baseToken === base);
     assert.ok(subset.length > 0, `${base} is not measured`);
@@ -445,7 +450,7 @@ test("every main interaction family clears its threshold", () => {
       !row.family.startsWith("driver-status") &&
       !row.baseToken.startsWith("--color-color-intent-")
   );
-  assert.equal(main.length, 98);
+  assert.equal(main.length, 104);
   const failures = main.filter((row) => !row.pass);
   assert.deepEqual(
     failures.map((row) => `${row.theme} ${row.baseToken} ${row.contrastAfter.toFixed(2)}`),

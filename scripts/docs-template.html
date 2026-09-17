@@ -1299,7 +1299,7 @@ const FAMILY_GROUPS = {
     {
       label: 'Consumer and product identity',
       description: 'Stable consumer-defined hues and complete families for specialized or product-domain contexts.',
-      ids: ['color.literal-intent', 'color.fixed-contexts', 'color.product-contexts'],
+      ids: ['color.literal-intent', 'color.fixed-contexts', 'color.chrome', 'color.product-contexts'],
     },
     {
       label: 'Visualization and foundation',
@@ -1393,11 +1393,11 @@ const RECIPE_VARIANT_GROUPS = {
   'token-recipe:foreground-hierarchy': [
     { label: 'Standard surfaces', ids: ['foreground-standard-primary', 'foreground-standard-secondary', 'foreground-standard-tertiary'] },
     { label: 'Semantic surfaces', ids: ['foreground-on-background-primary', 'foreground-on-background-secondary', 'foreground-on-background-tertiary'] },
-    { label: 'Fixed contexts', ids: ['foreground-context-primary', 'foreground-context-secondary', 'foreground-context-tertiary'] },
+    { label: 'Fixed contexts', ids: ['foreground-context-primary', 'foreground-context-secondary', 'foreground-context-tertiary', 'foreground-chrome-primary', 'foreground-chrome-secondary', 'foreground-chrome-tertiary', 'foreground-chrome-theme'] },
   ],
   'token-recipe:neutral-border-hierarchy': [
     { label: 'Standard surfaces', ids: ['neutral-border-primary', 'neutral-border-secondary', 'neutral-border-tertiary'] },
-    { label: 'Fixed contexts', ids: ['context-border-primary', 'context-border-secondary', 'context-border-tertiary'] },
+    { label: 'Fixed contexts', ids: ['context-border-primary', 'context-border-secondary', 'context-border-tertiary', 'chrome-border-primary', 'chrome-border-secondary', 'chrome-border-tertiary'] },
   ],
   'token-recipe:semantic-color-pairing': [
     { label: 'Semantic surfaces', ids: ['faint', 'medium', 'bold', 'strong'] },
@@ -1766,7 +1766,20 @@ function renderDocumentation() {
     case 'families': {
       const familyById = new Map(TOKEN_GUIDANCE.families.map(family => [family.id.replace('token-family:', ''), family]));
       const category = FAMILY_CATEGORIES.find(item => item.id === familyCategory) || FAMILY_CATEGORIES[0];
-      const categoryGroups = FAMILY_GROUPS[category.id] || [];
+      const configuredFamilyGroups = FAMILY_GROUPS[category.id] || [];
+      const groupedFamilyIds = new Set(configuredFamilyGroups.flatMap(group => group.ids));
+      const ungroupedFamilyIds = TOKEN_GUIDANCE.families
+        .filter(family => family.category === category.id)
+        .map(family => family.id.replace('token-family:', ''))
+        .filter(id => !groupedFamilyIds.has(id));
+      const categoryGroups = [
+        ...configuredFamilyGroups,
+        ...(ungroupedFamilyIds.length ? [{
+          label: 'Other families',
+          description: 'Published families that are not yet placed in a curated group.',
+          ids: ungroupedFamilyIds,
+        }] : []),
+      ];
       contentEl.innerHTML = `
         <header class="doc-page-header" aria-labelledby="docs-families-title">
           <div class="doc-kicker">Selection</div>

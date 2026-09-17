@@ -246,7 +246,8 @@
         "Rendering content inside the matching always-dark, inverted, media, navigation, or translucent context."
       ],
       "avoidWhen": [
-        "The element is on an ordinary primary, secondary, or semantic-intent surface."
+        "The element is on an ordinary primary, secondary, or semantic-intent surface.",
+        "The surface is a floating toolbar, control bar, or overlay panel above arbitrary content \u2014 use the chrome family instead."
       ],
       "constraints": [
         "Keep foregrounds, borders, dividers, and interaction states within the same context family.",
@@ -807,7 +808,7 @@
         {
           "id": "surface",
           "summary": "The documented background paired with the chosen foreground family.",
-          "tokenPatterns": ["--color-background-*", "--color-*-background"],
+          "tokenPatterns": ["--color-background-*", "--color-*-background", "--color-chrome-background-*"],
           "required": true
         }
       ],
@@ -817,7 +818,8 @@
         "Use tertiary only for deliberately de-emphasized or inactive content; it can carry large text and meaningful icons but is not a normal-size body-text color.",
         "Use quaternary only for disabled hints, washes, and ornament; it must never carry readable text or a meaningful icon.",
         "On medium, bold, or strong semantic surfaces, use the corresponding on-background hierarchy rather than an ordinary foreground.",
-        "Inside a fixed context, keep the foreground and background in that same context family."
+        "Inside a fixed context, keep the foreground and background in that same context family.",
+        "Chrome is the one fixed context with three background steps; pair a chrome foreground with chrome.background.theme when the pairing must be measurable, because the primary and secondary steps are translucent glass."
       ],
       "variants": [
         {
@@ -918,6 +920,62 @@
             { "role": "tertiary", "property": "color", "tokenPattern": "--color-*-foreground-tertiary" }
           ],
           "notes": ["Keep both assignments in the same context family; the documented pairings clear 3:1 but are not normal-text defaults."]
+        },
+        {
+          "id": "foreground-chrome-primary",
+          "label": "Chrome primary foreground",
+          "modifier": "high emphasis",
+          "when": "High-emphasis content sits inside a floating chrome toolbar, control bar, or overlay panel above arbitrary page, map, or media content.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
+            { "role": "primary", "property": "color", "token": "--color-chrome-foreground-primary" }
+          ],
+          "notes": [
+            "On the opaque chrome.background.theme step this pairing measures 17.09:1 light and 15.07:1 dark.",
+            "On the translucent primary and secondary steps the backdrop sets the real figure, so verify the pairing against the content the chrome floats over."
+          ]
+        },
+        {
+          "id": "foreground-chrome-secondary",
+          "label": "Chrome secondary foreground",
+          "modifier": "default content",
+          "when": "Ordinary readable content sits inside a floating chrome toolbar, control bar, or overlay panel.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
+            { "role": "secondary", "property": "color", "token": "--color-chrome-foreground-secondary" }
+          ],
+          "notes": [
+            "On the opaque chrome.background.theme step this pairing measures 5.39:1 light and 4.88:1 dark, clearing 4.5:1.",
+            "Choose chrome.background.theme when the backdrop cannot be verified and normal-size text must clear 4.5:1."
+          ]
+        },
+        {
+          "id": "foreground-chrome-tertiary",
+          "label": "Chrome tertiary foreground",
+          "modifier": "de-emphasized",
+          "when": "De-emphasized large text or meaningful icons sit inside a floating chrome toolbar, control bar, or overlay panel.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
+            { "role": "tertiary", "property": "color", "token": "--color-chrome-foreground-tertiary" }
+          ],
+          "notes": [
+            "On the opaque chrome.background.theme step this pairing measures 3.24:1 light and 3.14:1 dark, so it carries large text and meaningful icons but not normal-size body text.",
+            "chrome.foreground.quaternary sits at 1.59:1 light and 1.92:1 dark and must never carry readable text or a meaningful icon."
+          ]
+        },
+        {
+          "id": "foreground-chrome-theme",
+          "label": "Chrome theme foreground",
+          "modifier": "brand emphasis",
+          "when": "Content inside chrome carries theme or brand emphasis rather than a semantic status.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-chrome-background-theme" },
+            { "role": "primary", "property": "color", "token": "--color-chrome-foreground-theme" }
+          ],
+          "notes": [
+            "This pairing measures 4.78:1 light and 4.67:1 dark, clearing 4.5:1 for normal text.",
+            "It is a brand accent inside chrome, not a substitute for a semantic intent."
+          ]
         }
       ],
       "accessibility": [
@@ -962,7 +1020,7 @@
         {
           "id": "surface",
           "summary": "The ordinary or matching fixed-context surface beneath the border.",
-          "tokenPatterns": ["--color-background-*", "--color-*-background"],
+          "tokenPatterns": ["--color-background-*", "--color-*-background", "--color-chrome-background-*"],
           "required": true
         }
       ],
@@ -1039,6 +1097,42 @@
             { "role": "tertiary", "property": "border-color", "tokenPattern": "--color-*-border-tertiary" }
           ],
           "notes": ["Keep both assignments in the same context family; do not use this border for interactive controls."]
+        },
+        {
+          "id": "chrome-border-primary",
+          "label": "Chrome primary border",
+          "modifier": "control-identifying",
+          "when": "The stroke itself identifies a control inside a floating chrome toolbar, control bar, or overlay panel.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
+            { "role": "primary", "property": "border-color", "token": "--color-chrome-border-primary" }
+          ],
+          "notes": [
+            "Chrome borders are not covered by the published neutral-stroke measurements, because two of the three chrome backgrounds are translucent.",
+            "When a chrome stroke is the only thing identifying a control, put it on chrome.background.theme and verify 3:1 there rather than assuming the ordinary border ladder applies."
+          ]
+        },
+        {
+          "id": "chrome-border-secondary",
+          "label": "Chrome secondary border",
+          "modifier": "interactive default",
+          "when": "A control inside chrome has another identifying affordance.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
+            { "role": "secondary", "property": "border-color", "token": "--color-chrome-border-secondary" }
+          ],
+          "notes": ["This border cannot be the sole control identifier; keep it paired with a chrome background rather than an ordinary surface."]
+        },
+        {
+          "id": "chrome-border-tertiary",
+          "label": "Chrome tertiary border",
+          "modifier": "decorative only",
+          "when": "A non-interactive edge inside chrome remains understandable without the stroke.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
+            { "role": "tertiary", "property": "border-color", "token": "--color-chrome-border-tertiary" }
+          ],
+          "notes": ["This border is decorative; use chrome.divider for an internal separator inside the chrome surface."]
         }
       ],
       "accessibility": [

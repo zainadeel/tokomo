@@ -534,6 +534,14 @@ The mode gap is at most $0.02$, so the mode-dependent background is not a contra
 
 For the always-dark intent strokes, `strong` measures about $13.3$–$15.8{:}1$ and `bold` about $5.6$–$10.0{:}1$, both comfortably clear. `faint` measures $1.20$–$1.29{:}1$ and is decorative only. `medium` sits at about $2.89$–$3.48{:}1$ and straddles the threshold, with `always-dark.border-medium-negative` at $3.00{:}1$ light but $2.89{:}1$ dark, so do not treat the always-dark `medium` strokes as reliably meeting $3{:}1$.
 
+#### Chrome strokes
+
+The chrome family is the one fixed context whose strokes are **not** in the tables above, and that is deliberate. Two of its three surface steps are translucent glass, so `chrome.border.*` has no fixed backdrop to measure against — the figure depends entirely on the page, map, or media content the chrome floats over.
+
+Only `chrome.background.theme` is opaque, so it is the only chrome surface on which a stroke figure means anything. When a chrome stroke is the sole thing identifying a control or its state, put the control on `chrome.background.theme` and verify $3{:}1$ there. Do not assume the neutral ladder in the first table transfers: the chrome steps are separate tokens with their own alpha values, and the ordinary `border.primary` guarantee does not extend to them.
+
+Chrome foregrounds *are* measured, on `chrome.background.theme`, and the figures are in Section 7.1 and the `3:1 floor` group of `reports/contrast.md`.
+
 #### Regenerating these figures
 
 `npm run report:contrast` measures all of the above and flags strokes against $3{:}1$ rather than $4.5{:}1$. A flagged row is a prompt to check how the token is used, not an automatic defect, because the threshold only applies to control-identifying strokes. Expect `border.secondary`, `border.tertiary`, `divider.*`, and the `secondary`/`tertiary` on-background steps to be flagged permanently: they are decorative by design.

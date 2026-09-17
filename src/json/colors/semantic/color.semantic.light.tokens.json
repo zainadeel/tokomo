@@ -8600,7 +8600,7 @@
             1,
             1
           ],
-          "alpha": 0.4000000059604645,
+          "alpha": 0.5,
           "hex": "#FFFFFF"
         },
         "$extensions": {
@@ -8610,8 +8610,8 @@
             "SHAPE_FILL"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:8069850336ab0a3b5fa14b188573ce45a8183e9e/-1:-1",
-            "targetVariableName": "white/40",
+            "targetVariableId": "VariableID:ac3d61d4bb7ae37a192c4f38ee138c2b383290a9/-1:-1",
+            "targetVariableName": "white/50",
             "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
             "targetVariableSetName": "colors-reference"
           }
@@ -8626,7 +8626,7 @@
             1,
             1
           ],
-          "alpha": 0.20000000298023224,
+          "alpha": 0.30000001192092896,
           "hex": "#FFFFFF"
         },
         "$extensions": {
@@ -8636,8 +8636,8 @@
             "SHAPE_FILL"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:3404f9eed1cc4c8126c61bac064f82bcc764ce26/-1:-1",
-            "targetVariableName": "white/20",
+            "targetVariableId": "VariableID:d3e446a69f830250c5762229ff5277f32db0db9c/-1:-1",
+            "targetVariableName": "white/30",
             "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
             "targetVariableSetName": "colors-reference"
           }

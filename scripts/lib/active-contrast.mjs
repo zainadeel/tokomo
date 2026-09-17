@@ -234,6 +234,33 @@ export function buildActiveCombinations() {
     });
   }
 
+  // Chrome publishes three surface steps. `theme` is opaque, so it measures
+  // unconditionally. `primary` and `secondary` are translucent glass with no
+  // universal backdrop, so — like translucent below — they are measured over an
+  // ASSUMED background.primary and reported as conditional rows.
+  combos.push({
+    group: "Specialized context — chrome",
+    family: "chrome.interaction.active",
+    baseToken: "--color-chrome-background-theme",
+    activeToken: "--color-chrome-interaction-active",
+    foregroundToken: "--color-chrome-foreground-primary",
+  });
+
+  for (const surface of ["primary", "secondary"]) {
+    combos.push({
+      group: "Chrome glass (conditional — assumed backdrop)",
+      family: "chrome.interaction.active",
+      baseToken: `--color-chrome-background-${surface}`,
+      baseUnderToken: "--color-background-primary",
+      activeToken: "--color-chrome-interaction-active",
+      foregroundToken: "--color-chrome-foreground-primary",
+      conditional: true,
+      note:
+        "Translucent chrome surface composited over an ASSUMED background.primary backdrop. " +
+        "Chrome floats over arbitrary content, so this row is conditional, not a system-wide guarantee.",
+    });
+  }
+
   // Translucent has no background token of its own and no universal backdrop —
   // translucent.translucent is a scrim that takes the luminance of whatever sits
   // behind it. Measuring it requires ASSUMING a backdrop, so these rows are

@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.6.1](https://github.com/zainadeel/tokomo/compare/v6.6.0...v6.6.1) (2026-09-17)
+
+
+### Fixed
+
+* **colors:** retune chrome background alphas from figma export ([#144](https://github.com/zainadeel/tokomo/issues/144)) ([bd51d35](https://github.com/zainadeel/tokomo/commit/bd51d356d85ee38901f3cdcff79182dbe676809d))
+
 ## [6.6.0](https://github.com/zainadeel/tokomo/compare/v6.5.2...v6.6.0) (2026-09-17)
 
 

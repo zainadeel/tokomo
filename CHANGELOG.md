@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.6.0](https://github.com/zainadeel/tokomo/compare/v6.5.2...v6.6.0) (2026-09-17)
+
+
+### Added
+
+* **colors:** add chrome semantic color family from figma export ([#142](https://github.com/zainadeel/tokomo/issues/142)) ([7483523](https://github.com/zainadeel/tokomo/commit/7483523d59b7bd10118071daeeb537d5ceed6c46))
+
 ## [6.5.2](https://github.com/zainadeel/tokomo/compare/v6.5.1...v6.5.2) (2026-09-16)
 
 

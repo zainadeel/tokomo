@@ -302,7 +302,7 @@
   --color-chrome-foreground-quaternary: var(--color-reference-black-20);
   --color-chrome-foreground-secondary: var(--color-reference-black-60);
   --color-chrome-foreground-tertiary: var(--color-reference-black-45);
-  --color-chrome-foreground-theme: var(--color-reference-dark-blue-250-l65-c20-bold);
+  --color-chrome-foreground-theme: var(--color-reference-light-blue-250-l50-c18-bold);
   --color-chrome-interaction-active: var(--color-reference-black-5);
   --color-chrome-interaction-focus: var(--color-reference-black-20);
   --color-chrome-interaction-hover: var(--color-reference-black-10);

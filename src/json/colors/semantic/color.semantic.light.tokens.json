@@ -8785,11 +8785,11 @@
           "colorSpace": "srgb",
           "components": [
             0,
-            0.5686274766921997,
-            1
+            0.38823530077934265,
+            0.7686274647712708
           ],
           "alpha": 1,
-          "hex": "#0091FF"
+          "hex": "#0063C4"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:19338:13",
@@ -8799,8 +8799,8 @@
             "STROKE"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:80e4e9e7a639ccaa384906ce8eae6c2778079505/-1:-1",
-            "targetVariableName": "dark/blue-250/L65-C20-bold",
+            "targetVariableId": "VariableID:75befb04c9105c408660d53039285d8c47167550/-1:-1",
+            "targetVariableName": "light/blue-250/L50-C18-bold",
             "targetVariableSetId": "VariableCollectionId:da1b6f78397a1a66a7c860288f9968cdae2b65c2/-1:-1",
             "targetVariableSetName": "colors-reference"
           }

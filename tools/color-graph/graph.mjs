@@ -52,8 +52,10 @@ function update({ fit = true } = {}) {
   saveLocation();
 }
 function relatedNames(token) {
-  const pairs = data.pairings.filter(p => p.theme === state.theme && [p.baseToken, p.foregroundToken, p.activeToken].includes(token.name));
-  return [...new Set(pairs.flatMap(p => [p.baseToken, p.foregroundToken, p.activeToken]))].filter(n => n !== token.name);
+  return [...new Set(data.relationships
+    .filter(relation => relation.source === token.name || relation.target === token.name)
+    .flatMap(relation => [relation.source, relation.target]))]
+    .filter(name => name !== token.name);
 }
 function renderInspector() {
   const t = tokenMap.get(state.selected);
@@ -61,9 +63,12 @@ function renderInspector() {
   const family = data.families.find(f => t.guidance.includes(f.id));
   const intent = data.intents.find(i => i.name === t.intent);
   const description = (intent ?? family)?.summary ?? 'A semantic color for its documented rendering context.';
+  const related = relatedNames(t).map(name => tokenMap.get(name)).filter(Boolean).sort((a, b) => a.path.localeCompare(b.path));
+  const relatedSection = related.length ? `<section class="related" aria-labelledby="related-title"><h3 id="related-title">Related</h3><ul>${related.map(token => `<li class="related-item"><span class="small-swatch" style="--swatch:${token[state.theme].css}"></span><code>${escape(token.path)}</code></li>`).join('')}</ul></section>` : '';
   $('#inspector').innerHTML = `<div class="sheet-heading"><span class="token-swatch" style="--swatch:${t[state.theme].css}"></span><h2 id="token-title">${escape(t.path)}</h2><button id="sheet-close" class="sheet-close toggle-btn" aria-label="Close token details">Close</button></div>
     <div class="panel-body"><p class="token-path">${t.name}</p><p class="token-description">${escape(description)}</p>
       <div class="mode-values">${['light', 'dark'].map(mode => `<section class="mode-value" aria-label="${title(mode)} mode"><h3>${title(mode)}</h3><div class="mode-color"><span class="small-swatch" style="--swatch:${t[mode].css}"></span><code>${t[mode].hex}${t[mode].alpha < 1 ? ` / ${Math.round(t[mode].alpha * 100)}% opacity` : ''}</code></div><p class="reference-label">Reference</p><p class="reference-path">${escape(t[mode].referencePath ?? 'Direct value — no reference alias')}</p></section>`).join('')}</div>
+      ${relatedSection}
     </div>`;
   $('#inspector').scrollTop = 0;
   $('#sheet-close').addEventListener('click', () => closeInspector(true));
@@ -75,7 +80,7 @@ function changeTheme(theme) {
 }
 
 /** A deterministic, animated cluster map. Layout positions have no semantic meaning;
- * only explicit alias edges and matrix-derived pairing edges describe relationships. */
+ * only explicit alias edges and documented applicability edges describe relationships. */
 class ColorMap {
   constructor(canvas) {
     this.canvas = canvas; this.ctx = canvas.getContext('2d');
@@ -305,12 +310,13 @@ class ColorMap {
     }
     for (const n of this.nodes) {
       const p = this.point(n), isSelected = n.t.name === state.selected;
+      const isRelated = related.has(n.t.name) && state.view !== 'reference';
+      const isHighlighted = isSelected || isRelated;
       if (p.x < -20 || p.x > this.width + 20 || p.y < -20 || p.y > this.height + 20) continue;
       ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2); ctx.fillStyle = n.t[state.theme].rgb; ctx.fill();
-      ctx.strokeStyle = isSelected ? ink : dark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.15)'; ctx.lineWidth = isSelected ? 1 : .7; ctx.stroke();
-      if (!isSelected && related.has(n.t.name) && state.view !== 'reference') {
-        ctx.beginPath(); ctx.arc(p.x, p.y, radius + 2.2, 0, Math.PI * 2); ctx.strokeStyle = muted; ctx.lineWidth = .7; ctx.stroke();
-      }
+      ctx.strokeStyle = isHighlighted ? ink : dark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.15)';
+      ctx.lineWidth = isHighlighted ? 1 : .7;
+      ctx.stroke();
     }
     // At close range, reveal names only where they fit; keyboard navigation reaches every token.
     if (k >= 2.2) {

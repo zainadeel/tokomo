@@ -310,12 +310,13 @@ class ColorMap {
     }
     for (const n of this.nodes) {
       const p = this.point(n), isSelected = n.t.name === state.selected;
+      const isRelated = related.has(n.t.name) && state.view !== 'reference';
+      const isHighlighted = isSelected || isRelated;
       if (p.x < -20 || p.x > this.width + 20 || p.y < -20 || p.y > this.height + 20) continue;
       ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2); ctx.fillStyle = n.t[state.theme].rgb; ctx.fill();
-      ctx.strokeStyle = isSelected ? ink : dark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.15)'; ctx.lineWidth = isSelected ? 1 : .7; ctx.stroke();
-      if (!isSelected && related.has(n.t.name) && state.view !== 'reference') {
-        ctx.beginPath(); ctx.arc(p.x, p.y, radius + 2.2, 0, Math.PI * 2); ctx.strokeStyle = muted; ctx.lineWidth = .7; ctx.stroke();
-      }
+      ctx.strokeStyle = isHighlighted ? ink : dark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.15)';
+      ctx.lineWidth = isHighlighted ? 1 : .7;
+      ctx.stroke();
     }
     // At close range, reveal names only where they fit; keyboard navigation reaches every token.
     if (k >= 2.2) {

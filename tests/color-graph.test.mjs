@@ -89,6 +89,12 @@ test('inspector renders a conditional related-token list from graph relationship
   assert.match(graphClient, /token\[state\.theme\]\.css/);
 });
 
+test('related nodes use the same border highlight as the selected node', () => {
+  assert.match(graphClient, /const isHighlighted = isSelected \|\| isRelated/);
+  assert.match(graphClient, /ctx\.strokeStyle = isHighlighted \? ink/);
+  assert.doesNotMatch(graphClient, /radius \+ 2\.2/);
+});
+
 test('graph core intent groups do not assign meaning to literal hues or specialized contexts', () => {
   assert.equal(graph.intents.length, 9);
   assert.equal(graph.tokens.find(t => t.path === 'background.bold.brand').intent, 'brand');

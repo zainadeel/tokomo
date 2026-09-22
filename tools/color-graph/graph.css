@@ -1,0 +1,103 @@
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  --fg-muted: rgb(0 0 0 / 0.5);
+  --divider: rgb(0 0 0 / 0.1);
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #161616;
+  --fg: #ffffff;
+  --fg-muted: rgb(255 255 255 / 0.5);
+  --divider: rgb(255 255 255 / 0.1);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  height: 100%;
+  overflow: hidden;
+}
+button, a { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; border-radius: 0; }
+a { text-decoration: none; }
+button:hover, a:hover { color: var(--fg); }
+button:focus-visible, a:focus-visible, canvas:focus-visible {
+  outline: 2px solid var(--color-interaction-focus);
+  outline-offset: 4px;
+}
+[hidden] { display: none !important; }
+.toolbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+  padding: 0 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--divider);
+}
+.logo { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.spacer { flex: 1; }
+.vdivider { width: 1px; height: 12px; background: var(--divider); flex-shrink: 0; }
+.toggle-btn { background: none; border: none; padding: 0; color: var(--fg-muted); line-height: 1; white-space: nowrap; }
+.toggle-btn.active { color: var(--fg); }
+.tabs { display: flex; align-items: center; gap: 12px; }
+.workspace { position: relative; height: calc(100dvh - 48px); color: var(--fg); }
+.view-tabs { position: absolute; z-index: 2; top: 20px; left: 20px; }
+.zoom-tabs { position: absolute; z-index: 2; bottom: 20px; left: 20px; }
+#graph-area { position: absolute; inset: 0; overflow: hidden; }
+#graph { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#graph.dragging { cursor: grabbing; }
+#graph-tooltip { position: absolute; z-index: 3; pointer-events: none; padding: 3px 4px; background: var(--fg); color: var(--bg); font-size: 9px; line-height: 11px; transform: translateX(-50%); width: max-content; max-width: 280px; overflow-wrap: anywhere; }
+#inspector {
+  position: fixed;
+  inset: 68px 20px auto auto;
+  margin: 0;
+  width: 360px;
+  max-width: calc(100% - 40px);
+  max-height: calc(100dvh - 88px);
+  padding: 0;
+  border: 1px solid var(--divider);
+  background: var(--bg);
+  color: var(--fg);
+  overflow: auto;
+  overscroll-behavior: contain;
+  z-index: 10;
+}
+.sheet-heading { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--bg); border-bottom: 1px solid var(--divider); }
+.panel-body { padding: 16px 20px 20px; }
+.token-swatch { width: 24px; height: 24px; flex-shrink: 0; background: var(--swatch); border: 1px solid var(--divider); }
+#token-title { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; flex: 1; }
+.sheet-close { flex-shrink: 0; }
+.token-path, .reference-path { font: 10px/1.6 var(--mono); overflow-wrap: anywhere; }
+.token-path { color: var(--fg-muted); }
+.token-description { margin-top: 12px; line-height: 1.7; }
+.mode-values { margin-top: 20px; }
+.mode-value { border-top: 1px solid var(--divider); padding-top: 14px; }
+.mode-value + .mode-value { margin-top: 18px; }
+.mode-value h3 { font-size: 11px; font-weight: 500; margin-bottom: 8px; }
+.mode-color { display: flex; align-items: center; gap: 8px; }
+.mode-color code { font: 10px/1.6 var(--mono); }
+.small-swatch { width: 12px; height: 12px; background: var(--swatch); border: 1px solid var(--divider); flex-shrink: 0; }
+.reference-label { font-size: 10px; color: var(--fg-muted); margin-top: 10px; margin-bottom: 3px; }
+#load-error { position: absolute; top: 64px; left: 20px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media(max-width:540px) {
+  .toolbar { padding: 0 16px; gap: 12px; }
+  .view-tabs { top: 16px; left: 16px; }
+  .zoom-tabs { bottom: 20px; left: 16px; }
+  #inspector { inset: 96px 16px auto auto; max-width: calc(100% - 32px); max-height: min(55dvh, calc(100dvh - 160px)); }
+  .sheet-heading { padding: 14px 16px; }
+  .panel-body { padding: 14px 16px 16px; }
+}
+@media(forced-colors:active) {
+  .token-swatch, .small-swatch { forced-color-adjust: none; }
+  .toggle-btn.active { text-decoration: underline; }
+}

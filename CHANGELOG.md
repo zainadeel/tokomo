@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.8.0](https://github.com/zainadeel/tokomo/compare/v6.7.0...v6.8.0) (2026-09-22)
+
+
+### Added
+
+* **docs:** expand color graph relationships ([#148](https://github.com/zainadeel/tokomo/issues/148)) ([62792bc](https://github.com/zainadeel/tokomo/commit/62792bcf7c7a8a23e85d94366c54a6a8804861bc))
+
 ## [6.7.0](https://github.com/zainadeel/tokomo/compare/v6.6.1...v6.7.0) (2026-09-22)
 
 

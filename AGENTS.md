@@ -102,6 +102,7 @@ scripts/
   generate-agent-manifest.mjs   # Validates guidance coverage + emits dist/agent.*
   update-token-artifact-baseline.mjs # Accept intentional public artifact changes
   build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation)
+  build-color-graph.mjs         # Compiler graph + guidance + measured pairings → docs/graph/
   docs-template.html            # Template for Browser / Documentation / Color Tool navigation
   report-contrast.mjs           # WCAG + APCA report over shipped pairings (manual, not in build)
   lib/
@@ -118,6 +119,7 @@ docs/
     typography-usage.md   # Type style selection
     elevation-usage.md    # Elevation token selection
 dist/                   # Generated — do not edit directly
+tools/color-graph/       # Authored Color graph page, map interactions, and styles
 .github/
   workflows/
     build.yml          # PR: npm ci, build, test, build docs, verify artifacts + src unchanged
@@ -146,6 +148,13 @@ npm run report:contrast  # WCAG + APCA + selected-state overlay reports (run aft
 npm run dev              # Watch mode — rebuilds on src changes
 npm run clean            # Remove dist/
 ```
+
+`build:docs` also builds `docs/graph/`. Edit `tools/color-graph/` for the Color graph
+interface and `scripts/build-color-graph.mjs` for its graph-derived data. The graph
+uses the existing agent guidance contract and selected-state contrast matrix; it
+does not maintain a second token or guidance source. Run `npm run preview:docs`
+and open `/graph/` to review locally. Figma variable names are copied from token
+paths; a Figma library URL must be supplied before adding direct library links.
 
 `report:contrast` is diagnostic and gates nothing. WCAG 2.x AA is the shipped accessibility contract; APCA `Lc` is tracked alongside it as forward-looking guidance only. See `docs/guidelines/color-generation.md` §4.5.
 

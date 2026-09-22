@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Explore TokoMo semantic colors by role, intent, and reference.">
+  <title>TokoMo — Color graph</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./colors.css">
+  <link rel="stylesheet" href="./graph.css">
+  <script type="module" src="./graph.mjs"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <h1 class="logo">Color graph</h1>
+    <span class="spacer"></span>
+    <div class="tabs" role="group" aria-label="Color theme">
+      <button class="toggle-btn active" data-theme-choice="light" aria-pressed="true">Light</button>
+      <button class="toggle-btn" data-theme-choice="dark" aria-pressed="false">Dark</button>
+    </div>
+    <span class="vdivider" aria-hidden="true"></span>
+    <a class="toggle-btn" href="../">Token browser</a>
+  </header>
+  <main class="workspace" aria-label="Color graph">
+    <div class="view-tabs tabs" role="group" aria-label="Group tokens by">
+      <button class="toggle-btn active" data-view="role" aria-pressed="true">Role</button>
+      <button class="toggle-btn" data-view="intent" aria-pressed="false">Intent</button>
+      <button class="toggle-btn" data-view="reference" aria-pressed="false">Reference</button>
+    </div>
+    <div id="graph-area">
+      <canvas id="graph" tabindex="0" role="group" aria-label="Color graph" aria-describedby="graph-instructions"></canvas>
+      <div id="graph-tooltip" role="tooltip" hidden></div>
+    </div>
+    <div class="zoom-tabs tabs" role="group" aria-label="Graph zoom">
+      <button id="zoom-in" class="toggle-btn">Zoom in</button>
+      <button id="zoom-out" class="toggle-btn">Zoom out</button>
+      <button id="reset-view" class="toggle-btn">Reset</button>
+    </div>
+    <p id="graph-instructions" class="sr-only">Drag to pan, scroll or pinch to zoom. Use left and right arrow keys to explore tokens, Enter to open details, Escape to close them. Hold Shift with arrow keys to pan. Plus and minus zoom; zero fits the graph.</p>
+    <p id="load-error" role="alert" hidden></p>
+  </main>
+  <dialog id="inspector" aria-labelledby="token-title"></dialog>
+  <div id="selection-announcement" class="sr-only" role="status"></div>
+  <noscript>Enable JavaScript to explore the color graph.</noscript>
+</body>
+</html>

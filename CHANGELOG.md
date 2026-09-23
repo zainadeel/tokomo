@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [6.9.0](https://github.com/zainadeel/tokomo/compare/v6.8.0...v6.9.0) (2026-09-23)
+
+
+### Added
+
+* **docs:** render color graph groups as square grids ([#150](https://github.com/zainadeel/tokomo/issues/150)) ([bb9d47f](https://github.com/zainadeel/tokomo/commit/bb9d47f92c9d2aab8db2d4f7a99b41dd152fffb0))
+
 ## [6.8.0](https://github.com/zainadeel/tokomo/compare/v6.7.0...v6.8.0) (2026-09-22)
 
 

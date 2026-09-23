@@ -4,6 +4,22 @@ const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', 
 const title = value => value === 'ai' ? 'AI' : value.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase());
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const core = ['background', 'foreground', 'border', 'divider', 'interaction'];
+// World-space pitch of the square grids; background dots land on every other cell.
+const CELL = 12;
+const TOKEN_LABEL_H = 15;
+// Space between a grid square and its hover or selected label.
+const TOKEN_LABEL_GAP = 4;
+// Emphasis levels read strongest first; every other path segment sorts alphabetically.
+const EMPHASIS = ['strong', 'bold', 'medium', 'faint'];
+function comparePaths(a, b) {
+  const as = a.split('.'), bs = b.split('.');
+  for (let i = 0; i < Math.min(as.length, bs.length); i++) {
+    if (as[i] === bs[i]) continue;
+    const ar = EMPHASIS.indexOf(as[i]), br = EMPHASIS.indexOf(bs[i]);
+    return ar >= 0 && br >= 0 ? ar - br : as[i].localeCompare(bs[i]);
+  }
+  return as.length - bs.length;
+}
 let data, tokenMap, map;
 const state = { view: 'role', theme: 'light', selected: null };
 
@@ -154,10 +170,16 @@ class ColorMap {
       if (!buckets.has(key)) buckets.set(key, []);
       buckets.get(key).push(t);
     }
+    const grid = state.view !== 'reference';
     this.groups = [...buckets].map(([key, members]) => {
       const label = state.view === 'reference' ? (members[0][state.theme].referencePath ?? 'Direct value') : title(key.replace(/^literal:/, ''));
-      const radius = Math.max(38, Math.sqrt(members.length) * 11 + 12);
-      return { key, members, label, r: radius, x: 0, y: 0 };
+      if (!grid) {
+        const radius = Math.max(38, Math.sqrt(members.length) * 11 + 12);
+        return { key, members, label, r: radius, hw: radius, hh: radius, x: 0, y: 0 };
+      }
+      const cols = Math.ceil(Math.sqrt(members.length)), rows = Math.ceil(members.length / cols);
+      const hw = cols * CELL / 2, hh = rows * CELL / 2;
+      return { key, members, label, cols, r: Math.max(38, Math.hypot(hw, hh) + 12), hw, hh, x: 0, y: 0 };
     });
     // Pack circles without overlaps, with larger families anchoring the center.
     const packed = [...this.groups].sort((a, b) => b.r - a.r);
@@ -178,13 +200,23 @@ class ColorMap {
     }
     const next = [];
     for (const g of this.groups) {
-      const members = [...g.members].sort((a, b) => (a.intent ?? a.path).localeCompare(b.intent ?? b.path) || a.path.localeCompare(b.path));
+      const members = [...g.members].sort((a, b) => comparePaths(a.intent ?? a.path, b.intent ?? b.path) || comparePaths(a.path, b.path));
+      // Snap each grid's first cell to the world lattice so squares sit on the background dots.
+      const left = grid ? Math.round((g.x - g.hw + CELL / 2) / CELL) * CELL : 0;
+      const top = grid ? Math.round((g.y - g.hh + CELL / 2) / CELL) * CELL : 0;
+      if (grid) { g.x = left - CELL / 2 + g.hw; g.y = top - CELL / 2 + g.hh; }
       for (let i = 0; i < members.length; i++) {
         const t = members[i];
-        const angle = i * Math.PI * (3 - Math.sqrt(5));
-        const radius = state.view === 'reference' ? 22 + Math.sqrt(i) * 10 : Math.sqrt(i + .5) * 10;
-        const tx = g.x + Math.cos(angle) * radius;
-        const ty = g.y + Math.sin(angle) * radius;
+        let tx, ty;
+        if (grid) {
+          tx = left + (i % g.cols) * CELL;
+          ty = top + Math.floor(i / g.cols) * CELL;
+        } else {
+          const angle = i * Math.PI * (3 - Math.sqrt(5));
+          const radius = 22 + Math.sqrt(i) * 10;
+          tx = g.x + Math.cos(angle) * radius;
+          ty = g.y + Math.sin(angle) * radius;
+        }
         const old = this.positions.get(t.name);
         next.push({ t, group: g, x: old?.x ?? tx, y: old?.y ?? ty, sx: old?.x ?? tx, sy: old?.y ?? ty, tx, ty });
       }
@@ -210,10 +242,10 @@ class ColorMap {
   }
   fit(redraw = true, width = this.availableWidth) {
     if (!this.groups.length) return;
-    const minX = Math.min(...this.groups.map(g => g.x - g.r - 40));
-    const maxX = Math.max(...this.groups.map(g => g.x + g.r + 40));
-    const minY = Math.min(...this.groups.map(g => g.y - g.r - 40));
-    const maxY = Math.max(...this.groups.map(g => g.y + g.r + 45));
+    const minX = Math.min(...this.groups.map(g => g.x - g.hw - 40));
+    const maxX = Math.max(...this.groups.map(g => g.x + g.hw + 40));
+    const minY = Math.min(...this.groups.map(g => g.y - g.hh - 40));
+    const maxY = Math.max(...this.groups.map(g => g.y + g.hh + 45));
     const k = Math.min((width - 48) / (maxX - minX), (this.height - 96) / (maxY - minY), 2);
     this.camera = { k: Math.max(.12, k), x: width / 2 - (minX + maxX) / 2 * k, y: this.height / 2 - (minY + maxY) / 2 * k };
     if (redraw) { cancelAnimationFrame(this.animation); this.settle(); this.draw(); }
@@ -243,6 +275,10 @@ class ColorMap {
     this.draw();
   }
   point(node) { return { x: node.x * this.camera.k + this.camera.x, y: node.y * this.camera.k + this.camera.y }; }
+  // Screen-space half extent of a node: circle radius in Reference view, half a square's side elsewhere.
+  nodeHalf(k = this.camera.k) {
+    return state.view === 'reference' ? Math.max(2.4, Math.min(13, 4.2 * k)) : Math.max(.75, Math.min(11, CELL * k * .375));
+  }
   draw() {
     const ctx = this.ctx;
     ctx.setTransform(this.dpr || 1, 0, 0, this.dpr || 1, 0, 0);
@@ -253,7 +289,9 @@ class ColorMap {
     const line = dark ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.075)';
     const muted = dark ? '#AAAAAA' : '#646464';
     ctx.fillStyle = line;
-    const spacing = 24;
+    // Dots sit on the world lattice and scale with zoom; skip to coarser multiples when zoomed out.
+    let spacing = CELL * 2 * this.camera.k;
+    while (spacing < 12) spacing *= 2;
     for (let x = ((this.camera.x % spacing) + spacing) % spacing; x < this.width; x += spacing) {
       for (let y = ((this.camera.y % spacing) + spacing) % spacing; y < this.height; y += spacing) { ctx.beginPath(); ctx.arc(x, y, .65, 0, Math.PI * 2); ctx.fill(); }
     }
@@ -268,24 +306,13 @@ class ColorMap {
         ctx.lineWidth = n.t.name === state.selected ? 1.4 : .7;
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       }
-    } else if (selected) {
-      const a = this.point(selected);
-      ctx.strokeStyle = ink; ctx.lineWidth = .9; ctx.setLineDash([3, 5]);
-      for (const n of this.nodes.filter(n => related.has(n.t.name))) {
-        const b = this.point(n);
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo((a.x + b.x) / 2 + 12, (a.y + b.y) / 2 - 20, b.x, b.y); ctx.stroke();
-      }
-      ctx.setLineDash([]);
     }
-    const radius = Math.max(2.4, Math.min(13, 4.2 * k));
+    const radius = this.nodeHalf(k);
+    const grid = state.view !== 'reference';
     const labelBoxes = [];
     const overlaps = box => labelBoxes.some(b => box.x < b.x + b.w + 6 && box.x + box.w + 6 > b.x && box.y < b.y + b.h + 5 && box.y + box.h + 5 > b.y);
-    if (selected) {
-      const point = this.point(selected);
-      ctx.font = '9px Inter, -apple-system, sans-serif';
-      const width = ctx.measureText(selected.t.path).width + 18;
-      labelBoxes.push({ x: Math.max(8, Math.min(this.width - width - 8, point.x - width / 2)), y: point.y + radius + 3, w: width, h: 17 });
-    }
+    const selectedBox = selected && this.selectedLabelBox(selected, radius);
+    if (selectedBox) labelBoxes.push(selectedBox);
     for (const g of [...this.groups].sort((a, b) => b.r - a.r)) {
       const p = this.point(g);
       if (state.view === 'reference') {
@@ -295,31 +322,64 @@ class ColorMap {
       }
       if (state.view !== 'reference' || k > .9 || g.members.length >= 7 || this.groups.length < 8) {
         const label = state.view === 'reference' ? g.label.replace(/^(light|dark)\//, '') : g.label;
-        const y = p.y + g.r * k + 10;
-        ctx.font = '500 11px Inter, -apple-system, sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = muted;
         const text = label.length > 30 && k < 1 ? `${label.slice(0, 28)}…` : label;
-        const width = ctx.measureText(text).width;
-        const box = { x: p.x - width / 2, y: y - 11, w: width, h: 29 };
+        const count = `${g.members.length} ${g.key.startsWith('literal:') ? 'hue tokens' : g.members.length === 1 ? 'token' : 'tokens'}`;
+        ctx.font = '9px Inter, -apple-system, sans-serif';
+        const countMetrics = ctx.measureText(count);
+        ctx.font = '500 11px Inter, -apple-system, sans-serif'; ctx.fillStyle = muted;
+        const textMetrics = ctx.measureText(text);
+        // Grid views left-align both lines with the grid's first square; Reference keeps centered labels.
+        const left = state.view === 'reference' ? null : p.x + (CELL / 2 - g.hw) * k - radius;
+        const width = left === null ? textMetrics.width : Math.max(textMetrics.width, countMetrics.width);
+        // In grid views, match the gap above the title to the visible gap between title and count.
+        const y = left === null
+          ? p.y + g.hh * k + 10
+          : p.y + (g.hh - CELL / 2) * k + radius + (14 - countMetrics.actualBoundingBoxAscent) + textMetrics.actualBoundingBoxAscent;
+        ctx.textAlign = left === null ? 'center' : 'left';
+        const x = left ?? p.x;
+        const box = { x: left ?? p.x - width / 2, y: y - 11, w: width, h: 29 };
         if (box.x < 8 || box.x + box.w > this.width - 8 || overlaps(box)) continue;
         labelBoxes.push(box);
         ctx.globalAlpha = this.labelOpacity;
-        ctx.fillText(text, p.x, y);
+        ctx.fillText(text, x, y);
         ctx.font = '9px Inter, -apple-system, sans-serif'; ctx.globalAlpha = .8 * this.labelOpacity;
-        ctx.fillText(`${g.members.length} ${g.key.startsWith('literal:') ? 'hue tokens' : g.members.length === 1 ? 'token' : 'tokens'}`, p.x, y + 14); ctx.globalAlpha = 1;
+        ctx.fillText(count, x, y + 14); ctx.globalAlpha = 1;
       }
     }
-    for (const n of this.nodes) {
-      const p = this.point(n), isSelected = n.t.name === state.selected;
-      const isRelated = related.has(n.t.name) && state.view !== 'reference';
+    const drawNode = n => {
+      const p = this.point(n);
+      if (p.x < -20 || p.x > this.width + 20 || p.y < -20 || p.y > this.height + 20) return;
+      const isSelected = n.t.name === state.selected, isRelated = grid && related.has(n.t.name);
       const isHighlighted = isSelected || isRelated;
-      if (p.x < -20 || p.x > this.width + 20 || p.y < -20 || p.y > this.height + 20) continue;
-      ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2); ctx.fillStyle = n.t[state.theme].rgb; ctx.fill();
+      ctx.beginPath();
+      if (!grid) ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      else ctx.rect(p.x - radius, p.y - radius, radius * 2, radius * 2);
+      ctx.fillStyle = n.t[state.theme].rgb; ctx.fill();
       ctx.strokeStyle = isHighlighted ? ink : dark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.15)';
       ctx.lineWidth = isHighlighted ? 1 : .7;
       ctx.stroke();
+    };
+    for (const n of this.nodes) drawNode(n);
+    // Relationship lines cross over every other square, but the selected token and the tokens it
+    // connects to are redrawn on top so the lines end at their edges.
+    if (grid && selected) {
+      const a = this.point(selected);
+      const ends = this.nodes.filter(n => related.has(n.t.name));
+      ctx.strokeStyle = ink; ctx.lineWidth = .9;
+      for (const n of ends) {
+        const b = this.point(n);
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+      // Clear under each end square first: translucent fills would otherwise let the lines show through.
+      for (const n of [...ends, selected]) {
+        const p = this.point(n);
+        ctx.clearRect(p.x - radius, p.y - radius, radius * 2, radius * 2);
+        drawNode(n);
+      }
     }
-    // At close range, reveal names only where they fit; keyboard navigation reaches every token.
-    if (k >= 2.2) {
+    // Reference view reveals names at close range where they fit; grid views rely on hover and
+    // selection. Keyboard navigation reaches every token.
+    if (!grid && k >= 2.2) {
       ctx.font = '9px Inter, -apple-system, sans-serif'; ctx.textAlign = 'left';
       for (const n of this.nodes) {
         if (n.t.name === state.selected) continue;
@@ -332,30 +392,44 @@ class ColorMap {
         ctx.fillStyle = ink; ctx.fillText(label, box.x + 4, box.y + 11);
       }
     }
-    if (selected) {
+    if (selectedBox) {
       const p = this.point(selected);
       if (p.x > 10 && p.x < this.width - 10 && p.y > 10 && p.y < this.height - 65) {
-        const label = selected.t.path;
+        const { x, y, w, h } = selectedBox;
         ctx.font = '9px Inter, -apple-system, sans-serif';
-        const width = ctx.measureText(label).width + 18;
-        const x = Math.max(8, Math.min(this.width - width - 8, p.x - width / 2)); const y = p.y + radius + 3;
-        ctx.fillStyle = dark ? '#EEEEEE' : '#202020'; ctx.beginPath(); ctx.rect(x, y, width, 17); ctx.fill();
-        ctx.fillStyle = dark ? '#202020' : '#FFFFFF'; ctx.textAlign = 'left'; ctx.fillText(label, x + 9, y + 11);
+        ctx.fillStyle = dark ? '#EEEEEE' : '#202020'; ctx.beginPath(); ctx.rect(x, y, w, h); ctx.fill();
+        ctx.fillStyle = dark ? '#202020' : '#FFFFFF'; ctx.textAlign = 'left'; ctx.fillText(selected.t.path, x + (grid ? 4 : 9), y + 11);
       }
     }
+  }
+  // The selected token always shows its full path: left-aligned just below the square in grid
+  // views, centered below the circle in Reference view.
+  selectedLabelBox(node, radius) {
+    const p = this.point(node);
+    this.ctx.font = '9px Inter, -apple-system, sans-serif';
+    const text = this.ctx.measureText(node.t.path).width;
+    if (state.view !== 'reference') {
+      const w = Math.max(text + 8, radius * 2);
+      return { x: Math.max(8, Math.min(this.width - w - 8, p.x - radius)), y: p.y + radius + TOKEN_LABEL_GAP, w, h: TOKEN_LABEL_H };
+    }
+    const w = text + 18;
+    return { x: Math.max(8, Math.min(this.width - w - 8, p.x - w / 2)), y: p.y + radius + 3, w, h: 17 };
   }
   hit(x, y) {
     let match = null, distance = Infinity;
     for (const n of this.nodes) {
-      const p = this.point(n), d = Math.hypot(p.x - x, p.y - y);
-      if (d < Math.max(8, 6 * this.camera.k) && d < distance) { match = n; distance = d; }
+      // Grid cells hit-test as squares (the whole cell); Reference nodes as circles.
+      const p = this.point(n);
+      const d = state.view === 'reference' ? Math.hypot(p.x - x, p.y - y) : Math.max(Math.abs(p.x - x), Math.abs(p.y - y));
+      const reach = state.view === 'reference' ? Math.max(8, 6 * this.camera.k) : Math.max(5, CELL / 2 * this.camera.k);
+      if (d < reach && d < distance) { match = n; distance = d; }
     }
     return match;
   }
   bind() {
     const canvas = this.canvas;
     const local = e => { const rect = canvas.getBoundingClientRect(); return { x: e.clientX - rect.left, y: e.clientY - rect.top }; };
-    canvas.addEventListener('wheel', e => { e.preventDefault(); const p = local(e); this.zoom(Math.exp(-e.deltaY * .002), p.x, p.y); }, { passive: false });
+    canvas.addEventListener('wheel', e => { e.preventDefault(); $('#graph-tooltip').hidden = true; const p = local(e); this.zoom(Math.exp(-e.deltaY * .002), p.x, p.y); }, { passive: false });
     canvas.addEventListener('pointerdown', e => {
       const p = local(e); this.pointers.set(e.pointerId, p);
       cancelAnimationFrame(this.animation); this.settle();
@@ -383,10 +457,18 @@ class ColorMap {
       if (this.hovered) {
         tooltip.textContent = this.hovered.t.path;
         const point = this.point(this.hovered);
-        const radius = Math.max(2.4, Math.min(13, 4.2 * this.camera.k));
-        const halfWidth = tooltip.offsetWidth / 2;
-        tooltip.style.left = `${Math.max(halfWidth + 8, Math.min(point.x, this.width - halfWidth - 8))}px`;
-        tooltip.style.top = `${point.y + radius + 3}px`;
+        const radius = this.nodeHalf();
+        // Grid views left-align the tooltip just below the square, matching the selected label.
+        const grid = state.view !== 'reference';
+        tooltip.classList.toggle('anchor-start', grid);
+        if (grid) {
+          tooltip.style.left = `${Math.max(8, Math.min(point.x - radius, this.width - tooltip.offsetWidth - 8))}px`;
+          tooltip.style.top = `${point.y + radius + TOKEN_LABEL_GAP}px`;
+        } else {
+          const halfWidth = tooltip.offsetWidth / 2;
+          tooltip.style.left = `${Math.max(halfWidth + 8, Math.min(point.x, this.width - halfWidth - 8))}px`;
+          tooltip.style.top = `${point.y + radius + 3}px`;
+        }
       }
       this.draw();
     });
@@ -395,7 +477,8 @@ class ColorMap {
       this.pointers.delete(e.pointerId); canvas.classList.remove('dragging');
       if (wasSingle && this.drag && !this.drag.moved) {
         const node = this.hit(p.x, p.y);
-        if (node) selectToken(node.t.name);
+        // Selecting can reframe the map, which leaves the hover tooltip over the wrong square.
+        if (node) { $('#graph-tooltip').hidden = true; selectToken(node.t.name); }
         else {
           closeInspector();
           const group = this.groups.find(g => { const point = this.point(g); return Math.hypot(point.x - p.x, point.y - p.y) < g.r * this.camera.k + 20; });

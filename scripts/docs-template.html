@@ -162,6 +162,9 @@
       min-width: 0;
     }
     .sub-toolbar .search-wrap { margin-left: auto; flex-shrink: 0; }
+    /* The sizer leaves caret room; keep that slack on the left so the text
+       ends flush with the header's right edge. */
+    .sub-toolbar .search { text-align: right; }
 
     .sub-btn {
       background: none;

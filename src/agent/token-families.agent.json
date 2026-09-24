@@ -1127,7 +1127,7 @@
       "examples": [
         {
           "language": "css",
-          "content": "/* Decorative edge: the container is identifiable without it. */\n.container { border: var(--dimension-stroke-width-012) solid var(--color-border-tertiary); }\n\n/* Field: its label and value identify it; the stroke only defines the region. */\n.field { border: var(--dimension-stroke-width-012) solid var(--color-border-secondary); }\n\n/* Bare checkbox: the stroke is the only identifier, so it needs the 3:1 step. */\n.checkbox { border: var(--dimension-stroke-width-012) solid var(--color-border-primary); }"
+          "content": "/* Decorative edge: the container is identifiable without it. */\n.container { border: var(--dimension-stroke-width-012) solid var(--color-border-tertiary); }\n\n/* Controls draw the stroke inset so it never changes their size and stays\n   above interaction washes (on ::after when the control has them). */\n\n/* Field: its label and value identify it; the stroke only defines the region. */\n.field { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-border-secondary); }\n\n/* Bare checkbox: the stroke is the only identifier, so it needs the 3:1 step. */\n.checkbox { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-border-primary); }"
         }
       ]
     },
@@ -1325,7 +1325,7 @@
       "examples": [
         {
           "language": "css",
-          "content": "/* Faint surface: the ordinary foreground hierarchy. */\n.notice {\n  background: var(--color-background-faint-caution);\n  border: var(--dimension-stroke-width-012) solid var(--color-border-faint-caution);\n  color: var(--color-foreground-secondary);\n}\n.notice .title { color: var(--color-foreground-primary); }\n\n/* Bold surface: the matching on-background foreground. */\n.badge {\n  background: var(--color-background-bold-negative);\n  color: var(--color-foreground-on-bold-background-primary);\n}\n\n/* Optional tint: a faint surface with the same intent's bold foreground. */\n.tag {\n  background: var(--color-background-faint-positive);\n  color: var(--color-foreground-bold-positive);\n}"
+          "content": "/* Faint surface: the ordinary foreground hierarchy. */\n.notice { background: var(--color-background-faint-caution); }\n.notice .title { color: var(--color-foreground-primary); }\n.notice .body { color: var(--color-foreground-secondary); }\n\n/* Bold surface: the matching on-background foreground. */\n.badge {\n  background: var(--color-background-bold-negative);\n  color: var(--color-foreground-on-bold-background-primary);\n}\n\n/* Optional tint: a strong surface with the same intent's medium foreground. */\n.tag {\n  background: var(--color-background-strong-positive);\n  color: var(--color-foreground-medium-positive);\n}"
         }
       ]
     },

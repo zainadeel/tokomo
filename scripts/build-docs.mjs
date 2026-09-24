@@ -581,7 +581,6 @@ const FX_GROUPS = [
   ['--effect-shadow-',                        'elevation'],
   ['--effect-highlight-',                     'elevation'],
   ['--effect-elevation-',                     'elevation'],
-  ['--effect-focus-ring',                     'elevation'],
 ];
 
 function getFxGroup(name) {

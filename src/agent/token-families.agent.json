@@ -717,32 +717,6 @@
         "The parts remain public because a layout may need to paint or clip outer shadow and inset highlight separately."
       ],
       "recipes": ["token-recipe:elevation-composition"]
-    },
-    {
-      "id": "token-family:effect.focus-ring",
-      "kind": "token-family",
-      "category": "effect",
-      "audience": "general",
-      "status": "stable",
-      "summary": "A box-shadow focus ring in the default brand color, for elements that cannot draw an outline.",
-      "tokenPatterns": ["--effect-focus-ring"],
-      "selectionRole": "direct",
-      "useWhen": [
-        "An element on an ordinary surface cannot use an outline for its focus indicator."
-      ],
-      "avoidWhen": [
-        "Using focus styling as hover, selection, or an error boundary.",
-        "A colored or specialized surface needs its own interaction focus color."
-      ],
-      "constraints": [
-        "The standard focus indicator is an outline built from --dimension-stroke-width-025, --dimension-space-025, and the interaction focus color for the surface; prefer it over this token.",
-        "This token includes both geometry and its default brand color.",
-        "For a context-specific ring, reproduce the standard gap and width with --dimension-space-025 and --dimension-stroke-width-025, then use the interaction focus color for that surface."
-      ],
-      "recipes": ["token-recipe:interaction-layers"],
-      "accessibility": [
-        "The focus indicator must remain visible and distinguishable in forced-colors modes."
-      ]
     }
   ],
   "recipes": [
@@ -1405,12 +1379,6 @@
           "summary": "Standard context-specific ring thickness.",
           "tokenPatterns": ["--dimension-stroke-width-025"],
           "required": true
-        },
-        {
-          "id": "default-focus-ring",
-          "summary": "Box-shadow focus ring in the default brand color, for elements that cannot draw an outline.",
-          "tokenPatterns": ["--effect-focus-ring"],
-          "required": false
         }
       ],
       "compositionRules": [

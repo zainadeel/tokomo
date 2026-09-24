@@ -177,10 +177,10 @@
       "constraints": [
         "Select the semantic intent before selecting a tone tier.",
         "Faint surfaces default to ordinary primary or secondary foregrounds; medium, bold, and strong surfaces use their matching on-background foregrounds.",
-        "Default most ordinary text and UI labels to the secondary foreground step; reserve primary for titles, key values, selected labels, and other high-emphasis content.",
-        "Use tertiary only for deliberately de-emphasized content, large text, or meaningful icons; use quaternary only for disabled hints and ornament that does not carry content.",
-        "Use tertiary borders only for decorative non-interactive structure, secondary borders for controls with another identifying affordance, and primary borders when the stroke itself must identify the control.",
-        "Use background-primary for cards, panels, and other content surfaces, and background-secondary for the app shell or a secondary region beneath them.",
+        "Use the primary foreground for primary content (titles, labels, values, main text) and secondary for supporting content (descriptions, helper text, metadata, placeholders).",
+        "Restrict tertiary and quaternary foregrounds to inactive or disabled components and purely decorative content; never use them to quiet active information.",
+        "Use tertiary borders for decorative structure, secondary borders as the default control boundary, and primary borders for a structural edge that needs more definition. An outline that alone identifies a small control, such as a checkbox, is a component-owned stroke in the tertiary foreground.",
+        "Use background-primary for the page or card body and background-secondary for secondary surfaces and card chrome.",
         "Use dividers only for internal rules that separate content inside a surface; they are not a general component border.",
         "Medium intent borders are tinted edges below 3:1; use a bold or strong intent border when the stroke must identify a control or state.",
         "Do not infer a token from its current rendered hue."
@@ -193,7 +193,7 @@
       ],
       "accessibility": [
         "Primary and secondary foregrounds clear 4.5:1 on their documented backgrounds; tertiary foregrounds clear 3:1 but are not normal-text defaults.",
-        "Primary neutral borders clear 3:1 on their documented surfaces; secondary and tertiary borders are not control-identifying strokes.",
+        "Primary neutral borders and the tertiary foreground clear 3:1 on their documented surfaces; secondary and tertiary borders do not and cannot be the only thing identifying a control.",
         "Use documented foreground/background pairings and provide a non-color cue when meaning matters."
       ]
     },
@@ -348,8 +348,8 @@
         "Use data-sequence-{hue}-{steps}-{index} for ordered values in one direction. Choose the ramp whose step count equals the number of buckets; index 1 is the most emphatic step and the last index the least.",
         "Use data-diverging-{hues}-{steps}-{index} only when the values have a meaningful midpoint, such as a target, baseline, or zero. The middle index is the neutral midpoint and the two ends are the extremes in opposite directions.",
         "Use data-win-loss for a binary or small fixed outcome set; win-alt is the green alternative to the default win.",
-        "Use data-misc for gridlines, reference lines, axes, and neutral legend items that support the data rather than encode it.",
-        "Use data-intent, data-status-device, and data-score-safety only when the chart encodes that status or domain meaning.",
+        "Chart chrome follows the foreground hierarchy: primary for axis titles and annotations, secondary for tick labels and zero lines, tertiary for axis and rule lines, and quaternary for gridlines. Use data-misc for neutral supporting marks drawn as data.",
+        "Use data-intent, data-status-device, and data-score-safety only when the chart encodes that status or domain meaning. A heatmap may map intensity to the opacity of one data-intent color.",
         "Keep the same token mapped to the same meaning across views, and draw a chart's colors from one palette rather than mixing families."
       ],
       "accessibility": [
@@ -724,17 +724,18 @@
       "category": "effect",
       "audience": "general",
       "status": "stable",
-      "summary": "A complete default brand focus-ring box-shadow for ordinary surfaces.",
+      "summary": "A box-shadow focus ring in the default brand color, for elements that cannot draw an outline.",
       "tokenPatterns": ["--effect-focus-ring"],
       "selectionRole": "direct",
       "useWhen": [
-        "Rendering the default brand focus indicator on an ordinary surface."
+        "An element on an ordinary surface cannot use an outline for its focus indicator."
       ],
       "avoidWhen": [
         "Using focus styling as hover, selection, or an error boundary.",
         "A colored or specialized surface needs its own interaction focus color."
       ],
       "constraints": [
+        "The standard focus indicator is an outline built from --dimension-stroke-width-025, --dimension-space-025, and the interaction focus color for the surface; prefer it over this token.",
         "This token includes both geometry and its default brand color.",
         "For a context-specific ring, reproduce the standard gap and width with --dimension-space-025 and --dimension-stroke-width-025, then use the interaction focus color for that surface."
       ],
@@ -759,7 +760,7 @@
       "tokenRoles": [
         {
           "id": "primary",
-          "summary": "High-emphasis foreground content.",
+          "summary": "Primary content: titles, labels, values, and the main text of a component.",
           "tokenPatterns": [
             "--color-foreground-primary",
             "--color-foreground-on-*-background-primary",
@@ -769,7 +770,7 @@
         },
         {
           "id": "secondary",
-          "summary": "Default foreground for most ordinary readable content.",
+          "summary": "Supporting content: descriptions, helper text, metadata, and placeholders.",
           "tokenPatterns": [
             "--color-foreground-secondary",
             "--color-foreground-on-*-background-secondary",
@@ -779,7 +780,7 @@
         },
         {
           "id": "tertiary",
-          "summary": "Deliberately de-emphasized foreground content.",
+          "summary": "Content inside an inactive or disabled component, or purely decorative content.",
           "tokenPatterns": [
             "--color-foreground-tertiary",
             "--color-foreground-on-*-background-tertiary",
@@ -795,10 +796,11 @@
         }
       ],
       "compositionRules": [
-        "Default most body copy, descriptions, routine labels, and ordinary UI text to the secondary step.",
-        "Reserve primary for titles, key values, selected labels, and other text or icons whose high emphasis is important to the hierarchy.",
-        "Use tertiary only for deliberately de-emphasized or inactive content; it can carry large text and meaningful icons but is not a normal-size body-text color.",
-        "Use quaternary only for disabled hints, washes, and ornament; it must never carry readable text or a meaningful icon.",
+        "Use primary for primary content: titles, labels, values, and the main text of a component.",
+        "Use secondary for supporting content: descriptions, helper text, metadata, and placeholders.",
+        "Restrict tertiary and quaternary to content inside a genuinely inactive or disabled component, or to purely decorative content whose removal would not change meaning, status, or hierarchy; quaternary is the fainter tier. Never use them to quiet active information.",
+        "Prefer the component's inactive or disabled state over choosing tertiary or quaternary by hand.",
+        "A component may use tertiary for a non-text boundary, such as an unchecked checkbox or radio outline, when that exact treatment is verified to meet 3:1 on every supported surface.",
         "On medium, bold, or strong semantic surfaces, use the corresponding on-background hierarchy rather than an ordinary foreground.",
         "Inside a fixed context, keep the foreground and background in that same context family.",
         "Chrome is the one fixed context with three background steps; pair a chrome foreground with chrome.background.theme when the pairing must be measurable, because the primary and secondary steps are translucent glass."
@@ -807,8 +809,8 @@
         {
           "id": "foreground-standard-primary",
           "label": "Standard primary foreground",
-          "modifier": "high emphasis",
-          "when": "A title, key value, selected label, or other important content sits on the primary surface.",
+          "modifier": "primary content",
+          "when": "Titles, labels, values, and the main text of a component sit on the primary surface.",
           "assignments": [
             { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
             { "role": "primary", "property": "color", "token": "--color-foreground-primary" }
@@ -818,8 +820,8 @@
         {
           "id": "foreground-standard-secondary",
           "label": "Standard secondary foreground",
-          "modifier": "default content",
-          "when": "Most body copy, descriptions, routine labels, and ordinary UI text sit on the primary surface.",
+          "modifier": "supporting content",
+          "when": "Descriptions, helper text, metadata, and placeholders sit on the primary surface.",
           "assignments": [
             { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
             { "role": "secondary", "property": "color", "token": "--color-foreground-secondary" }
@@ -829,8 +831,8 @@
         {
           "id": "foreground-standard-tertiary",
           "label": "Standard tertiary foreground",
-          "modifier": "de-emphasized",
-          "when": "Inactive or intentionally de-emphasized large text or meaningful icons sit on the primary surface.",
+          "modifier": "inactive or decorative",
+          "when": "Content inside an inactive or disabled component, or purely decorative content, sits on the primary surface.",
           "assignments": [
             { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
             { "role": "tertiary", "property": "color", "token": "--color-foreground-tertiary" }
@@ -840,8 +842,8 @@
         {
           "id": "foreground-on-background-primary",
           "label": "On-background primary foreground",
-          "modifier": "high emphasis",
-          "when": "High-emphasis content sits on its matching medium, bold, or strong semantic surface.",
+          "modifier": "primary content",
+          "when": "Primary content sits on its matching medium, bold, or strong semantic surface.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
             { "role": "primary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-primary" }
@@ -851,8 +853,8 @@
         {
           "id": "foreground-on-background-secondary",
           "label": "On-background secondary foreground",
-          "modifier": "default content",
-          "when": "Ordinary readable content sits on its matching medium, bold, or strong semantic surface.",
+          "modifier": "supporting content",
+          "when": "Supporting content sits on its matching medium, bold, or strong semantic surface.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
             { "role": "secondary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-secondary" }
@@ -862,8 +864,8 @@
         {
           "id": "foreground-on-background-tertiary",
           "label": "On-background tertiary foreground",
-          "modifier": "de-emphasized",
-          "when": "De-emphasized large text or meaningful icons sit on their matching medium, bold, or strong semantic surface.",
+          "modifier": "inactive or decorative",
+          "when": "Inactive, disabled, or decorative content sits on its matching medium, bold, or strong semantic surface.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-background-*-*" },
             { "role": "tertiary", "property": "color", "tokenPattern": "--color-foreground-on-*-background-tertiary" }
@@ -873,8 +875,8 @@
         {
           "id": "foreground-context-primary",
           "label": "Context primary foreground",
-          "modifier": "high emphasis",
-          "when": "High-emphasis content sits inside an always-dark, inverted, media, navigation, or translucent context.",
+          "modifier": "primary content",
+          "when": "Primary content sits inside an always-dark, inverted, media, navigation, or translucent context.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "primary", "property": "color", "tokenPattern": "--color-*-foreground-primary" }
@@ -884,8 +886,8 @@
         {
           "id": "foreground-context-secondary",
           "label": "Context secondary foreground",
-          "modifier": "default content",
-          "when": "Ordinary readable content sits inside an always-dark, inverted, media, navigation, or translucent context.",
+          "modifier": "supporting content",
+          "when": "Supporting content sits inside an always-dark, inverted, media, navigation, or translucent context.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "secondary", "property": "color", "tokenPattern": "--color-*-foreground-secondary" }
@@ -895,8 +897,8 @@
         {
           "id": "foreground-context-tertiary",
           "label": "Context tertiary foreground",
-          "modifier": "de-emphasized",
-          "when": "De-emphasized large text or meaningful icons sit inside an always-dark, inverted, media, navigation, or translucent context.",
+          "modifier": "inactive or decorative",
+          "when": "Inactive, disabled, or decorative content sits inside an always-dark, inverted, media, navigation, or translucent context.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "tertiary", "property": "color", "tokenPattern": "--color-*-foreground-tertiary" }
@@ -906,8 +908,8 @@
         {
           "id": "foreground-chrome-primary",
           "label": "Chrome primary foreground",
-          "modifier": "high emphasis",
-          "when": "High-emphasis content sits inside a floating chrome toolbar, control bar, or overlay panel above arbitrary page, map, or media content.",
+          "modifier": "primary content",
+          "when": "Primary content sits inside a floating chrome toolbar, control bar, or overlay panel above arbitrary page, map, or media content.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
             { "role": "primary", "property": "color", "token": "--color-chrome-foreground-primary" }
@@ -920,8 +922,8 @@
         {
           "id": "foreground-chrome-secondary",
           "label": "Chrome secondary foreground",
-          "modifier": "default content",
-          "when": "Ordinary readable content sits inside a floating chrome toolbar, control bar, or overlay panel.",
+          "modifier": "supporting content",
+          "when": "Supporting content sits inside a floating chrome toolbar, control bar, or overlay panel.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
             { "role": "secondary", "property": "color", "token": "--color-chrome-foreground-secondary" }
@@ -934,8 +936,8 @@
         {
           "id": "foreground-chrome-tertiary",
           "label": "Chrome tertiary foreground",
-          "modifier": "de-emphasized",
-          "when": "De-emphasized large text or meaningful icons sit inside a floating chrome toolbar, control bar, or overlay panel.",
+          "modifier": "inactive or decorative",
+          "when": "Inactive, disabled, or decorative content sits inside a floating chrome toolbar, control bar, or overlay panel.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
             { "role": "tertiary", "property": "color", "token": "--color-chrome-foreground-tertiary" }
@@ -968,7 +970,7 @@
       "examples": [
         {
           "language": "css",
-          "content": ".surface { background: var(--color-background-primary); }\n.surface .title { color: var(--color-foreground-primary); }\n.surface .body { color: var(--color-foreground-secondary); }\n.surface .inactive-icon { color: var(--color-foreground-tertiary); }\n\n/* On a medium, bold, or strong fill, switch to the matching on-background hierarchy. */\n.fill { background: var(--color-background-bold-brand); }\n.fill .title { color: var(--color-foreground-on-bold-background-primary); }\n.fill .body { color: var(--color-foreground-on-bold-background-secondary); }"
+          "content": ".surface { background: var(--color-background-primary); }\n.surface .label { color: var(--color-foreground-primary); }\n.surface .description { color: var(--color-foreground-secondary); }\n/* Tertiary only inside an inactive or disabled component. */\n.surface .control[aria-disabled='true'] { color: var(--color-foreground-tertiary); }\n\n/* On a medium, bold, or strong fill, switch to the matching on-background hierarchy. */\n.fill { background: var(--color-background-bold-brand); }\n.fill .label { color: var(--color-foreground-on-bold-background-primary); }\n.fill .description { color: var(--color-foreground-on-bold-background-secondary); }"
         }
       ]
     },
@@ -986,7 +988,7 @@
       "tokenRoles": [
         {
           "id": "primary",
-          "summary": "Control-identifying neutral stroke.",
+          "summary": "Strongest neutral structural edge.",
           "tokenPatterns": ["--color-border-primary", "--color-*-border-primary"],
           "required": false
         },
@@ -1003,6 +1005,12 @@
           "required": false
         },
         {
+          "id": "control-outline",
+          "summary": "Component-owned non-text outline for a small control identified only by its stroke.",
+          "tokenPatterns": ["--color-foreground-tertiary"],
+          "required": false
+        },
+        {
           "id": "surface",
           "summary": "The ordinary or matching fixed-context surface beneath the border.",
           "tokenPatterns": ["--color-background-*", "--color-*-background", "--color-chrome-background-*"],
@@ -1010,23 +1018,36 @@
         }
       ],
       "compositionRules": [
-        "Use tertiary for decorative, non-interactive container edges and structure that remains understandable without the stroke.",
-        "Use secondary as the default resting boundary for an interactive control that also has a label, value, fill, shape, or other identifying affordance.",
-        "Use primary only when the stroke itself must identify the interactive control or state, such as an unchecked checkbox, radio ring, or toggle track.",
-        "Do not use tertiary for interactive controls, and do not rely on secondary when the control has no other identifying affordance.",
+        "Use tertiary for decorative container edges, internal splits, and the edge of a control already identified by its fill, such as a switch track.",
+        "Use secondary as the default boundary for an interactive control such as a field or a bordered button.",
+        "Use primary for a structural edge that needs more definition than secondary; it is not the outline for small controls.",
+        "A small control identified only by its outline, such as an unchecked checkbox or radio, uses the tertiary foreground as a component-owned non-text stroke, verified to meet 3:1 on every supported surface.",
+        "Draw control strokes inset, as a box-shadow on the element or its top interaction layer, so they never change the control's size and stay visible above selected and hover washes.",
+        "Do not rely on a secondary or tertiary border as the only thing identifying a control.",
         "A semantic state such as invalid, focused, or disabled needs its documented semantic or interaction treatment and must not rely on the resting neutral border alone."
       ],
       "variants": [
         {
           "id": "neutral-border-primary",
           "label": "Primary neutral border",
-          "modifier": "control-identifying",
-          "when": "The stroke itself is required to identify an interactive control on an ordinary surface.",
+          "modifier": "structural emphasis",
+          "when": "A structural edge on an ordinary surface needs more definition than the secondary step.",
           "assignments": [
             { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
             { "role": "primary", "property": "border-color", "token": "--color-border-primary" }
           ],
           "notes": ["This border clears 3:1 on primary, secondary, and faint ordinary surfaces in both themes."]
+        },
+        {
+          "id": "control-outline",
+          "label": "Control outline",
+          "modifier": "component-owned",
+          "when": "A small control such as an unchecked checkbox or radio is identified only by its outline.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
+            { "role": "control-outline", "property": "box-shadow", "token": "--color-foreground-tertiary" }
+          ],
+          "notes": ["Clears 3:1 on primary, secondary, and faint ordinary surfaces in both themes. Keep this choice inside the component rather than copying it into product code."]
         },
         {
           "id": "neutral-border-secondary",
@@ -1042,19 +1063,19 @@
         {
           "id": "neutral-border-tertiary",
           "label": "Tertiary neutral border",
-          "modifier": "decorative only",
-          "when": "A non-interactive container edge or structural hint remains understandable without the stroke.",
+          "modifier": "decorative",
+          "when": "A container edge, an internal split, or the edge of a control already identified by its fill.",
           "assignments": [
             { "role": "surface", "property": "background-color", "token": "--color-background-primary" },
             { "role": "tertiary", "property": "border-color", "token": "--color-border-tertiary" }
           ],
-          "notes": ["This border is decorative, intentionally below 3:1, and should not be used for interactive controls."]
+          "notes": ["Intentionally below 3:1; it can edge a control only when something else identifies it."]
         },
         {
           "id": "context-border-primary",
           "label": "Context primary border",
-          "modifier": "control-identifying",
-          "when": "The stroke itself identifies a control inside an always-dark, inverted, media, navigation, or translucent context.",
+          "modifier": "structural emphasis",
+          "when": "A structural edge inside an always-dark, inverted, media, navigation, or translucent context needs more definition than the secondary step.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "primary", "property": "border-color", "tokenPattern": "--color-*-border-primary" }
@@ -1075,19 +1096,19 @@
         {
           "id": "context-border-tertiary",
           "label": "Context tertiary border",
-          "modifier": "decorative only",
+          "modifier": "decorative",
           "when": "A non-interactive edge inside a fixed context remains understandable without the stroke.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "tertiary", "property": "border-color", "tokenPattern": "--color-*-border-tertiary" }
           ],
-          "notes": ["Keep both assignments in the same context family; do not use this border for interactive controls."]
+          "notes": ["Keep both assignments in the same context family; do not use it as the only identifier of a control."]
         },
         {
           "id": "chrome-border-primary",
           "label": "Chrome primary border",
-          "modifier": "control-identifying",
-          "when": "The stroke itself identifies a control inside a floating chrome toolbar, control bar, or overlay panel.",
+          "modifier": "structural emphasis",
+          "when": "A structural edge inside a floating chrome toolbar, control bar, or overlay panel needs more definition than the secondary step.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
             { "role": "primary", "property": "border-color", "token": "--color-chrome-border-primary" }
@@ -1111,7 +1132,7 @@
         {
           "id": "chrome-border-tertiary",
           "label": "Chrome tertiary border",
-          "modifier": "decorative only",
+          "modifier": "decorative",
           "when": "A non-interactive edge inside chrome remains understandable without the stroke.",
           "assignments": [
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-chrome-background-*" },
@@ -1122,12 +1143,13 @@
       ],
       "accessibility": [
         "Every documented primary neutral border pairing clears WCAG 1.4.11 non-text contrast at 3:1 in both themes.",
+        "The tertiary foreground used as a control outline clears 3:1 on primary, secondary, and faint ordinary surfaces in both themes.",
         "Secondary and tertiary neutral borders are intentionally below 3:1 and may be used only when the border does not carry the information required to identify a control or state."
       ],
       "examples": [
         {
           "language": "css",
-          "content": "/* Decorative edge: the container is identifiable without it. */\n.container { border: var(--dimension-stroke-width-012) solid var(--color-border-tertiary); }\n\n/* Controls draw the stroke inset so it never changes their size and stays\n   above interaction washes (on ::after when the control has them). */\n\n/* Field: its label and value identify it; the stroke only defines the region. */\n.field { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-border-secondary); }\n\n/* Bare checkbox: the stroke is the only identifier, so it needs the 3:1 step. */\n.checkbox { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-border-primary); }"
+          "content": "/* Decorative edge: the container is identifiable without it. */\n.container { border: var(--dimension-stroke-width-012) solid var(--color-border-tertiary); }\n\n/* Controls draw the stroke inset so it never changes their size and stays\n   above interaction washes (on ::after when the control has them). */\n\n/* Field: its label and value identify it; the stroke only defines the region. */\n.field { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-border-secondary); }\n\n/* Bare checkbox: the outline is the only identifier, so it uses the verified\n   3:1 tertiary foreground as a component-owned stroke. */\n.checkbox { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-foreground-tertiary); }"
         }
       ]
     },
@@ -1164,7 +1186,8 @@
       ],
       "compositionRules": [
         "Pick intent from meaning, never from hue.",
-        "On a faint semantic surface, default ordinary content to foreground-secondary rather than a chromatic intent foreground; use foreground-primary only when high emphasis is warranted.",
+        "On a faint semantic surface, use the ordinary foreground hierarchy (primary for primary content, secondary for supporting content) rather than a chromatic intent foreground.",
+        "Edge a faint surface with the tertiary neutral border, or border-medium-{intent} for a tinted edge; edge medium, bold, and strong surfaces with the matching border-on-{tone}-background family.",
         "On medium, bold, or strong surfaces, use the corresponding on-background foreground hierarchy.",
         "For optional chromatic tinting, pair faint with bold and medium with strong in either direction.",
         "Apply the same default foreground rules to literal color-intent backgrounds; when tinting them, keep background and foreground on the same hue.",
@@ -1176,37 +1199,40 @@
           "label": "Faint semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-faint-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-secondary" },
-            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-faint-*" }
+            { "role": "content", "property": "color", "token": "--color-foreground-primary" },
+            { "role": "boundary", "property": "border-color", "token": "--color-border-tertiary" }
           ],
-          "notes": ["Use foreground-primary only for titles, key values, selected labels, and other high-emphasis content."]
+          "notes": ["Use foreground-secondary for supporting content. For a tinted edge, use border-medium-* on the same intent."]
         },
         {
           "id": "medium",
           "label": "Medium semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-medium-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-secondary" },
-            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-medium-*" }
-          ]
+            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-primary" },
+            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-on-medium-background-*" }
+          ],
+          "notes": ["Use the on-medium-background secondary step for supporting content."]
         },
         {
           "id": "bold",
           "label": "Bold semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-bold-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-secondary" },
-            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-bold-*" }
-          ]
+            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-primary" },
+            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-on-bold-background-*" }
+          ],
+          "notes": ["Use the on-bold-background secondary step for supporting content."]
         },
         {
           "id": "strong",
           "label": "Strong semantic surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-background-strong-*" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-secondary" },
-            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-strong-*" }
-          ]
+            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-primary" },
+            { "role": "boundary", "property": "border-color", "tokenPattern": "--color-border-on-strong-background-*" }
+          ],
+          "notes": ["Use the on-strong-background secondary step for supporting content."]
         },
         {
           "id": "tinted-faint-bold",
@@ -1249,33 +1275,36 @@
           "label": "Literal faint surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-faint-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-secondary" }
+            { "role": "content", "property": "color", "token": "--color-foreground-primary" }
           ],
-          "notes": ["Use foreground-primary only for titles, key values, selected labels, and other high-emphasis content."]
+          "notes": ["Use foreground-secondary for supporting content."]
         },
         {
           "id": "literal-medium",
           "label": "Literal medium surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-medium-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-secondary" }
-          ]
+            { "role": "content", "property": "color", "token": "--color-foreground-on-medium-background-primary" }
+          ],
+          "notes": ["Use the on-medium-background secondary step for supporting content."]
         },
         {
           "id": "literal-bold",
           "label": "Literal bold surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-bold-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-secondary" }
-          ]
+            { "role": "content", "property": "color", "token": "--color-foreground-on-bold-background-primary" }
+          ],
+          "notes": ["Use the on-bold-background secondary step for supporting content."]
         },
         {
           "id": "literal-strong",
           "label": "Literal strong surface",
           "assignments": [
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-strong-background" },
-            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-secondary" }
-          ]
+            { "role": "content", "property": "color", "token": "--color-foreground-on-strong-background-primary" }
+          ],
+          "notes": ["Use the on-strong-background secondary step for supporting content."]
         },
         {
           "id": "literal-tinted-faint-bold",
@@ -1285,7 +1314,7 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-faint-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-bold-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone, or a core semantic surface, when normal-size text must stay readable while selected."]
         },
         {
           "id": "literal-tinted-medium-strong",
@@ -1295,7 +1324,7 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-medium-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-strong-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone, or a core semantic surface, when normal-size text must stay readable while selected."]
         },
         {
           "id": "literal-tinted-bold-faint",
@@ -1305,7 +1334,7 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-bold-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-faint-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone, or a core semantic surface, when normal-size text must stay readable while selected."]
         },
         {
           "id": "literal-tinted-strong-medium",
@@ -1315,7 +1344,7 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-strong-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-medium-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone, or a core semantic surface, when normal-size text must stay readable while selected."]
         }
       ],
       "accessibility": [
@@ -1325,7 +1354,7 @@
       "examples": [
         {
           "language": "css",
-          "content": "/* Faint surface: the ordinary foreground hierarchy. */\n.notice { background: var(--color-background-faint-caution); }\n.notice .title { color: var(--color-foreground-primary); }\n.notice .body { color: var(--color-foreground-secondary); }\n\n/* Bold surface: the matching on-background foreground. */\n.badge {\n  background: var(--color-background-bold-negative);\n  color: var(--color-foreground-on-bold-background-primary);\n}\n\n/* Optional tint: a strong surface with the same intent's medium foreground. */\n.tag {\n  background: var(--color-background-strong-positive);\n  color: var(--color-foreground-medium-positive);\n}"
+          "content": "/* Faint surface: the ordinary foreground hierarchy and a neutral edge. */\n.notice {\n  background: var(--color-background-faint-caution);\n  border-bottom: var(--dimension-stroke-width-012) solid var(--color-border-tertiary);\n}\n.notice .title { color: var(--color-foreground-primary); }\n.notice .description { color: var(--color-foreground-secondary); }\n\n/* Bold surface: the matching on-background foreground. */\n.badge {\n  background: var(--color-background-bold-negative);\n  color: var(--color-foreground-on-bold-background-primary);\n}\n\n/* Optional tint: a strong surface with the same intent's medium foreground. */\n.tag {\n  background: var(--color-background-strong-positive);\n  color: var(--color-foreground-medium-positive);\n}"
         }
       ]
     },
@@ -1379,7 +1408,7 @@
         },
         {
           "id": "default-focus-ring",
-          "summary": "Complete default brand ring for ordinary surfaces.",
+          "summary": "Box-shadow focus ring in the default brand color, for elements that cannot draw an outline.",
           "tokenPatterns": ["--effect-focus-ring"],
           "required": false
         }
@@ -1389,7 +1418,9 @@
         "Paint selected state above the background and below the inner content.",
         "Paint hover and pressed washes as a top sheet above both the fill and inner content; a positioned ::after pseudo-element is the required reference technique for this stacking behavior.",
         "Keep the focus ring visually distinct from the fill layers and use the focus color for the current surface.",
-        "The complete --effect-focus-ring token is the default brand ring. For a context-specific ring, combine the documented gap and width dimensions with the matching focus color instead of trying to recolor that complete token.",
+        "Draw focus as an outline --dimension-stroke-width-025 wide at a --dimension-space-025 offset, in the focus color for the current surface. For an inset ring, draw it on the top layer with a negative offset of the same width.",
+        "Paint a control's resting stroke inset on the top layer so it stays visible above the selected and hover washes; do not use a layout border on an interactive target.",
+        "Selection changes fill and foreground only; it must not change text weight.",
         "Do not apply hover or pressed layers when disabled.",
         "On touch input, pressed feedback remains useful but hover should only be enabled for hover-capable fine pointers."
       ],
@@ -1493,7 +1524,7 @@
       "examples": [
         {
           "language": "css",
-          "content": ".interactive { position: relative; z-index: 0; }\n.interactive::before, .interactive::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }\n.interactive::before { z-index: 1; }\n.interactive__content { position: relative; z-index: 2; }\n.interactive::after { z-index: 3; }\n.interactive[aria-selected='true']::before { background: var(--color-interaction-active-brand); }\n@media (hover: hover) and (pointer: fine) { .interactive:hover:not(:disabled)::after { background: var(--color-interaction-hover); } }\n.interactive:active:not(:disabled)::after { background: var(--color-interaction-pressed); }"
+          "content": ".interactive { position: relative; z-index: 0; }\n.interactive::before, .interactive::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }\n.interactive::before { z-index: 1; }\n.interactive__content { position: relative; z-index: 2; }\n.interactive::after { z-index: 3; }\n.interactive[aria-selected='true']::before { background: var(--color-interaction-active-brand); }\n@media (hover: hover) and (pointer: fine) { .interactive:hover:not(:disabled)::after { background: var(--color-interaction-hover); } }\n.interactive:active:not(:disabled)::after { background: var(--color-interaction-pressed); }\n.interactive:focus-visible { outline: var(--dimension-stroke-width-025) solid var(--color-interaction-focus); outline-offset: var(--dimension-space-025); }"
         }
       ]
     },
@@ -1522,58 +1553,60 @@
         "Display and title emphasis use heavier target weights than body emphasis; caption remains uppercase in both variants.",
         "Choose smaller body styles for dense supporting content and larger title/display styles only when the hierarchy warrants them.",
         "Emphasis is not a hierarchy tool: text that functions as a heading moves to a title or display role instead of an emphasized body style.",
-        "Prefer the smallest step up in role or size that creates the needed hierarchy."
+        "Prefer the smallest step up in role or size that creates the needed hierarchy.",
+        "Choose the element for document structure and the text style for appearance; a heading level does not dictate a style.",
+        "Keep a style's size, line height, weight, and letter spacing together; do not override one part."
       ],
       "variants": [
-        { "id": "text-display-medium", "label": "Display Medium", "modifier": "regular", "when": "Rare, oversized emphasis that should dominate the layout, such as a primary score or summary metric. Not a general heading.", "assignments": [
+        { "id": "text-display-medium", "label": "Display Medium", "modifier": "regular", "when": "Rare hero metrics. Not a general heading.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-3xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-3xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
         { "id": "text-display-medium-emphasis", "label": "Display Medium", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-3xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-3xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-bold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
         ] },
-        { "id": "text-display-small", "label": "Display Small", "modifier": "regular", "when": "Rare large numeric or headline values that need to dominate, one step below display medium. Not a general heading.", "assignments": [
+        { "id": "text-display-small", "label": "Display Small", "modifier": "regular", "when": "Prominent summary values. Not a general heading.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-2xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-2xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
         { "id": "text-display-small-emphasis", "label": "Display Small", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-2xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-2xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-bold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
         ] },
-        { "id": "text-title-large", "label": "Title Large", "modifier": "regular", "when": "The most prominent title on a page or large region.", "assignments": [
+        { "id": "text-title-large", "label": "Title Large", "modifier": "regular", "when": "Page headings.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
         { "id": "text-title-large-emphasis", "label": "Title Large", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
         ] },
-        { "id": "text-title-medium", "label": "Title Medium", "modifier": "regular", "when": "Section headers and card titles.", "assignments": [
+        { "id": "text-title-medium", "label": "Title Medium", "modifier": "regular", "when": "Section headings and expanded page regions.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
         { "id": "text-title-medium-emphasis", "label": "Title Medium", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-title-small", "label": "Title Small", "modifier": "regular", "when": "Short titles and headers inside compact components or dense regions.", "assignments": [
+        { "id": "text-title-small", "label": "Title Small", "modifier": "regular", "when": "Card titles, modal titles, and compact chrome headings.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
         { "id": "text-title-small-emphasis", "label": "Title Small", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-body-large", "label": "Body Large", "modifier": "regular", "when": "Text that sits slightly above normal body copy without becoming a title, such as a short introductory line or a lightweight heading.", "assignments": [
+        { "id": "text-body-large", "label": "Body Large", "modifier": "regular", "when": "Introductory copy or a modest hierarchy increase.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
         { "id": "text-body-large-emphasis", "label": "Body Large", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-body-medium", "label": "Body Medium", "modifier": "regular", "when": "The default for paragraphs, standard labels, and most product copy. Start here when unsure.", "assignments": [
+        { "id": "text-body-medium", "label": "Body Medium", "modifier": "regular", "when": "Default product copy and standard labels. Start here when unsure.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
         { "id": "text-body-medium-emphasis", "label": "Body Medium", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-body-small", "label": "Body Small", "modifier": "regular", "when": "Supporting text that should read slightly subdued: helper text, secondary metadata, and subtext below primary copy.", "assignments": [
+        { "id": "text-body-small", "label": "Body Small", "modifier": "regular", "when": "Helper text, metadata, and supporting copy.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-sm" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-sm" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-none" }
         ] },
         { "id": "text-body-small-emphasis", "label": "Body Small", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-sm" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-sm" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
-        { "id": "text-caption", "label": "Caption", "modifier": "regular", "when": "Short uppercase labels; not for sentences or body copy.", "assignments": [
+        { "id": "text-caption", "label": "Caption", "modifier": "regular", "when": "Compact labels and extra-small-density control text; always uppercase.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xs" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xs" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-positive" }, { "role": "transform", "property": "text-transform", "value": "uppercase" }
         ] },
         { "id": "text-caption-emphasis", "label": "Caption", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
@@ -1616,25 +1649,28 @@
         "Do not mix a shadow from one elevation level with a highlight from another.",
         "Choose the suffix from how the surface meets its container: a panel suffix when it is attached to an edge (touching at least three sides), elevated-sm, elevated-md, or elevated-floating when it has clearance on all four sides, and depressed-* when it should read as inset.",
         "Match a panel suffix to the edge the surface is attached to, and never put a panel suffix on a free-standing card or a free-standing suffix on an edge-attached surface.",
-        "Split the shadow and highlight onto separate elements only when an ancestor or inner clipping boundary would otherwise cut the outer shadow; an element's own overflow does not require a split by itself."
+        "Split the shadow and highlight onto separate layers only when the structure requires it: an overflow boundary that would cut the outer shadow, or opaque children that would cover the inset highlight, which then paints on a pointer-transparent top layer.",
+        "Choose the lowest level that communicates the relationship; surface, border, and spacing hierarchy often make elevation unnecessary.",
+        "Edge-attached chrome can rely on surface and border hierarchy; a panel suffix is available, not required.",
+        "Do not add a second shadow around a surface that already owns its elevation."
       ],
       "variants": [
         { "id": "elevated-none", "label": "Elevated none", "when": "Elevation is part of the component model but this state should render flat.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-none" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-none" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-none" }
         ] },
-        { "id": "elevated-sm", "label": "Elevated small", "when": "The lightest raised surface with clearance on all four sides, such as a card.", "assignments": [
+        { "id": "elevated-sm", "label": "Elevated small", "when": "A subtle raised surface with clearance on all four sides.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-sm" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-sm" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-sm" }
         ] },
-        { "id": "elevated-md", "label": "Elevated medium", "when": "A standard raised surface with clearance on all four sides that needs more separation than elevated-sm.", "assignments": [
+        { "id": "elevated-md", "label": "Elevated medium", "when": "A stronger raised surface with clearance on all four sides.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-md" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-md" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-md" }
         ] },
-        { "id": "elevated-floating", "label": "Elevated floating", "when": "A surface that floats above other content, such as a menu, popover, modal, or floating action button. Not for a card that only needs more lift.", "assignments": [
+        { "id": "elevated-floating", "label": "Elevated floating", "when": "A popover, tooltip, menu, modal, toast, or other floating overlay. Not for an ordinary container that only needs more prominence.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-floating" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-floating" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-floating" }
         ] },
-        { "id": "depressed-sm", "label": "Depressed small", "when": "An element that should read as inset or embedded in its surface, such as a text field.", "assignments": [
+        { "id": "depressed-sm", "label": "Depressed small", "when": "A compact inset field or control.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-depressed-sm" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-depressed-sm" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-depressed-sm" }
         ] },
-        { "id": "depressed-md", "label": "Depressed medium", "when": "A deeper inset region, such as an embedded control area.", "assignments": [
+        { "id": "depressed-md", "label": "Depressed medium", "when": "A stronger inset region.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-depressed-md" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-depressed-md" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-depressed-md" }
         ] },
         { "id": "elevated-panel-top", "label": "Elevated panel top", "when": "An edge-attached surface on the top edge of its container, such as an app header.", "assignments": [

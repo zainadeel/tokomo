@@ -94,7 +94,7 @@ export function parseCssColor(value) {
 // Foreground tokens are frequently black/white at partial alpha, so the
 // foreground must be composited over its background before measuring — this is
 // the sRGB alpha-compositing rule in color-generation.md §4.3, and it is why the
-// figures in color-usage.md §7 are described as post-compositing.
+// figures in color-generation.md §13 are described as post-compositing.
 export function flatten(foreground, background) {
   if (foreground.a >= 1) return foreground;
   const isBlackish = foreground.r + foreground.g + foreground.b < 1.5;

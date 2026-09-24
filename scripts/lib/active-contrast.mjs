@@ -13,7 +13,7 @@
 //
 // Compositing model: sRGB alpha compositing, per docs/guidelines/color-generation.md
 // §4.3, matching TokoMo's documented overlay method. The visual stack is defined in
-// color-usage.md §3.4 "Interaction" — the selected overlay sits ABOVE the original
+// The interaction-layers recipe in the agent contract — the selected overlay sits ABOVE the original
 // background and BELOW inner content, so the content is measured against
 // composite(active, background).
 
@@ -38,7 +38,7 @@ export const THEMES = ["light", "dark"];
 // Excluding them does not fix them. At the time of exclusion five marker
 // pairings failed 4.5:1 *at rest*, before any overlay — worst at 1.64:1, white
 // on a light yellow fill — and four of those five also fail a 3:1 large-text
-// restriction. Those tokens still ship. See color-usage.md §7.6.
+// restriction. Those tokens still ship. See color-generation.md §13.
 export const EXCLUDED_ACTIVE_TOKENS = [
   "--color-entity-cluster-marker-interaction-active",
   "--color-entity-marker-interaction-active",
@@ -90,7 +90,7 @@ export const SAFETY_TIERS = ["excellent", "fair", "good"];
 
 // ---------------------------------------------------------------------------
 // Combination enumeration — mirrors the Interaction table in
-// docs/guidelines/color-usage.md §3.4
+// interaction-layers recipe, src/agent/token-families.agent.json
 // ---------------------------------------------------------------------------
 
 // Every combination carries the surface it is documented against. A background
@@ -141,7 +141,7 @@ export function buildActiveCombinations() {
   //
   // The SELECTED state on these surfaces is restricted to large-text / non-text
   // content, so 3:1 is its applicable threshold. Confirmed decision; see
-  // color-usage.md §7.6.
+  // color-generation.md §13.
   //
   // Why: the foreground here is the reciprocal tone of the same hue, not black or
   // white, so it starts near its partner by design — resting contrast across all
@@ -175,7 +175,7 @@ export function buildActiveCombinations() {
   // restructure is what cleared its resting failures.
   //
   // The family is restricted to bold or large text, so 3:1 is its applicable
-  // threshold. Confirmed decision; see color-usage.md §7.6. Like literal
+  // threshold. Confirmed decision; see color-generation.md §13. Like literal
   // color-intent, its foreground is a reciprocal tone rather than black or white,
   // which is why the selected overlay costs it enough to matter at 4.5:1.
   for (const status of DRIVER_STATUSES) {
@@ -196,7 +196,7 @@ export function buildActiveCombinations() {
 
   // Safety score is restricted to large-text / non-text use, so 3:1 is its
   // applicable threshold rather than 4.5:1. Confirmed in the issue #130 Gate 2
-  // review; see color-usage.md §7.6. This is why dark `good` is not a defect: it
+  // review; see color-generation.md §13. This is why dark `good` is not a defect: it
   // rests at 3.56:1, which clears 3:1 but not 4.5:1.
   for (const tier of SAFETY_TIERS) {
     combos.push({

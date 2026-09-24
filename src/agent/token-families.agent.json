@@ -180,6 +180,9 @@
         "Default most ordinary text and UI labels to the secondary foreground step; reserve primary for titles, key values, selected labels, and other high-emphasis content.",
         "Use tertiary only for deliberately de-emphasized content, large text, or meaningful icons; use quaternary only for disabled hints and ornament that does not carry content.",
         "Use tertiary borders only for decorative non-interactive structure, secondary borders for controls with another identifying affordance, and primary borders when the stroke itself must identify the control.",
+        "Use background-primary for cards, panels, and other content surfaces, and background-secondary for the app shell or a secondary region beneath them.",
+        "Use dividers only for internal rules that separate content inside a surface; they are not a general component border.",
+        "Medium intent borders are tinted edges below 3:1; use a bold or strong intent border when the stroke must identify a control or state.",
         "Do not infer a token from its current rendered hue."
       ],
       "recipes": [
@@ -192,9 +195,6 @@
         "Primary and secondary foregrounds clear 4.5:1 on their documented backgrounds; tertiary foregrounds clear 3:1 but are not normal-text defaults.",
         "Primary neutral borders clear 3:1 on their documented surfaces; secondary and tertiary borders are not control-identifying strokes.",
         "Use documented foreground/background pairings and provide a non-color cue when meaning matters."
-      ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -222,9 +222,6 @@
       "recipes": ["token-recipe:interaction-layers"],
       "accessibility": [
         "Use the matching focus token as the focus-ring color; focus must not rely on a fill change alone."
-      ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -262,9 +259,6 @@
         "Primary and secondary foregrounds clear 4.5:1 on the matching context background; tertiary foregrounds clear 3:1.",
         "Primary borders clear 3:1 on the matching context background; secondary and tertiary borders are decorative.",
         "Do not mix an ordinary foreground with a fixed-context background unless that pairing is explicitly verified."
-      ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -301,9 +295,6 @@
         "No unconditional contrast figure exists for the translucent chrome backgrounds; verify foreground pairings against the actual backdrop the chrome floats over.",
         "chrome.background.theme is opaque, so its primary and secondary foreground pairings are measurable and reported in the contrast reports.",
         "Tertiary and quaternary foregrounds are low-emphasis steps and are not for normal-size body text."
-      ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -332,9 +323,6 @@
       "accessibility": [
         "When users must identify or distinguish the assigned category, pair its hue with a label, icon, pattern, or other non-color cue.",
         "Use the documented tone pairings; a literal hue assignment does not establish contrast suitability by itself."
-      ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -355,13 +343,17 @@
       "constraints": [
         "UI semantic colors never substitute for data tokens, and data tokens never substitute for UI semantic colors.",
         "Data-intent meanings mirror the semantic intents only inside visualization marks.",
-        "The absence of AI, guide, and walkthrough data intents is intentional."
+        "The absence of AI, guide, and walkthrough data intents is intentional.",
+        "Use data-category for unordered categories. Assign it in numeric order from 1 (four series use 1 through 4), especially where segments touch, as in pies, donuts, and stacked bars.",
+        "Use data-sequence-{hue}-{steps}-{index} for ordered values in one direction. Choose the ramp whose step count equals the number of buckets; index 1 is the most emphatic step and the last index the least.",
+        "Use data-diverging-{hues}-{steps}-{index} only when the values have a meaningful midpoint, such as a target, baseline, or zero. The middle index is the neutral midpoint and the two ends are the extremes in opposite directions.",
+        "Use data-win-loss for a binary or small fixed outcome set; win-alt is the green alternative to the default win.",
+        "Use data-misc for gridlines, reference lines, axes, and neutral legend items that support the data rather than encode it.",
+        "Use data-intent, data-status-device, and data-score-safety only when the chart encodes that status or domain meaning.",
+        "Keep the same token mapped to the same meaning across views, and draw a chart's colors from one palette rather than mixing families."
       ],
       "accessibility": [
         "Provide labels, shapes, patterns, or another non-color encoding whenever the data distinction matters."
-      ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -388,8 +380,7 @@
         "Reference palette values carry no standalone contrast or semantic guarantee."
       ],
       "references": [
-        { "label": "Color generation", "path": "docs/guidelines/color-generation.md" },
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+        { "label": "Color generation", "path": "docs/guidelines/color-generation.md" }
       ]
     },
     {
@@ -410,10 +401,7 @@
       "constraints": [
         "Use these through the documented shadow/highlight/elevation recipes unless implementing the layers separately for a deliberate paint or clipping reason."
       ],
-      "recipes": ["token-recipe:elevation-composition"],
-      "references": [
-        { "label": "Elevation usage", "path": "docs/guidelines/elevation-usage.md" }
-      ]
+      "recipes": ["token-recipe:elevation-composition"]
     },
     {
       "id": "token-family:color.product-contexts",
@@ -621,9 +609,6 @@
       "recipes": ["token-recipe:typography-composites"],
       "accessibility": [
         "Preserve the recipe's line height and allow user-agent text resizing and reflow."
-      ],
-      "references": [
-        { "label": "Typography usage", "path": "docs/guidelines/typography-usage.md" }
       ]
     },
     {
@@ -731,10 +716,7 @@
         "Choose the semantic elevation level first, then use its combined token or its same-suffix shadow and highlight parts together.",
         "The parts remain public because a layout may need to paint or clip outer shadow and inset highlight separately."
       ],
-      "recipes": ["token-recipe:elevation-composition"],
-      "references": [
-        { "label": "Elevation usage", "path": "docs/guidelines/elevation-usage.md" }
-      ]
+      "recipes": ["token-recipe:elevation-composition"]
     },
     {
       "id": "token-family:effect.focus-ring",
@@ -983,8 +965,11 @@
         "Every documented tertiary foreground pairing clears 3:1 in both themes, which supports large text and meaningful icons but not normal-size text.",
         "A foreground guarantee applies only on the documented ordinary, matching on-background, or same-context surface."
       ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      "examples": [
+        {
+          "language": "css",
+          "content": ".surface { background: var(--color-background-primary); }\n.surface .title { color: var(--color-foreground-primary); }\n.surface .body { color: var(--color-foreground-secondary); }\n.surface .inactive-icon { color: var(--color-foreground-tertiary); }\n\n/* On a medium, bold, or strong fill, switch to the matching on-background hierarchy. */\n.fill { background: var(--color-background-bold-brand); }\n.fill .title { color: var(--color-foreground-on-bold-background-primary); }\n.fill .body { color: var(--color-foreground-on-bold-background-secondary); }"
+        }
       ]
     },
     {
@@ -1139,8 +1124,11 @@
         "Every documented primary neutral border pairing clears WCAG 1.4.11 non-text contrast at 3:1 in both themes.",
         "Secondary and tertiary neutral borders are intentionally below 3:1 and may be used only when the border does not carry the information required to identify a control or state."
       ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      "examples": [
+        {
+          "language": "css",
+          "content": "/* Decorative edge: the container is identifiable without it. */\n.container { border: var(--dimension-stroke-width-012) solid var(--color-border-tertiary); }\n\n/* Field: its label and value identify it; the stroke only defines the region. */\n.field { border: var(--dimension-stroke-width-012) solid var(--color-border-secondary); }\n\n/* Bare checkbox: the stroke is the only identifier, so it needs the 3:1 step. */\n.checkbox { border: var(--dimension-stroke-width-012) solid var(--color-border-primary); }"
+        }
       ]
     },
     {
@@ -1297,7 +1285,7 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-faint-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-bold-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
         },
         {
           "id": "literal-tinted-medium-strong",
@@ -1307,7 +1295,7 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-medium-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-strong-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
         },
         {
           "id": "literal-tinted-bold-faint",
@@ -1317,7 +1305,7 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-bold-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-faint-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
         },
         {
           "id": "literal-tinted-strong-medium",
@@ -1327,15 +1315,18 @@
             { "role": "surface", "property": "background", "tokenPattern": "--color-color-intent-*-strong-background" },
             { "role": "content", "property": "color", "tokenPattern": "--color-color-intent-*-medium-foreground" }
           ],
-          "notes": ["Keep both patterns on the same literal hue."]
+          "notes": ["Keep both patterns on the same literal hue.", "If this surface can be selected, same-hue content is for large text and icons only: the selected overlay drops it below 4.5:1. Use the non-tinted default foreground for that tone when normal-size text must stay readable while selected."]
         }
       ],
       "accessibility": [
         "Treat these as selection rules, not a substitute for testing the actual rendered context.",
         "Provide a non-color cue for semantic meaning."
       ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
+      "examples": [
+        {
+          "language": "css",
+          "content": "/* Faint surface: the ordinary foreground hierarchy. */\n.notice {\n  background: var(--color-background-faint-caution);\n  border: var(--dimension-stroke-width-012) solid var(--color-border-faint-caution);\n  color: var(--color-foreground-secondary);\n}\n.notice .title { color: var(--color-foreground-primary); }\n\n/* Bold surface: the matching on-background foreground. */\n.badge {\n  background: var(--color-background-bold-negative);\n  color: var(--color-foreground-on-bold-background-primary);\n}\n\n/* Optional tint: a faint surface with the same intent's bold foreground. */\n.tag {\n  background: var(--color-background-faint-positive);\n  color: var(--color-foreground-bold-positive);\n}"
+        }
       ]
     },
     {
@@ -1504,9 +1495,6 @@
           "language": "css",
           "content": ".interactive { position: relative; z-index: 0; }\n.interactive::before, .interactive::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }\n.interactive::before { z-index: 1; }\n.interactive__content { position: relative; z-index: 2; }\n.interactive::after { z-index: 3; }\n.interactive[aria-selected='true']::before { background: var(--color-interaction-active-brand); }\n@media (hover: hover) and (pointer: fine) { .interactive:hover:not(:disabled)::after { background: var(--color-interaction-hover); } }\n.interactive:active:not(:disabled)::after { background: var(--color-interaction-pressed); }"
         }
-      ],
-      "references": [
-        { "label": "Color usage", "path": "docs/guidelines/color-usage.md" }
       ]
     },
     {
@@ -1532,61 +1520,63 @@
         "Use font-family, font-size, line-height, font-weight, and letter-spacing together as one style.",
         "Use emphasis as the documented weight-and-letter-spacing change, not as a blanket jump to bold.",
         "Display and title emphasis use heavier target weights than body emphasis; caption remains uppercase in both variants.",
-        "Choose smaller body styles for dense supporting content and larger title/display styles only when the hierarchy warrants them."
+        "Choose smaller body styles for dense supporting content and larger title/display styles only when the hierarchy warrants them.",
+        "Emphasis is not a hierarchy tool: text that functions as a heading moves to a title or display role instead of an emphasized body style.",
+        "Prefer the smallest step up in role or size that creates the needed hierarchy."
       ],
       "variants": [
-        { "id": "text-display-medium", "label": "Display Medium", "modifier": "regular", "assignments": [
+        { "id": "text-display-medium", "label": "Display Medium", "modifier": "regular", "when": "Rare, oversized emphasis that should dominate the layout, such as a primary score or summary metric. Not a general heading.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-3xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-3xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-display-medium-emphasis", "label": "Display Medium", "modifier": "emphasis", "assignments": [
+        { "id": "text-display-medium-emphasis", "label": "Display Medium", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-3xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-3xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-bold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
         ] },
-        { "id": "text-display-small", "label": "Display Small", "modifier": "regular", "assignments": [
+        { "id": "text-display-small", "label": "Display Small", "modifier": "regular", "when": "Rare large numeric or headline values that need to dominate, one step below display medium. Not a general heading.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-2xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-2xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-display-small-emphasis", "label": "Display Small", "modifier": "emphasis", "assignments": [
+        { "id": "text-display-small-emphasis", "label": "Display Small", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-2xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-2xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-bold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
         ] },
-        { "id": "text-title-large", "label": "Title Large", "modifier": "regular", "assignments": [
+        { "id": "text-title-large", "label": "Title Large", "modifier": "regular", "when": "The most prominent title on a page or large region.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-title-large-emphasis", "label": "Title Large", "modifier": "emphasis", "assignments": [
+        { "id": "text-title-large-emphasis", "label": "Title Large", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xl" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xl" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-double" }
         ] },
-        { "id": "text-title-medium", "label": "Title Medium", "modifier": "regular", "assignments": [
+        { "id": "text-title-medium", "label": "Title Medium", "modifier": "regular", "when": "Section headers and card titles.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
-        { "id": "text-title-medium-emphasis", "label": "Title Medium", "modifier": "emphasis", "assignments": [
+        { "id": "text-title-medium-emphasis", "label": "Title Medium", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-title-small", "label": "Title Small", "modifier": "regular", "assignments": [
+        { "id": "text-title-small", "label": "Title Small", "modifier": "regular", "when": "Short titles and headers inside compact components or dense regions.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
-        { "id": "text-title-small-emphasis", "label": "Title Small", "modifier": "emphasis", "assignments": [
+        { "id": "text-title-small-emphasis", "label": "Title Small", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-body-large", "label": "Body Large", "modifier": "regular", "assignments": [
+        { "id": "text-body-large", "label": "Body Large", "modifier": "regular", "when": "Text that sits slightly above normal body copy without becoming a title, such as a short introductory line or a lightweight heading.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
-        { "id": "text-body-large-emphasis", "label": "Body Large", "modifier": "emphasis", "assignments": [
+        { "id": "text-body-large-emphasis", "label": "Body Large", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-lg" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-lg" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-body-medium", "label": "Body Medium", "modifier": "regular", "assignments": [
+        { "id": "text-body-medium", "label": "Body Medium", "modifier": "regular", "when": "The default for paragraphs, standard labels, and most product copy. Start here when unsure.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
-        { "id": "text-body-medium-emphasis", "label": "Body Medium", "modifier": "emphasis", "assignments": [
+        { "id": "text-body-medium-emphasis", "label": "Body Medium", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-md" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-md" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative" }
         ] },
-        { "id": "text-body-small", "label": "Body Small", "modifier": "regular", "assignments": [
+        { "id": "text-body-small", "label": "Body Small", "modifier": "regular", "when": "Supporting text that should read slightly subdued: helper text, secondary metadata, and subtext below primary copy.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-sm" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-sm" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-regular" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-none" }
         ] },
-        { "id": "text-body-small-emphasis", "label": "Body Small", "modifier": "emphasis", "assignments": [
+        { "id": "text-body-small-emphasis", "label": "Body Small", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-sm" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-sm" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-negative-half" }
         ] },
-        { "id": "text-caption", "label": "Caption", "modifier": "regular", "assignments": [
+        { "id": "text-caption", "label": "Caption", "modifier": "regular", "when": "Short uppercase labels; not for sentences or body copy.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xs" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xs" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-medium" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-positive" }, { "role": "transform", "property": "text-transform", "value": "uppercase" }
         ] },
-        { "id": "text-caption-emphasis", "label": "Caption", "modifier": "emphasis", "assignments": [
+        { "id": "text-caption-emphasis", "label": "Caption", "modifier": "emphasis", "when": "The same role needs more weight at the same size, such as a key term or one label among peers. Size and line height do not change, so switching is layout-safe.", "assignments": [
           { "role": "family", "property": "font-family", "token": "--typography-font-family-ui" }, { "role": "size", "property": "font-size", "token": "--typography-fontsize-xs" }, { "role": "line-height", "property": "line-height", "token": "--typography-lineheight-xs" }, { "role": "weight", "property": "font-weight", "token": "--typography-weight-semibold" }, { "role": "tracking", "property": "letter-spacing", "token": "--typography-letterspacing-positive" }, { "role": "transform", "property": "text-transform", "value": "uppercase" }
         ] }
       ],
@@ -1599,9 +1589,6 @@
           "language": "css",
           "content": ".text-body-medium {\n  font-family: var(--typography-font-family-ui);\n  font-size: var(--typography-fontsize-md);\n  line-height: var(--typography-lineheight-md);\n  font-weight: var(--typography-weight-regular);\n  letter-spacing: var(--typography-letterspacing-negative-half);\n}"
         }
-      ],
-      "references": [
-        { "label": "Typography usage", "path": "docs/guidelines/typography-usage.md" }
       ]
     },
     {
@@ -1626,46 +1613,46 @@
         "Choose one semantic elevation suffix and keep shadow, highlight, and combined tokens on that same suffix.",
         "Use the combined token for the normal one-element case.",
         "When a layout requires different clipping or paint behavior for outer and inset layers, apply the same-suffix shadow and highlight tokens to deliberate separate layers.",
-        "Do not mix a shadow from one elevation level with a highlight from another."
+        "Do not mix a shadow from one elevation level with a highlight from another.",
+        "Choose the suffix from how the surface meets its container: a panel suffix when it is attached to an edge (touching at least three sides), elevated-sm, elevated-md, or elevated-floating when it has clearance on all four sides, and depressed-* when it should read as inset.",
+        "Match a panel suffix to the edge the surface is attached to, and never put a panel suffix on a free-standing card or a free-standing suffix on an edge-attached surface.",
+        "Split the shadow and highlight onto separate elements only when an ancestor or inner clipping boundary would otherwise cut the outer shadow; an element's own overflow does not require a split by itself."
       ],
       "variants": [
-        { "id": "elevated-none", "label": "Elevated none", "assignments": [
+        { "id": "elevated-none", "label": "Elevated none", "when": "Elevation is part of the component model but this state should render flat.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-none" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-none" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-none" }
         ] },
-        { "id": "elevated-sm", "label": "Elevated small", "assignments": [
+        { "id": "elevated-sm", "label": "Elevated small", "when": "The lightest raised surface with clearance on all four sides, such as a card.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-sm" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-sm" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-sm" }
         ] },
-        { "id": "elevated-md", "label": "Elevated medium", "assignments": [
+        { "id": "elevated-md", "label": "Elevated medium", "when": "A standard raised surface with clearance on all four sides that needs more separation than elevated-sm.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-md" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-md" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-md" }
         ] },
-        { "id": "elevated-floating", "label": "Elevated floating", "assignments": [
+        { "id": "elevated-floating", "label": "Elevated floating", "when": "A surface that floats above other content, such as a menu, popover, modal, or floating action button. Not for a card that only needs more lift.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-floating" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-floating" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-floating" }
         ] },
-        { "id": "depressed-sm", "label": "Depressed small", "assignments": [
+        { "id": "depressed-sm", "label": "Depressed small", "when": "An element that should read as inset or embedded in its surface, such as a text field.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-depressed-sm" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-depressed-sm" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-depressed-sm" }
         ] },
-        { "id": "depressed-md", "label": "Depressed medium", "assignments": [
+        { "id": "depressed-md", "label": "Depressed medium", "when": "A deeper inset region, such as an embedded control area.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-depressed-md" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-depressed-md" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-depressed-md" }
         ] },
-        { "id": "elevated-panel-top", "label": "Elevated panel top", "assignments": [
+        { "id": "elevated-panel-top", "label": "Elevated panel top", "when": "An edge-attached surface on the top edge of its container, such as an app header.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-top" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-top" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-top" }
         ] },
-        { "id": "elevated-panel-right", "label": "Elevated panel right", "assignments": [
+        { "id": "elevated-panel-right", "label": "Elevated panel right", "when": "An edge-attached surface on the right edge, such as a right drawer.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-right" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-right" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-right" }
         ] },
-        { "id": "elevated-panel-bottom", "label": "Elevated panel bottom", "assignments": [
+        { "id": "elevated-panel-bottom", "label": "Elevated panel bottom", "when": "An edge-attached surface on the bottom edge, such as a bottom bar or footer.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-bottom" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-bottom" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-bottom" }
         ] },
-        { "id": "elevated-panel-left", "label": "Elevated panel left", "assignments": [
+        { "id": "elevated-panel-left", "label": "Elevated panel left", "when": "An edge-attached surface on the left edge, such as a left drawer.", "assignments": [
           { "role": "shadow", "property": "box-shadow", "token": "--effect-shadow-elevated-panel-left" }, { "role": "highlight", "property": "box-shadow", "token": "--effect-highlight-elevated-panel-left" }, { "role": "combined", "property": "box-shadow", "token": "--effect-elevation-elevated-panel-left" }
         ] }
       ],
       "examples": [
         { "language": "css", "content": ".surface { box-shadow: var(--effect-elevation-elevated-sm); }" },
         { "language": "css", "content": ".outer-depth { box-shadow: var(--effect-shadow-elevated-sm); }\n.inner-edge { box-shadow: var(--effect-highlight-elevated-sm); }" }
-      ],
-      "references": [
-        { "label": "Elevation usage", "path": "docs/guidelines/elevation-usage.md" }
       ]
     }
   ]

@@ -218,6 +218,10 @@ function validateRecipe(recipe, ids) {
       assertKnownFields(example, new Set(['language', 'content']), `${recipe.id}.examples[${index}]`);
       if (!['css', 'html', 'json'].includes(example.language)) fail(`${recipe.id}.examples[${index}].language is invalid.`);
       assertString(example.content, `${recipe.id}.examples[${index}].content`);
+      // Examples are copied verbatim, so every token they name must still ship.
+      for (const [, name] of example.content.matchAll(/var\((--[a-z0-9-]+)/g)) {
+        if (!tokens[name]) fail(`${recipe.id}.examples[${index}] references missing token ${name}.`);
+      }
     }
   }
 }

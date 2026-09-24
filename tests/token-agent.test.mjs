@@ -58,6 +58,19 @@ test('recipe assignments reference published tokens or productive patterns', asy
   }
 });
 
+test('recipe examples only reference published tokens', async () => {
+  const manifest = await readJson('dist/agent.json');
+  const tokens = await readJson('dist/tokens.json');
+
+  for (const recipe of manifest.recipes) {
+    for (const example of recipe.examples ?? []) {
+      for (const [, name] of example.content.matchAll(/var\((--[a-z0-9-]+)/g)) {
+        assert.ok(tokens[name], `${recipe.id} example references ${name}`);
+      }
+    }
+  }
+});
+
 test('typography composites and elevation parts remain complete', async () => {
   const manifest = await readJson('dist/agent.json');
   const typography = manifest.recipes.find(recipe => recipe.id === 'token-recipe:typography-composites');

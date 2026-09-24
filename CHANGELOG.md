@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [8.0.0](https://github.com/zainadeel/tokomo/compare/v7.0.0...v8.0.0) (2026-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **colors:** consolidate map marker tokens ([#154](https://github.com/zainadeel/tokomo/issues/154))
+
+### Added
+
+* **colors:** consolidate map marker tokens ([#154](https://github.com/zainadeel/tokomo/issues/154)) ([f2950c9](https://github.com/zainadeel/tokomo/commit/f2950c93adf41cc5d1e02f714728a646694ebad8))
+
 ## [7.0.0](https://github.com/zainadeel/tokomo/compare/v6.9.0...v7.0.0) (2026-09-24)
 
 

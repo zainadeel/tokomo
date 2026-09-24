@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [7.0.0](https://github.com/zainadeel/tokomo/compare/v6.9.0...v7.0.0) (2026-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **docs:** consolidate usage guidance into the agent contract and refresh the docs site ([#152](https://github.com/zainadeel/tokomo/issues/152))
+
+### Added
+
+* **docs:** consolidate usage guidance into the agent contract and refresh the docs site ([#152](https://github.com/zainadeel/tokomo/issues/152)) ([669a48f](https://github.com/zainadeel/tokomo/commit/669a48f42496f62cb5cac006de87decb62e5a207))
+
 ## [6.9.0](https://github.com/zainadeel/tokomo/compare/v6.8.0...v6.9.0) (2026-09-23)
 
 

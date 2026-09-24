@@ -154,6 +154,14 @@
       scrollbar-width: none;
     }
     .sub-toolbar::-webkit-scrollbar { display: none; }
+    .sub-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .sub-toolbar .search-wrap { margin-left: auto; flex-shrink: 0; }
 
     .sub-btn {
       background: none;
@@ -174,8 +182,8 @@
       background: var(--divider);
       flex: 0 0 auto;
     }
-    /* While searching, tabs are bypassed — hide the sub-toolbar entirely. */
-    .sub-toolbar.searching { display: none; }
+    /* While searching, tabs are bypassed — hide them and keep the search. */
+    .sub-toolbar.searching .sub-nav { visibility: hidden; }
 
     /* ── Content ──────────────────────────────────────────────────────── */
     #content {
@@ -815,7 +823,7 @@
       line-height: 1.4;
       color: var(--fg-muted);
       padding: 4px 5px 6px;
-      word-break: break-all;
+      overflow-wrap: anywhere;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
@@ -1127,33 +1135,34 @@
   <div class="primary-nav" id="primary-nav" aria-label="Primary">
     <button class="toggle-btn" data-view="browser">Browser</button>
     <button class="toggle-btn" data-view="documentation">Documentation</button>
+    <a class="toggle-btn" href="./graph/">Color graph</a>
+    <a class="toggle-btn" href="./tool/">Color tool</a>
   </div>
 
   <div class="controls">
-    <div class="search-wrap" id="search-wrap">
-      <input
-        class="search"
-        type="search"
-        id="search"
-        placeholder=""
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="Search tokens"
-      >
-      <span class="search-count" id="search-count" aria-live="polite"></span>
-    </div>
     <div class="text-toggle" role="group" aria-label="Color theme">
       <button class="toggle-btn" id="theme-light-btn">Light</button>
       <button class="toggle-btn" id="theme-dark-btn">Dark</button>
     </div>
-    <div class="vdivider" aria-hidden="true"></div>
-    <a class="toggle-btn" href="./tool/">Color tool</a>
-    <a class="toggle-btn" href="./graph/">Color graph</a>
   </div>
 </nav>
 
-<!-- Sub-toolbar (group filters) -->
-<div class="sub-toolbar" id="sub-toolbar" role="group" aria-label="Group filter"></div>
+<!-- Sub-toolbar (section and group filters, plus Browser search) -->
+<div class="sub-toolbar" id="sub-toolbar">
+  <div class="sub-nav" id="sub-nav" role="group" aria-label="Group filter"></div>
+  <div class="search-wrap" id="search-wrap">
+    <input
+      class="search"
+      type="search"
+      id="search"
+      placeholder=""
+      autocomplete="off"
+      spellcheck="false"
+      aria-label="Search tokens"
+    >
+    <span class="search-count" id="search-count" aria-live="polite"></span>
+  </div>
+</div>
 
 <!-- Content -->
 <main>
@@ -1168,9 +1177,9 @@
 const GROUPS = {
   colors: [
     { id: 'all',       label: 'All' },
-    { id: 'reference', label: 'Reference' },
     { id: 'semantic',  label: 'Semantic' },
     { id: 'data',      label: 'Data' },
+    { id: 'reference', label: 'Reference' },
   ],
   dimensions: [
     { id: 'all',         label: 'All' },
@@ -1202,6 +1211,8 @@ const SECTIONS = [
   { id: 'typography', label: 'Typography' },
   { id: 'effects', label: 'Effects' },
 ];
+
+const REPO_BLOB_URL = '@@REPO_BLOB_URL@@';
 
 const DOC_SECTIONS = [
   { id: 'overview', label: 'Overview' },
@@ -1426,7 +1437,9 @@ const RECIPE_VARIANT_GROUPS = {
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-let view     = localStorage.getItem('tokomo-view') || 'browser';
+const VIEWS = ['browser', 'documentation'];
+const hashView = location.hash.slice(1);
+let view     = VIEWS.includes(hashView) ? hashView : (localStorage.getItem('tokomo-view') || 'browser');
 let section  = localStorage.getItem('tokomo-section') || 'colors';
 let documentationSection = 'overview';
 let familyCategory = 'color';
@@ -1444,6 +1457,7 @@ const searchCount  = document.getElementById('search-count');
 const searchWrap   = document.getElementById('search-wrap');
 const primaryNav   = document.getElementById('primary-nav');
 const subToolbar   = document.getElementById('sub-toolbar');
+const subNav       = document.getElementById('sub-nav');
 const toast        = document.getElementById('toast');
 const themeLightBtn = document.getElementById('theme-light-btn');
 const themeDarkBtn  = document.getElementById('theme-dark-btn');
@@ -1487,6 +1501,7 @@ function switchView(nextView) {
   }
   view = nextView;
   localStorage.setItem('tokomo-view', view);
+  history.replaceState(null, '', `#${view}`);
   primaryNav.querySelectorAll('[data-view]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === view);
   });
@@ -1562,11 +1577,11 @@ function switchSection(s) {
 // ── Sub-toolbar ───────────────────────────────────────────────────────────────
 
 function updateSubToolbar() {
-  subToolbar.innerHTML = '';
+  subNav.innerHTML = '';
   subToolbar.classList.remove('searching');
 
   if (view === 'documentation') {
-    subToolbar.setAttribute('aria-label', 'Documentation sections');
+    subNav.setAttribute('aria-label', 'Documentation sections');
     for (const item of DOC_SECTIONS) {
       const btn = document.createElement('button');
       const isActive = item.id === documentationSection;
@@ -1575,19 +1590,19 @@ function updateSubToolbar() {
       btn.dataset.documentationSection = item.id;
       if (isActive) btn.setAttribute('aria-current', 'page');
       btn.addEventListener('click', () => switchDocumentationSection(item.id));
-      subToolbar.appendChild(btn);
+      subNav.appendChild(btn);
     }
     return;
   }
 
-  subToolbar.setAttribute('aria-label', 'Token section and group filter');
+  subNav.setAttribute('aria-label', 'Token section and group filter');
   for (const item of SECTIONS) {
     const btn = document.createElement('button');
     btn.className = 'sub-btn' + (item.id === section ? ' active' : '');
     btn.textContent = item.label;
     btn.dataset.section = item.id;
     btn.addEventListener('click', () => switchSection(item.id));
-    subToolbar.appendChild(btn);
+    subNav.appendChild(btn);
   }
 
   const groups = GROUPS[section] || [];
@@ -1595,7 +1610,7 @@ function updateSubToolbar() {
     const separator = document.createElement('span');
     separator.className = 'sub-separator';
     separator.setAttribute('aria-hidden', 'true');
-    subToolbar.appendChild(separator);
+    subNav.appendChild(separator);
   }
   for (const g of groups) {
     const btn = document.createElement('button');
@@ -1604,12 +1619,12 @@ function updateSubToolbar() {
     btn.dataset.group = g.id;
     btn.addEventListener('click', () => {
       group = g.id;
-      subToolbar.querySelectorAll('.sub-btn').forEach(b => {
+      subNav.querySelectorAll('.sub-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.group === group);
       });
       render();
     });
-    subToolbar.appendChild(btn);
+    subNav.appendChild(btn);
   }
 }
 
@@ -2138,7 +2153,8 @@ function renderStringList(items) {
 function renderReferences(references) {
   if (!references?.length) return '';
   return `<h4>References</h4><ul class="doc-list">${references.map(reference => {
-    const href = reference.path.startsWith('docs/') ? `./${reference.path.slice('docs/'.length)}` : reference.path;
+    // Repository files open on GitHub, which renders markdown; the site would serve it raw.
+    const href = reference.path.startsWith('http') ? reference.path : `${REPO_BLOB_URL}/${reference.path}`;
     const external = href.startsWith('http') ? ' target="_blank" rel="noreferrer"' : '';
     return `<li><a class="doc-reference" href="${escHtml(href)}"${external}>${escHtml(reference.label)}</a></li>`;
   }).join('')}</ul>`;
@@ -2187,7 +2203,7 @@ function renderColors(tokens) {
     // --sc is the swatch color; resolves through inlined token CSS
     card.innerHTML = `
       <div class="color-swatch" style="--sc:var(${t.name})"></div>
-      <span class="color-label">${escHtml(t.label)}</span>`;
+      <span class="color-label" title="${escHtml(t.label)}">${escHtml(t.short || t.label)}</span>`;
     addCopyHandler(card, `var(${t.name})`, t.name);
     frag.appendChild(card);
   }

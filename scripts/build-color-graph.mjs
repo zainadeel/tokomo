@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { compileTokenProject } from './lib/token-compiler.mjs';
 import { makeResolver, makeChainResolver, parseCssColor } from './lib/token-colors.mjs';
 import { buildActiveMatrix } from './lib/active-contrast.mjs';
+import { stampPackageLabel } from './lib/package-label.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const compilation = await compileTokenProject({ root });
@@ -71,7 +72,7 @@ const addOnToneSurfaceTokens = (background, tone) => {
 };
 
 // Core semantic surfaces. These are the documented foreground hierarchies and
-// interaction families in color-usage.md, including optional chromatic pairs.
+// interaction families in the agent contract, including optional chromatic pairs.
 for (const token of tokens.filter(token => token.family === 'background')) {
   const [, tone, intent] = token.path.split('.');
   if (['primary', 'secondary'].includes(tone)) {
@@ -159,9 +160,13 @@ for (const token of tokens.filter(token => token.path.includes('.background') ||
 
 const output = join(root, 'docs/graph');
 mkdirSync(output, { recursive: true });
-for (const file of ['index.html', 'graph.css', 'graph.mjs']) {
+for (const file of ['graph.css', 'graph.mjs']) {
   copyFileSync(join(root, 'tools/color-graph', file), join(output, file));
 }
+writeFileSync(
+  join(output, 'index.html'),
+  stampPackageLabel(readFileSync(join(root, 'tools/color-graph/index.html'), 'utf8')),
+);
 writeFileSync(join(output, 'colors.css'), compilation.css.colors);
 writeFileSync(join(output, 'graph-data.json'), JSON.stringify({
   version: JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version,

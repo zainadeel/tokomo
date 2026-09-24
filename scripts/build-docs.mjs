@@ -7,6 +7,8 @@
  *   3. Reading graph-derived token data from dist/json/
  *   4. Reading the validated token guidance from dist/agent.json
  *   5. Writing docs/index.html — no external assets needed
+ *   6. Writing docs/llms.txt plus copies of dist/agent.json and
+ *      dist/tokens-index.json for agents that land on the site
  *
  * Run after `npm run build`:
  *   npm run build && npm run build:docs
@@ -15,6 +17,7 @@
 import { readFileSync, mkdirSync, writeFileSync, copyFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { packageLabel } from './lib/package-label.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const root = join(__dirname, '..');
@@ -23,7 +26,7 @@ const docsDir = join(root, 'docs');
 
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const tokenGuidance = JSON.parse(readFileSync(join(distDir, 'agent.json'), 'utf8'));
-const packageLabel = `${pkg.name} v${pkg.version}`;
+const repoBlobUrl = `${pkg.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/blob/main`;
 
 mkdirSync(docsDir, { recursive: true });
 
@@ -256,46 +259,90 @@ const referenceTokens = rawColors
     || (a._shade - b._shade)
     || (a._variant - b._variant)
   );
-// Semantic: keep the source order of first-appearance, but pull every token of
-// the same category together — otherwise interleaved CSS (e.g. `interaction-focus`,
-// `interaction-on-bold-background-focus`, `interaction-pressed`) renders as two
-// separate "Interaction" sections.
-const semanticCategoryFirstSeen = new Map();
-rawColors.forEach((t, i) => {
-  if (t.group === 'semantic' && !semanticCategoryFirstSeen.has(t.category)) {
-    semanticCategoryFirstSeen.set(t.category, i);
-  }
-});
-// Intensity tiers (strong/bold/medium/faint) render contiguously in
-// strong → bold → medium → faint order, anchored at the earliest-seen sibling.
-// Without this override, `*-strong` drifts to the end of the semantic section
-// because its CSS var names sort after `*-on-*` and `*-primary/secondary/…`.
-for (const prefix of ['foreground', 'background']) {
-  const order = [`${prefix}-strong`, `${prefix}-bold`, `${prefix}-medium`, `${prefix}-faint`];
-  const anchor = Math.min(
-    ...order.map(cat => semanticCategoryFirstSeen.get(cat)).filter(v => v != null)
-  );
-  if (Number.isFinite(anchor)) {
-    order.forEach((cat, i) => {
-      if (semanticCategoryFirstSeen.has(cat)) {
-        semanticCategoryFirstSeen.set(cat, anchor + i * 0.001);
-      }
-    });
-  }
+// Semantic: order families by how often product UI reaches for them, matching
+// the family order of the agent contract — everyday core first, specialized
+// contexts next, product-domain families last. Source CSS is alphabetical, which
+// would otherwise open the page on `always-dark` and bury `background-primary`.
+const SEMANTIC_FAMILY_ORDER = [
+  'background', 'foreground', 'border', 'divider', 'interaction', 'elevation', 'shimmer',
+  'color-intent',
+  'always-dark', 'inverted', 'media', 'navigation', 'translucent', 'chrome',
+  'driver-status', 'safety-score', 'entity-marker', 'entity-cluster-marker',
+  'location-marker', 'settings-profile',
+];
+function semanticFamilyRank(category) {
+  const i = SEMANTIC_FAMILY_ORDER.findIndex(p => category === p || category.startsWith(`${p}-`));
+  return i === -1 ? SEMANTIC_FAMILY_ORDER.length : i;
 }
-// Within a category, sort primary → secondary → tertiary → quaternary first,
-// then fall back to source order for everything else (focus/hover/pressed,
-// intent qualifiers like -ai/-brand/-negative, etc.).
+function semanticFamilyPrefix(category) {
+  return SEMANTIC_FAMILY_ORDER.find(p => category === p || category.startsWith(`${p}-`)) ?? '';
+}
+
+// Inside a family: the base category first, then its background, foreground,
+// border, divider, and interaction roles; within a role, strong → bold →
+// medium → faint, then the on-strong/bold/medium-background variants.
+const SEMANTIC_ROLE_ORDER = ['background', 'foreground', 'border', 'divider', 'interaction'];
+const SEMANTIC_TONE_RANK = { strong: 1, bold: 2, medium: 3, faint: 4 };
+function semanticCategoryKey(category) {
+  const prefix = semanticFamilyPrefix(category);
+  let suffix = category.slice(prefix.length);
+  let toneRank = 0;
+  // `on-bold-background` names the surface underneath, not a role of its own.
+  const on = suffix.match(/(?:^|-)on-(strong|bold|medium|faint)(?:-background)?(?=-|$)/);
+  if (on) {
+    toneRank = 4 + SEMANTIC_TONE_RANK[on[1]];
+    suffix = suffix.replace(on[0], '');
+  }
+  const words = suffix.split('-').filter(w => w && w !== prefix);
+  const role = words.findIndex(w => SEMANTIC_ROLE_ORDER.includes(w));
+  const roleRank = role === -1 ? 0 : SEMANTIC_ROLE_ORDER.indexOf(words[role]) + 1;
+  const rest = role === -1 ? words : words.slice(role + 1);
+  if (!on) {
+    const tone = rest.find(w => SEMANTIC_TONE_RANK[w]);
+    if (tone) toneRank = SEMANTIC_TONE_RANK[tone];
+    else if (rest.includes('active')) toneRank = 0.5;
+  }
+  // Whatever is left (e.g. a literal hue name) keeps sibling tones together.
+  const leftover = rest.filter(w => !SEMANTIC_TONE_RANK[w] && w !== 'on' && w !== 'active').join('-');
+  return { roleRank, toneRank, leftover };
+}
+
+// Leftover words (literal hues, driver statuses) keep their source order.
+const semanticLeftoverFirstSeen = new Map();
+rawColors.forEach((t, i) => {
+  if (t.group !== 'semantic') return;
+  const { leftover } = semanticCategoryKey(t.category);
+  if (!semanticLeftoverFirstSeen.has(leftover)) semanticLeftoverFirstSeen.set(leftover, i);
+});
+
+// Within a category: primary → quaternary, then intents in the documented
+// meaning order rather than alphabetically, then source order.
 const RANK_QUALIFIERS = { primary: 0, secondary: 1, tertiary: 2, quaternary: 3 };
+const INTENT_ORDER = ['neutral', 'brand', 'positive', 'caution', 'warning', 'negative', 'ai', 'guide', 'walkthrough'];
 function semanticRankWithinCategory(name) {
   const last = name.split('-').pop();
-  return RANK_QUALIFIERS[last] ?? 99;
+  if (last in RANK_QUALIFIERS) return RANK_QUALIFIERS[last];
+  const intent = INTENT_ORDER.indexOf(last);
+  if (intent !== -1) return 10 + intent;
+  // Surface-specific variants follow the plain token (`divider` before `divider-on-*`).
+  const on = name.match(/-on-(strong|bold|medium|faint)(?:-|$)/);
+  return on ? 100 + SEMANTIC_TONE_RANK[on[1]] : 99;
+}
+function compareSemanticCategories(a, b) {
+  if (a === b) return 0;
+  const ka = semanticCategoryKey(a);
+  const kb = semanticCategoryKey(b);
+  return (semanticFamilyRank(a) - semanticFamilyRank(b))
+    || (ka.roleRank - kb.roleRank)
+    || (semanticLeftoverFirstSeen.get(ka.leftover) - semanticLeftoverFirstSeen.get(kb.leftover))
+    || (ka.toneRank - kb.toneRank)
+    || a.localeCompare(b);
 }
 const semanticTokens = rawColors
   .map((t, i) => ({ t, i }))
   .filter(({ t }) => t.group === 'semantic')
   .sort((a, b) =>
-    (semanticCategoryFirstSeen.get(a.t.category) - semanticCategoryFirstSeen.get(b.t.category))
+    compareSemanticCategories(a.t.category, b.t.category)
     || (semanticRankWithinCategory(a.t.name) - semanticRankWithinCategory(b.t.name))
     || (a.i - b.i)
   )
@@ -333,8 +380,27 @@ const dataTokens = rawColors
     || a.name.localeCompare(b.name)
   );
 
-const colors = [...referenceTokens, ...semanticTokens, ...dataTokens]
-  .map(({ _hue, _shade, _variant, _alpha, ...rest }) => rest); // drop sort-only fields
+/**
+ * Swatch label: the part of the name that the group header does not already
+ * say (`background-strong` + `ai` rather than the full name wrapped mid-word).
+ * The full name stays on the card for copy, search, and the tooltip.
+ */
+function getColorShortLabel(name, category) {
+  const tail = name.replace(/^--color-/, '');
+  // `--color-divider-divider-on-bold-background` → `on-bold-background`.
+  if (category === 'divider') return tail.replace(/^divider-divider-/, '').replace(/^divider-/, '');
+  if (tail === category) return tail.split('-').pop();
+  if (tail.startsWith(`${category}-`)) return tail.slice(category.length + 1);
+  // Reference dark/light hues share one "Reference Blue" header.
+  return tail.replace(/^reference-(dark|light)-[a-z]+-/, '$1-').replace(/^reference-/, '');
+}
+
+// Most-used first: semantic, then data, then the reference palette that backs them.
+const colors = [...semanticTokens, ...dataTokens, ...referenceTokens]
+  .map(({ _hue, _shade, _variant, _alpha, ...rest }) => ({
+    ...rest,
+    short: getColorShortLabel(rest.name, rest.category),
+  }));
 
 console.log(`  ✓ colors        (${colors.length} tokens)`);
 
@@ -467,6 +533,9 @@ function tokenSuffix(assignment, prefix) {
   return assignment?.token?.replace(prefix, '') ?? '';
 }
 
+// Text styles render before the primitives: they are what product UI should
+// reach for, and the primitives are their inputs.
+const textStyles = [];
 for (const variant of typographyRecipe.variants) {
   const family = assignmentFor(variant, 'font-family');
   const size = assignmentFor(variant, 'font-size');
@@ -479,7 +548,7 @@ for (const variant of typographyRecipe.variants) {
     `${assignment.property}: ${assignment.token ? `var(${assignment.token})` : assignment.value};`
   ).join('\n');
 
-  typography.push({
+  textStyles.push({
     name: baseName,
     group: 'textstyle',
     label: `${baseName} ${variant.modifier}`,
@@ -495,6 +564,7 @@ for (const variant of typographyRecipe.variants) {
     snippet,
   });
 }
+typography.unshift(...textStyles);
 
 console.log(`  ✓ typography    (${typography.length} tokens)`);
 
@@ -571,10 +641,42 @@ const TOKEN_DATA_JS =
 
 let html = readFileSync(join(__dirname, 'docs-template.html'), 'utf8');
 html = html.replaceAll('@@PACKAGE_LABEL@@', packageLabel);
+html = html.replace('@@REPO_BLOB_URL@@', repoBlobUrl);
 html = html.replace('/* @@TOKEN_CSS@@ */',  TOKEN_CSS);
 html = html.replace('/* @@TOKEN_DATA@@ */', TOKEN_DATA_JS);
 
 writeFileSync(join(docsDir, 'index.html'), html);
+
+// ── Agent entry point ────────────────────────────────────────────────────────
+// llms.txt points agents at the machine-readable contract rather than the
+// rendered pages. The contract and index are copied beside it so the links are
+// version-locked to this deploy.
+
+copyFileSync(join(distDir, 'agent.json'), join(docsDir, 'agent.json'));
+copyFileSync(join(distDir, 'tokens-index.json'), join(docsDir, 'tokens-index.json'));
+
+const LLMS_TXT = `# TokoMo (${pkg.name})
+
+> Design tokens for the ds-mo design system, shipped as CSS custom properties, JSON, and TypeScript constants. Light and dark themes switch through the \`data-theme\` attribute; token names never change between themes. Choose tokens by meaning and rendering context, never by their current value.
+
+Version: ${pkg.version}
+
+## Start here
+
+- [Token selection contract](agent.json): the authoritative, validated guidance. Principles, the nine color intents, every token family with useWhen/avoidWhen/constraints, and composition recipes, all using exact CSS variable names. Also shipped as \`${pkg.name}/agent\`.
+- [Token index](tokens-index.json): every token name and value, grouped by category. Use it to confirm a token exists. Also shipped as \`${pkg.name}/json/index\`.
+
+## Principles
+
+${tokenGuidance.principles.map(principle => `- ${principle.summary}`).join('\n')}
+
+## Optional
+
+- [Color generation](guidelines/color-generation.md): how the reference palette is built and audited. For maintainers of TokoMo only.
+`;
+
+writeFileSync(join(docsDir, 'llms.txt'), LLMS_TXT);
+console.log('  ✓ docs/llms.txt, docs/agent.json, docs/tokens-index.json');
 
 const kbSize = Math.round(Buffer.byteLength(html, 'utf8') / 1024);
 console.log(`  ✓ docs/index.html  (${kbSize}KB, self-contained)\n\nDocs ready → docs/index.html`);

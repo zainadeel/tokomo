@@ -26,7 +26,10 @@ const state = { view: 'role', theme: 'light', selected: null };
 function readLocation() {
   const p = new URLSearchParams(location.hash.slice(1));
   state.view = ['role', 'intent', 'reference'].includes(p.get('view')) ? p.get('view') : 'role';
-  state.theme = ['light', 'dark'].includes(p.get('theme')) ? p.get('theme') : 'light';
+  // The site shares one theme choice across pages; an explicit #theme= link wins.
+  const savedTheme = localStorage.getItem('tokomo-theme');
+  state.theme = ['light', 'dark'].includes(p.get('theme')) ? p.get('theme')
+    : ['light', 'dark'].includes(savedTheme) ? savedTheme : 'light';
   state.selected = tokenMap.has(p.get('token')) ? p.get('token') : null;
 }
 function saveLocation() {
@@ -92,6 +95,7 @@ function renderInspector() {
 
 function changeTheme(theme) {
   state.theme = theme;
+  localStorage.setItem('tokomo-theme', theme);
   update({ fit: state.view === 'reference' });
 }
 

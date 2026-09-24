@@ -412,9 +412,7 @@
       "summary": "Domain-specific families for driver status, map entities and locations, safety score, and settings profile contexts.",
       "tokenPatterns": [
         "--color-driver-status-*",
-        "--color-entity-cluster-marker-*",
-        "--color-entity-marker-*",
-        "--color-location-marker-*",
+        "--color-map-marker-*",
         "--color-safety-score-*",
         "--color-settings-profile-*"
       ],

@@ -267,8 +267,7 @@ const SEMANTIC_FAMILY_ORDER = [
   'background', 'foreground', 'border', 'divider', 'interaction', 'elevation', 'shimmer',
   'color-intent',
   'always-dark', 'inverted', 'media', 'navigation', 'translucent', 'chrome',
-  'driver-status', 'safety-score', 'entity-marker', 'entity-cluster-marker',
-  'location-marker', 'settings-profile',
+  'driver-status', 'safety-score', 'map-marker', 'settings-profile',
 ];
 function semanticFamilyRank(category) {
   const i = SEMANTIC_FAMILY_ORDER.findIndex(p => category === p || category.startsWith(`${p}-`));

@@ -40,9 +40,9 @@ export const THEMES = ["light", "dark"];
 // on a light yellow fill — and four of those five also fail a 3:1 large-text
 // restriction. Those tokens still ship. See color-generation.md §13.
 export const EXCLUDED_ACTIVE_TOKENS = [
-  "--color-entity-cluster-marker-interaction-active",
-  "--color-entity-marker-interaction-active",
-  "--color-location-marker-interaction-active",
+  "--color-map-marker-cluster-interaction-active",
+  "--color-map-marker-entity-interaction-active",
+  "--color-map-marker-intent-interaction-active",
 ];
 
 // Semantic intents present in the strong/bold/medium/faint families.

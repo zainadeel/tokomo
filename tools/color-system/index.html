@@ -58,7 +58,7 @@
   }
   .toggle-btn:hover { color: var(--fg); }
   .toggle-btn.active { color: var(--fg); }
-  .toggle-btn.is-clean { color: var(--fg-faint); pointer-events: none; }
+  a.toggle-btn { text-decoration: none; }
 
   .tabs { display: flex; align-items: center; gap: 12px; }
 
@@ -90,6 +90,7 @@
   }
   .lock-btn:hover { color: var(--canvas-text); }
   .lock-btn.active { color: var(--canvas-text); }
+  .lock-btn.is-clean { color: var(--canvas-faint); pointer-events: none; }
 
   /* ── Hue rows ───────────────────────────────────────────────────── */
   .hue-row { display: grid; grid-template-columns: 1fr 4fr; gap: 4px; padding: 8px 0; align-items: start; }
@@ -217,22 +218,27 @@
 </head>
 <body>
 <header class="toolbar">
-  <span class="logo">Color tool</span>
+  <span class="logo" data-package-label>@ds-mo/tokens</span>
+  <nav class="tabs" aria-label="Primary">
+    <a class="toggle-btn" href="../#browser">Browser</a>
+    <a class="toggle-btn" href="../#documentation">Documentation</a>
+    <a class="toggle-btn" href="../graph/">Color graph</a>
+    <a class="toggle-btn active" href="./" aria-current="page">Color tool</a>
+  </nav>
   <span class="spacer"></span>
-  <div class="tabs" id="theme-tabs">
+  <div class="tabs" id="theme-tabs" role="group" aria-label="Color theme">
     <button class="toggle-btn active" data-theme="light">Light</button>
     <button class="toggle-btn" data-theme="dark">Dark</button>
   </div>
-  <span class="vdivider"></span>
-  <button class="toggle-btn" id="reset-btn" title="Revert all edits to source token values">Reset</button>
-  <button class="toggle-btn" id="export-btn">Export CSV</button>
-  <span class="vdivider"></span>
-  <a class="toggle-btn" id="back-to-browser" href="../" style="text-decoration: none;">Token browser</a>
 </header>
 
 <div class="canvas" id="canvas" data-theme="light">
   <div class="legend">
-    <div><button class="lock-btn active" id="couple-toggle" type="button">Contrast-Link</button></div>
+    <div>
+      <button class="lock-btn active" id="couple-toggle" type="button">Contrast-Link</button>
+      <button class="lock-btn" id="reset-btn" type="button" title="Revert all edits to source token values">Reset</button>
+      <button class="lock-btn" id="export-btn" type="button">Export CSV</button>
+    </div>
     <div class="legend-cards">
       <div>Faint <button class="lock-btn" data-lock="faint" title="Link all faint L sliders" aria-pressed="false">L-Link</button> <button class="lock-btn" data-clock="faint" title="Link all faint C sliders" aria-pressed="false">C-Link</button></div>
       <div>Medium <button class="lock-btn" data-lock="medium" title="Link all medium L sliders" aria-pressed="false">L-Link</button> <button class="lock-btn" data-clock="medium" title="Link all medium C sliders" aria-pressed="false">C-Link</button></div>
@@ -264,7 +270,7 @@
   const state = {
     tones: [],
     original: [],
-    theme: "light",
+    theme: localStorage.getItem("tokomo-theme") === "dark" ? "dark" : "light",
     couple: { light: true, dark: true },
     locks: {
       light: { faint: false, medium: false, bold: false, strong: false },
@@ -570,11 +576,17 @@
     $("#couple-toggle").classList.toggle("active", state.couple[state.theme]);
   }
 
+  function syncThemeTabs() {
+    document.querySelectorAll("#theme-tabs button").forEach(b => b.classList.toggle("active", b.dataset.theme === state.theme));
+  }
+  syncThemeTabs();
+
   $("#theme-tabs").addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-theme]");
     if (!btn) return;
     state.theme = btn.dataset.theme;
-    document.querySelectorAll("#theme-tabs button").forEach(b => b.classList.toggle("active", b === btn));
+    localStorage.setItem("tokomo-theme", state.theme);
+    syncThemeTabs();
     syncTopControls();
     render();
   });

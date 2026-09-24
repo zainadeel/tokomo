@@ -16,15 +16,20 @@
 </head>
 <body>
   <header class="toolbar">
-    <h1 class="logo">Color graph</h1>
+    <span class="logo" data-package-label>@ds-mo/tokens</span>
+    <nav class="tabs" aria-label="Primary">
+      <a class="toggle-btn" href="../#browser">Browser</a>
+      <a class="toggle-btn" href="../#documentation">Documentation</a>
+      <a class="toggle-btn active" href="./" aria-current="page">Color graph</a>
+      <a class="toggle-btn" href="../tool/">Color tool</a>
+    </nav>
     <span class="spacer"></span>
     <div class="tabs" role="group" aria-label="Color theme">
       <button class="toggle-btn active" data-theme-choice="light" aria-pressed="true">Light</button>
       <button class="toggle-btn" data-theme-choice="dark" aria-pressed="false">Dark</button>
     </div>
-    <span class="vdivider" aria-hidden="true"></span>
-    <a class="toggle-btn" href="../">Token browser</a>
   </header>
+  <h1 class="sr-only">Color graph</h1>
   <main class="workspace" aria-label="Color graph">
     <div class="view-tabs tabs" role="group" aria-label="Group tokens by">
       <button class="toggle-btn active" data-view="role" aria-pressed="true">Role</button>

@@ -195,20 +195,10 @@ const elevationTokens = elevationGroups.flatMap(group => [
   },
 ]);
 
-const focusRing = {
-  cssName: '--effect-focus-ring',
-  path: ['focus-ring'],
-  provenance: 'hand-authored',
-  cssValue:
-    '0 0 0 var(--dimension-space-025) transparent,\n' +
-    '    0 0 0 calc(var(--dimension-space-025) + var(--dimension-stroke-width-025)) var(--color-foreground-medium-brand)',
-};
-
 export const MANUAL_EFFECT_TOKENS = Object.freeze([
   ...motionTokens,
   ...transitionTokens,
   ...elevationTokens,
-  focusRing,
 ]);
 
 function renderAlignedToken(token, suffix) {
@@ -287,10 +277,8 @@ export function renderManualEffectsCss(valueForName) {
     lines.push('');
   });
 
-  lines.push(
-    '  /* ── focus ring ────────────────────────────────────────────────────────── */',
-    renderMultilineToken(tokenByName.get('--effect-focus-ring')),
-  );
+  // Groups are separated by a blank line; drop the one after the last group.
+  if (lines.at(-1) === '') lines.pop();
 
   return lines.join('\n');
 }

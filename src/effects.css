@@ -237,9 +237,4 @@
   --effect-elevation-elevated-panel-left:
     var(--effect-shadow-elevated-panel-left),
     var(--effect-highlight-elevated-panel-left);
-
-  /* ── focus ring ────────────────────────────────────────────────────────── */
-  --effect-focus-ring:
-    0 0 0 var(--dimension-space-025) transparent,
-    0 0 0 calc(var(--dimension-space-025) + var(--dimension-stroke-width-025)) var(--color-foreground-medium-brand);
 }

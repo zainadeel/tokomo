@@ -78,7 +78,7 @@ const colorFamilies = guidance.families.filter(family => family.category === 'co
 const typeRecipes = guidance.recipes.find(recipe => recipe.id === 'token-recipe:typography-composites');
 ```
 
-The [documentation site](https://zainadeel.github.io/tokomo/) renders the same contract for people under **Browser / Documentation / Color Tool**. The Browser shows values; Documentation intentionally explains selection with token names only.
+The [documentation site](https://zainadeel.github.io/tokomo/) renders the same contract for people under **Browser / Documentation / Color graph / Color tool**. The Browser shows values; Documentation intentionally explains selection with token names only. Agents can start from [`llms.txt`](https://zainadeel.github.io/tokomo/llms.txt), which links the contract and token index directly.
 
 ## Theming
 
@@ -100,7 +100,7 @@ Light is the default. No JS required — pure CSS variable overrides.
 | `typography.css` | `--typography-*` | Font family, weight, font-size, line-height, letter-spacing, paragraph spacing |
 | `effects.css` | `--effect-*` | Blur, animation timing, easing, elevation shadows |
 
-Typography ships **CSS primitives rather than `.text-*` classes**. TokoMo itself defines the recommended display/title/body/caption × regular/emphasis composites in `@ds-mo/tokens/agent`, so any framework or component library can implement them consistently. See [docs/guidelines/typography-usage.md](docs/guidelines/typography-usage.md).
+Typography ships **CSS primitives rather than `.text-*` classes**. TokoMo itself defines the recommended display/title/body/caption × regular/emphasis composites in `@ds-mo/tokens/agent`, so any framework or component library can implement them consistently. Selection guidance for each style is in the `token-recipe:typography-composites` recipe.
 
 ## Scaling
 
@@ -141,7 +141,7 @@ Each suffix publishes a public outer shadow, inset highlight, and combined eleva
 }
 ```
 
-Keep split parts on the same suffix. An element's own overflow does not automatically require a split; use it when an ancestor or inner clipping boundary would otherwise cut a descendant's outer shadow. See [docs/guidelines/elevation-usage.md](docs/guidelines/elevation-usage.md).
+Keep split parts on the same suffix. An element's own overflow does not automatically require a split; use it when an ancestor or inner clipping boundary would otherwise cut a descendant's outer shadow. Selection guidance for each suffix is in the `token-recipe:elevation-composition` recipe.
 
 Available: `elevated-none`, `elevated-sm`, `elevated-md`, `elevated-floating`, `depressed-sm`, `depressed-md`, `elevated-panel-top/right/bottom/left`
 

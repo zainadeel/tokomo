@@ -4,7 +4,18 @@ Guide for AI agents (and humans) working on **TokoMo** (`@ds-mo/tokens`). Follow
 
 Keep this file as the single source of truth for project conventions. Update it when you add pipelines, token categories, or change the release flow.
 
-**Before changing any color token, read `docs/guidelines/color-generation.md` (palette model, contrast and gamut constraints, validation rules) and `docs/guidelines/color-usage.md` (semantic vs data usage, verified contrast pairings).** Those are hand-written specs, not generated output. `typography-usage.md` and `elevation-usage.md` cover style selection for those categories.
+## Choosing tokens in product code
+
+If you are *using* TokoMo tokens (in CompoMo, an app, or a prototype) rather than changing TokoMo itself, you only need:
+
+1. **`@ds-mo/tokens/agent`** (`dist/agent.json`) is the selection contract. Read `principles`, then `intents` for color meaning, then the `families` entry for the category you need, then the `recipes` it links to. It uses exact CSS variable names and is validated against the shipped tokens, so it cannot name a token that does not exist.
+2. **`@ds-mo/tokens/json/index`** (`dist/tokens-index.json`) confirms a token exists and gives its value.
+
+The site's [`llms.txt`](https://zainadeel.github.io/tokomo/llms.txt) links both.
+
+Never pick a `--color-reference-*` token or a hardcoded value in product code. The rest of this file is for maintaining TokoMo.
+
+**Before changing any color token, read `docs/guidelines/color-generation.md`** (palette model, contrast and gamut constraints, validation rules, and the contrast audit in §13). It is a hand-written spec, not generated output. Rules for *choosing* tokens live only in `src/agent/token-families.agent.json`; do not add a parallel usage document.
 
 ---
 
@@ -101,9 +112,9 @@ scripts/
   generate-ts-constants.mjs     # Graph → TypeScript token-name constants
   generate-agent-manifest.mjs   # Validates guidance coverage + emits dist/agent.*
   update-token-artifact-baseline.mjs # Accept intentional public artifact changes
-  build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation)
+  build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation) and docs/llms.txt
   build-color-graph.mjs         # Compiler graph + guidance + measured pairings → docs/graph/
-  docs-template.html            # Template for Browser / Documentation / Color Tool navigation
+  docs-template.html            # Template for the Browser and Documentation views
   report-contrast.mjs           # WCAG + APCA report over shipped pairings (manual, not in build)
   lib/
     token-compiler.mjs          # Source manifest → normalized graph → validated artifacts
@@ -111,13 +122,12 @@ scripts/
     transactional-output.mjs    # Failure-safe generated output replacement + rollback
     token-colors.mjs            # Shared token resolution, CSS colour parsing, sRGB compositing
     active-contrast.mjs         # Selected-state (`active`) overlay contrast matrix — pure, unit-tested
+    package-label.mjs           # Versioned header label shared by every docs page
 docs/
   index.html            # Built GitHub Pages browser (do NOT edit by hand — regenerate)
-  guidelines/           # Hand-written specs — READ THESE before changing tokens
-    color-generation.md   # Reference palette model, contrast/gamut constraints, validation rules
-    color-usage.md        # Semantic vs data token usage, verified contrast pairings
-    typography-usage.md   # Type style selection
-    elevation-usage.md    # Elevation token selection
+  llms.txt              # Built agent entry point; links the copied agent.json + tokens-index.json
+  guidelines/           # Hand-written maintainer specs — READ before changing color tokens
+    color-generation.md   # Reference palette model, contrast/gamut constraints, validation, contrast audit
 dist/                   # Generated — do not edit directly
 tools/color-graph/       # Authored Color graph page, map interactions, and styles
 .github/
@@ -166,7 +176,7 @@ It writes three files:
 | `reports/active-contrast.md` | Exhaustive selected-state (`active`) overlay matrix, both themes |
 | `reports/active-contrast.json` | Machine-readable twin of the matrix, for filtering and sorting |
 
-The resting figures and the selected-state figures answer different questions. A pairing can clear $4.5{:}1$ at rest and fail once the selected overlay is composited beneath the content, so **never treat a `contrast.md` pass as coverage for an interactive element** — see `docs/guidelines/color-usage.md` §7.6.
+The resting figures and the selected-state figures answer different questions. A pairing can clear $4.5{:}1$ at rest and fail once the selected overlay is composited beneath the content, so **never treat a `contrast.md` pass as coverage for an interactive element** — see `docs/guidelines/color-generation.md` §13.
 
 Coverage of the selected-state matrix is enforced by `tests/active-contrast.test.mjs`: if a new `interaction.*-active` token is added without being wired into `buildActiveCombinations()`, the test suite fails rather than silently omitting it. Hover, pressed, and focus overlays are not yet measured.
 
@@ -396,6 +406,8 @@ Must be done manually by the package owner once:
 | Build orchestration | `scripts/build.mjs` |
 | TypeScript constant format | `scripts/generate-ts-constants.mjs` |
 | Token browser styling | `scripts/docs-template.html` + `scripts/build-docs.mjs` |
+| Site header (shared by all pages) | `scripts/docs-template.html`, `tools/color-graph/index.html`, `tools/color-system/index.html` — keep the four tabs identical |
+| Agent entry point (`llms.txt`) | `scripts/build-docs.mjs` — principles are generated from the agent contract |
 | Release changelog sections | `release-please-config.json` |
 | PR title rules | `.github/workflows/pr-title.yml` |
 | Theme CSS (light/dark) | `src/themes/light.css`, `src/themes/dark.css` |

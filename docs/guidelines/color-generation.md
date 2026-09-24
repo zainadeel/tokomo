@@ -183,7 +183,7 @@ Treat a rising count here as a signal that manual tuning is drifting away from t
 
 ### 4.5 APCA As A Secondary Diagnostic
 
-WCAG 2.x contrast ratio remains the shipped accessibility contract for this system. Every hard constraint in Section 6 and every pairing guarantee in `color-usage.md` Section 7 is expressed as a WCAG ratio, and nothing in the build gates on anything else.
+WCAG 2.x contrast ratio remains the shipped accessibility contract for this system. Every hard constraint in Section 6 and every documented pairing guarantee (Section 13) is expressed as a WCAG ratio, and nothing in the build gates on anything else.
 
 APCA is tracked alongside it as a **non-binding** forward-looking signal. WCAG 2.x is known to be lenient on dark backgrounds and harsh in the mid-tones, which is exactly the range the `strong` and `medium` tones occupy, so a second measure is useful for spotting pairs whose ratio looks acceptable but whose perceived readability is weaker.
 
@@ -204,7 +204,7 @@ npm run build
 npm run report:contrast
 ```
 
-That writes `reports/contrast.md`, covering every pairing documented in `color-usage.md` Section 7 in both themes, with the WCAG ratio and the APCA `Lc` side by side. The report is regenerable output and is not committed.
+That writes `reports/contrast.md`, covering every documented pairing (Section 13) in both themes, with the WCAG ratio and the APCA `Lc` side by side. The report is regenerable output and is not committed.
 
 Two rules apply to it:
 
@@ -339,7 +339,7 @@ Before accepting a color change in this repository, validate the following:
 6. each chromatic hue still has strong, bold, medium, and faint coverage,
 7. faint, bold, strong, and medium contrast rules still hold,
 8. downstream semantic and data usage still matches the intended reference tone semantics,
-9. `npm run report:contrast` shows no new WCAG AA failure among the pairings in `color-usage.md` Section 7.
+9. `npm run report:contrast` shows no new WCAG AA failure among the documented pairings (Section 13).
 
 On the name and hex parity rule: a reference token's name and its stored hex must agree for colors inside sRGB. For colors outside sRGB they cannot agree exactly, because the mirrored hex is produced by per-channel clipping while the shipped value is the `oklch()` parsed from the name. In that case treat the name as correct and the hex as an approximation. See Section 4.2.
 
@@ -419,10 +419,47 @@ This file should stay focused on generation logic for the core palette.
 
 If the docs folder expands, keep adjacent files separate by purpose:
 
-1. design dos and don’ts,
-2. accessibility guidance,
-3. semantic color usage rules,
-4. token update workflows,
-5. ADR-style decisions for major palette changes.
+1. token update workflows,
+2. ADR-style decisions for major palette changes.
+
+Usage rules (which token to choose when) belong in the agent contract, `src/agent/token-families.agent.json`, not in a parallel document.
 
 If additional tone families become first-class system concepts, extend both the workflow utility and this document together so the generation rules, ordering rules, and validation rules stay aligned.
+
+## 13. Contrast Audit
+
+Usage rules live in the agent contract (`src/agent/token-families.agent.json`). This section records what `npm run report:contrast` measures and the decisions behind its results, so a palette change can be judged against them. The report writes current figures to `reports/`; do not copy numbers into this file.
+
+### 13.1 What Is Measured
+
+1. Resting pairings (`reports/contrast.md`): every foreground/background pairing the foreground-hierarchy, neutral-border-hierarchy, and semantic-color-pairing recipes document, in both themes, after alpha compositing. Text is held to $4.5{:}1$ (tertiary steps to $3{:}1$); strokes to the WCAG 1.4.11 non-text threshold of $3{:}1$.
+2. Selected-state pairings (`reports/active-contrast.md` and `.json`): the same content read against `composite(active overlay, background)`, because the selected overlay sits between the background and the content. A resting pass does not imply a selected pass.
+3. Not measured: hover, pressed, and focus overlays. They sit above the content, so they need their own audit rather than a re-run of the selected one.
+
+A flagged stroke is a prompt to check usage, not an automatic defect: the $3{:}1$ threshold binds only when the stroke identifies a control or its state. `border.secondary`, `border.tertiary`, `divider.*`, every `quaternary` step, and the secondary and tertiary on-background border steps are decorative by design and stay flagged permanently.
+
+### 13.2 Thresholds And Scope Decisions
+
+| Family | Selected-state threshold | Reason |
+| --- | --- | --- |
+| Core semantic, default brand-selected, fixed contexts, chrome | $4.5{:}1$ | Normal text. |
+| Literal `color-intent` with a same-hue foreground | $3{:}1$ | Large text and non-text only while selected; see 13.3. |
+| `driver-status` | $3{:}1$ | Bold or large text; see 13.3. |
+| `safety-score` | $3{:}1$ | Rendered as a large numeral. |
+| `translucent`, translucent `chrome` steps | Conditional | No fixed backdrop; measured over an assumed `background.primary` only. |
+| Map markers | Out of scope | They sit over arbitrary map imagery. Several marker pairings also fail at rest. |
+
+Map markers are excluded through `EXCLUDED_ACTIVE_TOKENS` in `scripts/lib/active-contrast.mjs`. That is a scope decision, not a fix; reversing it means removing them from that list. The coverage test in `tests/active-contrast.test.mjs` requires every shipped `interaction.*-active` token to be either measured or named in that list, so the exemption cannot widen silently. It also asserts that the literal and driver-status restrictions are still needed, so a palette change that makes one redundant fails the test instead of leaving a stale restriction.
+
+### 13.3 Why Some Pairings Fail When Selected
+
+Every failure the selected-state audit has found traces to the foreground, not the overlay. Black and white foregrounds start at the luminance extremes and keep their margin through a 5% overlay. A same-hue ("reciprocal") foreground is deliberately close to its surface, so it starts near the threshold and the overlay tips it over.
+
+1. Literal `color-intent` surfaces pass normal text at rest with their same-hue foregrounds but not once selected, and no overlay value fixes that. The selected state is therefore restricted to large text and non-text content when a same-hue foreground is used. A black or white foreground on the same surface clears $4.5{:}1$ selected.
+2. `driver-status` uses the same pattern with a slightly larger margin. It could clear $4.5{:}1$ without a restriction by correcting overlay polarity (13.4) on the fills that point the wrong way.
+
+### 13.4 Structural Rules For Future Palette Work
+
+1. **Overlay polarity.** A state overlay must push the surface away from the foreground's luminance: a light foreground needs a dark overlay and a dark foreground a light one. Polarity flips per fill and per theme, so check each fill in each theme rather than setting one overlay per family.
+2. **One foreground per fill.** A single foreground shared across fills of differing lightness cannot clear a text threshold on all of them. `driver-status` failed at rest for this reason until it was split into a foreground and interaction family per status; the map-marker families still share one foreground.
+3. **Sub-themes must not move both sides of a pair.** A context whose background is lighter than the core surface and whose tertiary foreground is dimmer than the core step fails twice over, which is how `navigation.foreground.tertiary` once missed $3{:}1$ in dark mode. Keep context steps at parity with the core tokens unless measured otherwise.

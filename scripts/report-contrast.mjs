@@ -1,7 +1,7 @@
 // Contrast report for the shipped semantic token pairings.
 //
 // Scores every foreground/background pairing documented in
-// docs/guidelines/color-usage.md §7 against WCAG 2.x AA (the shipped contract)
+// the documented pairings in docs/guidelines/color-generation.md §13 against WCAG 2.x AA (the shipped contract)
 // and APCA Lc (a secondary, non-binding diagnostic — see §4.5 of
 // docs/guidelines/color-generation.md).
 //
@@ -97,7 +97,7 @@ function measure(resolve, mode, fgToken, bgToken) {
 }
 
 // ---------------------------------------------------------------------------
-// Pairing matrix — mirrors docs/guidelines/color-usage.md §7
+// Pairing matrix — mirrors the recipes summarized in docs/guidelines/color-generation.md §13
 // ---------------------------------------------------------------------------
 
 function buildPairs() {
@@ -371,7 +371,7 @@ function renderActiveMatrix(rows, summary) {
   lines.push("");
   lines.push(
     "Exhaustive row-level inventory of every documented selected-state combination, per the " +
-      "Interaction table in `docs/guidelines/color-usage.md` §3.4. In interaction token names " +
+      "interaction-layers recipe in `src/agent/token-families.agent.json`. In interaction token names " +
       "`active` means the persistent **selected** state, not the transient CSS `:active` pointer " +
       "state."
   );
@@ -386,7 +386,7 @@ function renderActiveMatrix(rows, summary) {
   lines.push(
     "**This report changes no token values.** It is the measurement behind " +
       "[issue #130](https://github.com/zainadeel/tokomo/issues/130). The Gate 2 review is complete — " +
-      "see `docs/guidelines/color-usage.md` §7.6 for the confirmed thresholds, the three fix classes, " +
+      "see `docs/guidelines/color-generation.md` §13 for the confirmed thresholds, the three fix classes, " +
       "and who owns each. Palette and foreground changes are Gate 3 and are owned by the token author, " +
       "not by this audit."
   );
@@ -902,5 +902,5 @@ console.log(
 console.log(
   `Selected-state rows awaiting a documented threshold: ${activeSummary.unconfirmedThreshold}; ` +
     `conditional rows: ${activeSummary.conditional}. This report changes no token values — see ` +
-    "docs/guidelines/color-usage.md §7.6 for the confirmed thresholds and fix classes."
+    "docs/guidelines/color-generation.md §13 for the confirmed thresholds and fix classes."
 );

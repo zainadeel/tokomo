@@ -106,7 +106,7 @@ test('documentation inventory reads graph JSON instead of reparsing CSS', async 
 });
 
 test('graph preserves source semantics, aliases, modes, provenance, and metadata', () => {
-  assert.equal(production.graph.nodes.length, 1082);
+  assert.equal(production.graph.nodes.length, 1081);
   const primary = production.graph.byCssName.get('--color-background-primary');
   assert.equal(primary.sourceType, 'color');
   assert.equal(primary.publicType, 'color');
@@ -117,12 +117,15 @@ test('graph preserves source semantics, aliases, modes, provenance, and metadata
   assert.equal(primary.values.dark.target, '--color-reference-grey-l20');
   assert.ok(primary.extensions.light['com.figma.variableId']);
 
-  const focusRing = production.graph.byCssName.get('--effect-focus-ring');
-  assert.equal(focusRing.provenance, 'hand-authored');
-  assert.deepEqual(focusRing.values.default.dependencies, [
-    '--dimension-space-025',
-    '--dimension-stroke-width-025',
-    '--color-foreground-medium-brand',
+  const shadow = production.graph.byCssName.get('--effect-shadow-elevated-sm');
+  assert.equal(shadow.provenance, 'hand-authored');
+  assert.deepEqual(shadow.values.default.dependencies, ['--color-elevation-shadow']);
+
+  const elevation = production.graph.byCssName.get('--effect-elevation-elevated-sm');
+  assert.equal(elevation.provenance, 'derived');
+  assert.deepEqual(elevation.values.default.dependencies, [
+    '--effect-shadow-elevated-sm',
+    '--effect-highlight-elevated-sm',
   ]);
 });
 
@@ -178,7 +181,7 @@ test('compiler can omit optional manual effect inputs without crashing', async (
     root,
     includeManualEffects: false,
   });
-  assert.equal(withoutManualEffects.graph.byCssName.has('--effect-focus-ring'), false);
+  assert.equal(withoutManualEffects.graph.byCssName.has('--effect-elevation-elevated-sm'), false);
   assert.doesNotMatch(withoutManualEffects.css.effects, /--effect-motion-/);
 });
 

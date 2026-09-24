@@ -58,6 +58,19 @@ test('recipe assignments reference published tokens or productive patterns', asy
   }
 });
 
+test('recipe examples only reference published tokens', async () => {
+  const manifest = await readJson('dist/agent.json');
+  const tokens = await readJson('dist/tokens.json');
+
+  for (const recipe of manifest.recipes) {
+    for (const example of recipe.examples ?? []) {
+      for (const [, name] of example.content.matchAll(/var\((--[a-z0-9-]+)/g)) {
+        assert.ok(tokens[name], `${recipe.id} example references ${name}`);
+      }
+    }
+  }
+});
+
 test('typography composites and elevation parts remain complete', async () => {
   const manifest = await readJson('dist/agent.json');
   const typography = manifest.recipes.find(recipe => recipe.id === 'token-recipe:typography-composites');
@@ -83,10 +96,13 @@ test('foreground and neutral-border hierarchies carry their usage and contrast c
   assert.ok(borders, 'neutral border hierarchy recipe must be published');
 
   assert.ok(foreground.compositionRules.some(rule =>
-    rule.includes('Default most body copy') && rule.includes('secondary')
+    rule.includes('Use primary for primary content')
   ));
   assert.ok(foreground.compositionRules.some(rule =>
-    rule.includes('Reserve primary') && rule.includes('high emphasis')
+    rule.includes('Use secondary for supporting content')
+  ));
+  assert.ok(foreground.compositionRules.some(rule =>
+    rule.includes('Restrict tertiary and quaternary') && rule.includes('inactive or disabled')
   ));
   assert.ok(foreground.accessibility.some(rule =>
     rule.includes('primary and secondary') && rule.includes('4.5:1')
@@ -98,17 +114,17 @@ test('foreground and neutral-border hierarchies carry their usage and contrast c
   for (const id of ['faint', 'medium', 'bold', 'strong', 'literal-faint', 'literal-medium', 'literal-bold', 'literal-strong']) {
     const variant = surfacePairing.variants.find(candidate => candidate.id === id);
     const content = variant.assignments.find(assignment => assignment.role === 'content');
-    assert.match(content.token, /secondary$/, `${id} should default ordinary content to secondary`);
+    assert.match(content.token, /primary$/, `${id} should assign primary content to the primary step`);
   }
 
   assert.ok(borders.compositionRules.some(rule =>
-    rule.includes('tertiary') && rule.includes('non-interactive')
+    rule.includes('Use tertiary') && rule.includes('decorative')
   ));
   assert.ok(borders.compositionRules.some(rule =>
     rule.includes('secondary') && rule.includes('interactive control')
   ));
   assert.ok(borders.compositionRules.some(rule =>
-    rule.includes('primary') && rule.includes('stroke itself')
+    rule.includes('tertiary foreground') && rule.includes('component-owned')
   ));
   assert.ok(borders.accessibility.some(rule =>
     rule.includes('primary neutral border') && rule.includes('3:1')

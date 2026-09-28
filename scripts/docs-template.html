@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
+  <script>/* @@THEME_SCRIPT@@ */</script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>TokoMo — Tokens</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,18 +20,10 @@
   <style>
     /* ── UI design tokens ─────────────────────────────────────────────── */
     :root {
-      --bg:       #ffffff;
-      --fg:       #000000;
-      --fg-muted: rgb(0 0 0 / 0.5);
-      --divider:  rgb(0 0 0 / 0.1);
-      color-scheme: light;
-    }
-    [data-theme="dark"] {
-      --bg:       #000000;
-      --fg:       #ffffff;
-      --fg-muted: rgb(255 255 255 / 0.5);
-      --divider:  rgb(255 255 255 / 0.1);
-      color-scheme: dark;
+      --bg:       var(--site-bg);
+      --fg:       var(--site-fg);
+      --fg-muted: var(--site-muted);
+      --divider:  var(--site-divider);
     }
 
     /* ── Reset / base ─────────────────────────────────────────────────── */
@@ -45,34 +38,6 @@
       line-height: 16px;
       min-height: 100dvh;
     }
-
-    /* ── Toolbar ──────────────────────────────────────────────────────── */
-    .toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display: grid;
-      grid-template-columns: auto auto 1fr;
-      align-items: center;
-      gap: 16px;
-      height: 48px;
-      padding: 0 20px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--divider);
-    }
-
-    .logo {
-      font-size: 12px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .primary-nav {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .toolbar a.toggle-btn { text-decoration: none; }
 
     /* ── Search ───────────────────────────────────────────────────────── */
     .search-wrap {
@@ -110,41 +75,10 @@
     }
     .search-count.visible { display: block; }
 
-    /* ── Controls ─────────────────────────────────────────────────────── */
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      justify-content: flex-end;
-    }
-    .text-toggle {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .toggle-btn {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      font-size: 12px;
-      font-family: inherit;
-      color: var(--fg-muted);
-      line-height: 1;
-      white-space: nowrap;
-    }
-    .toggle-btn.active { color: var(--fg); }
-    .vdivider {
-      width: 1px;
-      height: 12px;
-      background: var(--divider);
-      flex-shrink: 0;
-    }
-
     /* ── Sub-toolbar (group filters) ──────────────────────────────────── */
     .sub-toolbar {
       position: sticky;
-      top: 48px;
+      top: var(--site-header-height);
       z-index: 19;
       display: flex;
       align-items: center;
@@ -736,9 +670,6 @@
     }
 
     @media (max-width: 760px) {
-      .toolbar { grid-template-columns: auto 1fr; gap: 12px; padding: 0 12px; }
-      .primary-nav { justify-self: end; }
-      .controls { display: none; }
       .sub-toolbar { padding-inline: 12px; }
       #content.documentation { padding: 32px 16px 72px; }
       .doc-page-header h1 { font-size: 28px; line-height: 34px; }
@@ -811,7 +742,7 @@
       position: absolute;
       inset: 0;
       background-image: repeating-conic-gradient(
-        rgb(0 0 0 / 0.06) 0% 25%, transparent 0% 50%
+        rgb(22 22 22 / 0.06) 0% 25%, transparent 0% 50%
       );
       background-size: 8px 8px;
     }
@@ -1069,10 +1000,10 @@
       flex-shrink: 0;
       background-color: #fff;
       background-image:
-        linear-gradient(45deg, rgba(0,0,0,0.08) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(0,0,0,0.08) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.08) 75%),
-        linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.08) 75%);
+        linear-gradient(45deg, rgb(22 22 22 / 0.08) 25%, transparent 25%),
+        linear-gradient(-45deg, rgb(22 22 22 / 0.08) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgb(22 22 22 / 0.08) 75%),
+        linear-gradient(-45deg, transparent 75%, rgb(22 22 22 / 0.08) 75%);
       background-size: 8px 8px;
       background-position: 0 0, 0 4px, 4px -4px, -4px 0;
       box-shadow: inset 0 0 0 1px var(--border);
@@ -1130,27 +1061,27 @@
       transform: translateX(-50%) translateY(0);
     }
   </style>
+  <style>/* @@SITE_CSS@@ */</style>
 </head>
 <body>
 
 <!-- Toolbar -->
-<nav class="toolbar" role="banner">
+<header class="toolbar">
   <span class="logo">@@PACKAGE_LABEL@@</span>
 
-  <div class="primary-nav" id="primary-nav" aria-label="Primary">
-    <button class="toggle-btn" data-view="browser">Browser</button>
-    <button class="toggle-btn" data-view="documentation">Documentation</button>
+  <nav class="primary-nav" id="primary-nav" aria-label="Primary">
+    <a class="toggle-btn" data-view="browser" href="#browser">Browser</a>
+    <a class="toggle-btn" data-view="documentation" href="#documentation">Documentation</a>
     <a class="toggle-btn" href="./graph/">Color graph</a>
     <a class="toggle-btn" href="./tool/">Color tool</a>
-  </div>
+  </nav>
 
-  <div class="controls">
-    <div class="text-toggle" role="group" aria-label="Color theme">
-      <button class="toggle-btn" id="theme-light-btn">Light</button>
-      <button class="toggle-btn" id="theme-dark-btn">Dark</button>
-    </div>
+  <div class="theme-options" role="group" aria-label="Color theme">
+    <button class="toggle-btn" data-theme-choice="light" aria-pressed="false">Light</button>
+    <button class="toggle-btn" data-theme-choice="dark" aria-pressed="false">Dark</button>
+    <button class="toggle-btn" data-theme-choice="system" aria-pressed="false">System</button>
   </div>
-</nav>
+</header>
 
 <!-- Sub-toolbar (section and group filters, plus Browser search) -->
 <div class="sub-toolbar" id="sub-toolbar">
@@ -1452,7 +1383,6 @@ let recipeCategory = 'color';
 let selectedRecipe = 'token-recipe:semantic-color-pairing';
 let group    = 'all';
 let query    = '';
-let theme    = localStorage.getItem('tokomo-theme') || 'light';
 
 // ── Refs ──────────────────────────────────────────────────────────────────────
 
@@ -1464,8 +1394,6 @@ const primaryNav   = document.getElementById('primary-nav');
 const subToolbar   = document.getElementById('sub-toolbar');
 const subNav       = document.getElementById('sub-nav');
 const toast        = document.getElementById('toast');
-const themeLightBtn = document.getElementById('theme-light-btn');
-const themeDarkBtn  = document.getElementById('theme-dark-btn');
 
 // ── Search sizer ──────────────────────────────────────────────────────────────
 
@@ -1479,25 +1407,18 @@ function syncSearchWidth() {
   searchEl.style.width = Math.ceil(sizer.offsetWidth) + 4 + 'px';
 }
 
-// ── Theme ─────────────────────────────────────────────────────────────────────
-
-function applyTheme(t) {
-  theme = t;
-  document.documentElement.setAttribute('data-theme', t);
-  themeLightBtn.classList.toggle('active', t === 'light');
-  themeDarkBtn.classList.toggle('active', t === 'dark');
-}
-
-applyTheme(theme);
-themeLightBtn.addEventListener('click', () => { applyTheme('light'); localStorage.setItem('tokomo-theme', 'light'); });
-themeDarkBtn.addEventListener('click',  () => { applyTheme('dark');  localStorage.setItem('tokomo-theme', 'dark'); });
-
 // ── View and section navigation ───────────────────────────────────────────────
 
 primaryNav.addEventListener('click', e => {
   const btn = e.target.closest('[data-view]');
   if (!btn) return;
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
   switchView(btn.dataset.view);
+});
+window.addEventListener('hashchange', () => {
+  const nextView = location.hash.slice(1);
+  if (VIEWS.includes(nextView) && nextView !== view) switchView(nextView);
 });
 
 function switchView(nextView) {
@@ -1508,7 +1429,10 @@ function switchView(nextView) {
   localStorage.setItem('tokomo-view', view);
   history.replaceState(null, '', `#${view}`);
   primaryNav.querySelectorAll('[data-view]').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === view);
+    const active = btn.dataset.view === view;
+    btn.classList.toggle('active', active);
+    if (active) btn.setAttribute('aria-current', 'page');
+    else btn.removeAttribute('aria-current');
   });
   searchWrap.classList.toggle('hidden', view !== 'browser');
   updateSubToolbar();
@@ -2696,7 +2620,10 @@ function escHtml(str) {
 
 // Apply saved primary view state
 primaryNav.querySelectorAll('[data-view]').forEach(btn => {
-  btn.classList.toggle('active', btn.dataset.view === view);
+  const active = btn.dataset.view === view;
+  btn.classList.toggle('active', active);
+  if (active) btn.setAttribute('aria-current', 'page');
+  else btn.removeAttribute('aria-current');
 });
 
 searchWrap.classList.toggle('hidden', view !== 'browser');

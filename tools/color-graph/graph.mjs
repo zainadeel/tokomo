@@ -21,19 +21,17 @@ function comparePaths(a, b) {
   return as.length - bs.length;
 }
 let data, tokenMap, map;
-const state = { view: 'role', theme: 'light', selected: null };
+const state = { view: 'role', theme: window.TokomoTheme.theme, selected: null };
 
 function readLocation() {
   const p = new URLSearchParams(location.hash.slice(1));
   state.view = ['role', 'intent', 'reference'].includes(p.get('view')) ? p.get('view') : 'role';
-  // The site shares one theme choice across pages; an explicit #theme= link wins.
-  const savedTheme = localStorage.getItem('tokomo-theme');
-  state.theme = ['light', 'dark'].includes(p.get('theme')) ? p.get('theme')
-    : ['light', 'dark'].includes(savedTheme) ? savedTheme : 'light';
+  // Appearance belongs to the shared preference, not a stale graph URL.
+  state.theme = window.TokomoTheme.theme;
   state.selected = tokenMap.has(p.get('token')) ? p.get('token') : null;
 }
 function saveLocation() {
-  const p = new URLSearchParams({ view: state.view, theme: state.theme });
+  const p = new URLSearchParams({ view: state.view });
   if (state.selected) p.set('token', state.selected);
   history.replaceState(null, '', `#${p}`);
 }
@@ -57,11 +55,6 @@ function selectToken(name, focus = false) {
   if (focus) map.focusToken(name);
 }
 function update({ fit = true } = {}) {
-  document.documentElement.dataset.theme = state.theme;
-  $$('[data-theme-choice]').forEach(b => {
-    const active = b.dataset.themeChoice === state.theme;
-    b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active));
-  });
   $$('[data-view]').forEach(b => {
     const active = b.dataset.view === state.view;
     b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active));
@@ -91,12 +84,6 @@ function renderInspector() {
     </div>`;
   $('#inspector').scrollTop = 0;
   $('#sheet-close').addEventListener('click', () => closeInspector(true));
-}
-
-function changeTheme(theme) {
-  state.theme = theme;
-  localStorage.setItem('tokomo-theme', theme);
-  update({ fit: state.view === 'reference' });
 }
 
 /** A deterministic, animated cluster map. Layout positions have no semantic meaning;
@@ -288,10 +275,13 @@ class ColorMap {
     ctx.setTransform(this.dpr || 1, 0, 0, this.dpr || 1, 0, 0);
     ctx.clearRect(0, 0, this.width, this.height);
     // Canvas cannot resolve CSS variables; sample the UI's computed colors.
-    const ink = getComputedStyle($('.workspace')).color;
+    const uiStyle = getComputedStyle($('.workspace'));
+    const ink = uiStyle.color;
+    const muted = uiStyle.getPropertyValue('--site-secondary').trim();
+    const selectedBackground = uiStyle.getPropertyValue('--site-selected-bg').trim();
+    const background = getComputedStyle(document.body).backgroundColor;
     const dark = state.theme === 'dark';
-    const line = dark ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.075)';
-    const muted = dark ? '#AAAAAA' : '#646464';
+    const line = dark ? 'rgba(255,255,255,.10)' : 'rgba(22,22,22,.075)';
     ctx.fillStyle = line;
     // Dots sit on the world lattice and scale with zoom; skip to coarser multiples when zoomed out.
     let spacing = CELL * 2 * this.camera.k;
@@ -359,7 +349,7 @@ class ColorMap {
       if (!grid) ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
       else ctx.rect(p.x - radius, p.y - radius, radius * 2, radius * 2);
       ctx.fillStyle = n.t[state.theme].rgb; ctx.fill();
-      ctx.strokeStyle = isHighlighted ? ink : dark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.15)';
+      ctx.strokeStyle = isHighlighted ? ink : dark ? 'rgba(255,255,255,.2)' : 'rgba(22,22,22,.15)';
       ctx.lineWidth = isHighlighted ? 1 : .7;
       ctx.stroke();
     };
@@ -391,7 +381,7 @@ class ColorMap {
         const width = ctx.measureText(label).width + 8;
         const box = { x: p.x - width / 2, y: p.y + radius + 3, w: width, h: 15 };
         if (box.x < 8 || box.y < 8 || box.x + box.w > this.width - 8 || box.y > this.height - 90 || overlaps(box)) continue;
-        labelBoxes.push(box); ctx.fillStyle = dark ? '#161616' : '#FFFFFF'; ctx.fillRect(box.x, box.y, box.w, box.h);
+        labelBoxes.push(box); ctx.fillStyle = background; ctx.fillRect(box.x, box.y, box.w, box.h);
         ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.strokeRect(box.x, box.y, box.w, box.h);
         ctx.fillStyle = ink; ctx.fillText(label, box.x + 4, box.y + 11);
       }
@@ -401,8 +391,10 @@ class ColorMap {
       if (p.x > 10 && p.x < this.width - 10 && p.y > 10 && p.y < this.height - 65) {
         const { x, y, w, h } = selectedBox;
         ctx.font = '9px Inter, -apple-system, sans-serif';
-        ctx.fillStyle = dark ? '#EEEEEE' : '#202020'; ctx.beginPath(); ctx.rect(x, y, w, h); ctx.fill();
-        ctx.fillStyle = dark ? '#202020' : '#FFFFFF'; ctx.textAlign = 'left'; ctx.fillText(selected.t.path, x + (grid ? 4 : 9), y + 11);
+        // Composite the translucent label against the page, not graph lines or tokens.
+        ctx.clearRect(x, y, w, h);
+        ctx.fillStyle = selectedBackground; ctx.beginPath(); ctx.rect(x, y, w, h); ctx.fill();
+        ctx.fillStyle = background; ctx.textAlign = 'left'; ctx.fillText(selected.t.path, x + (grid ? 4 : 9), y + 11);
       }
     }
   }
@@ -531,7 +523,11 @@ function wireControls() {
   $('#zoom-out').addEventListener('click', () => map.zoom(1 / 1.3));
   $('#reset-view').addEventListener('click', () => map.fit());
   $$('[data-view]').forEach(b => b.addEventListener('click', () => { state.view = b.dataset.view; update(); }));
-  $$('[data-theme-choice]').forEach(b => b.addEventListener('click', () => changeTheme(b.dataset.themeChoice)));
+  window.addEventListener('tokomo-theme-change', ({ detail }) => {
+    if (state.theme === detail.theme) return;
+    state.theme = detail.theme;
+    update({ fit: state.view === 'reference' });
+  });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && $('#inspector').open) { e.preventDefault(); closeInspector(true); }
   });

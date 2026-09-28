@@ -18,12 +18,14 @@ import { readFileSync, mkdirSync, writeFileSync, copyFileSync, readdirSync, stat
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { stampPackageLabel } from './lib/package-label.mjs';
+import { copySiteAssets } from './lib/site-assets.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const root = join(__dirname, '..');
 const tokensSrc = join(root, 'src/json/colors/reference/color.reference.tokens.json');
 const toolDir = join(root, 'tools/color-system');
 const toolTokens = join(toolDir, 'tokens.json');
+copySiteAssets(toolDir);
 
 const json = readFileSync(tokensSrc, 'utf8');
 writeFileSync(toolTokens, json);

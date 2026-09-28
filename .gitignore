@@ -24,6 +24,8 @@ docs/*
 # Generated copies staged into the visual color tool by scripts/copy-tool-assets.mjs
 tools/color-system/tokens.json
 tools/color-system/favicon.svg
+tools/color-system/site.css
+tools/color-system/theme.js
 
 # Generated contrast report (npm run report:contrast)
 reports/
@@ -34,3 +36,5 @@ reports/
 # Browser test artifacts
 playwright-report/
 test-results/
+.playwright-cli/
+output/playwright/

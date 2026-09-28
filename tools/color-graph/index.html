@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
+  <script src="./theme.js"></script>
   <meta name="description" content="Explore TokoMo semantic colors by role, intent, and reference.">
   <title>TokoMo — Color graph</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
@@ -12,21 +13,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./colors.css">
   <link rel="stylesheet" href="./graph.css">
+  <link rel="stylesheet" href="./site.css">
   <script type="module" src="./graph.mjs"></script>
 </head>
 <body>
   <header class="toolbar">
     <span class="logo" data-package-label>@ds-mo/tokens</span>
-    <nav class="tabs" aria-label="Primary">
+    <nav class="primary-nav" aria-label="Primary">
       <a class="toggle-btn" href="../#browser">Browser</a>
       <a class="toggle-btn" href="../#documentation">Documentation</a>
       <a class="toggle-btn active" href="./" aria-current="page">Color graph</a>
       <a class="toggle-btn" href="../tool/">Color tool</a>
     </nav>
-    <span class="spacer"></span>
-    <div class="tabs" role="group" aria-label="Color theme">
-      <button class="toggle-btn active" data-theme-choice="light" aria-pressed="true">Light</button>
+    <div class="theme-options" role="group" aria-label="Color theme">
+      <button class="toggle-btn" data-theme-choice="light" aria-pressed="false">Light</button>
       <button class="toggle-btn" data-theme-choice="dark" aria-pressed="false">Dark</button>
+      <button class="toggle-btn" data-theme-choice="system" aria-pressed="false">System</button>
     </div>
   </header>
   <h1 class="sr-only">Color graph</h1>

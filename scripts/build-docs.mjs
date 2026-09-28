@@ -18,6 +18,7 @@ import { readFileSync, mkdirSync, writeFileSync, copyFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { packageLabel } from './lib/package-label.mjs';
+import { siteCss, themeScript } from './lib/site-assets.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const root = join(__dirname, '..');
@@ -642,6 +643,8 @@ html = html.replaceAll('@@PACKAGE_LABEL@@', packageLabel);
 html = html.replace('@@REPO_BLOB_URL@@', repoBlobUrl);
 html = html.replace('/* @@TOKEN_CSS@@ */',  TOKEN_CSS);
 html = html.replace('/* @@TOKEN_DATA@@ */', TOKEN_DATA_JS);
+html = html.replace('/* @@SITE_CSS@@ */', siteCss);
+html = html.replace('/* @@THEME_SCRIPT@@ */', themeScript);
 
 writeFileSync(join(docsDir, 'index.html'), html);
 

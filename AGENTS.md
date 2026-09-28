@@ -123,6 +123,7 @@ scripts/
     token-colors.mjs            # Shared token resolution, CSS colour parsing, sRGB compositing
     active-contrast.mjs         # Selected-state (`active`) overlay contrast matrix — pure, unit-tested
     package-label.mjs           # Versioned header label shared by every docs page
+    site-assets.mjs             # Inline/copy shared header CSS and theme controller
 docs/
   index.html            # Built GitHub Pages browser (do NOT edit by hand — regenerate)
   llms.txt              # Built agent entry point; links the copied agent.json + tokens-index.json
@@ -130,6 +131,7 @@ docs/
     color-generation.md   # Reference palette model, contrast/gamut constraints, validation, contrast audit
 dist/                   # Generated — do not edit directly
 tools/color-graph/       # Authored Color graph page, map interactions, and styles
+tools/site/              # Shared docs header styles and Light / Dark / System controller
 .github/
   workflows/
     build.yml          # PR: npm ci, build, test, build docs, verify artifacts + src unchanged
@@ -165,6 +167,21 @@ uses the existing agent guidance contract and selected-state contrast matrix; it
 does not maintain a second token or guidance source. Run `npm run preview:docs`
 and open `/graph/` to review locally. Figma variable names are copied from token
 paths; a Figma library URL must be supplied before adding direct library links.
+
+All four site tabs use `tools/site/site.css` and `tools/site/theme.js`. The docs
+build inlines them into the Browser/Documentation page and copies them beside
+the graph and color tool (including standalone `npm run tool:colors`). Edit the
+shared sources, not their generated copies. The site defaults to System and
+persists explicit Light / Dark / System choices in `tokomo-theme`; graph URLs
+store graph view/selection only. The resolved theme is applied before paint,
+and graph/tool content subscribes to `tokomo-theme-change` for live updates.
+The shared stylesheet also owns the page and header background: white in Light,
+`#161616` in Dark, with `#161616` foregrounds in Light and white in Dark. Site UI
+uses `#161616` instead of pure black, including opacity variants; this does not
+change token values. Color tool's `vs bg` readout measures its preview surface.
+Graph secondary labels use the foreground at 65% opacity; dark selected-label
+backgrounds use white at 90%. The canvas reads these shared CSS colors instead
+of maintaining separate gray hex values.
 
 `report:contrast` is diagnostic and gates nothing. WCAG 2.x AA is the shipped accessibility contract; APCA `Lc` is tracked alongside it as forward-looking guidance only. See `docs/guidelines/color-generation.md` §4.5.
 
@@ -406,7 +423,7 @@ Must be done manually by the package owner once:
 | Build orchestration | `scripts/build.mjs` |
 | TypeScript constant format | `scripts/generate-ts-constants.mjs` |
 | Token browser styling | `scripts/docs-template.html` + `scripts/build-docs.mjs` |
-| Site header (shared by all pages) | `scripts/docs-template.html`, `tools/color-graph/index.html`, `tools/color-system/index.html` — keep the four tabs identical |
+| Site header and theme preference | `tools/site/site.css` + `tools/site/theme.js`; header markup in `scripts/docs-template.html`, `tools/color-graph/index.html`, `tools/color-system/index.html` — keep the four tabs identical |
 | Agent entry point (`llms.txt`) | `scripts/build-docs.mjs` — principles are generated from the agent contract |
 | Release changelog sections | `release-please-config.json` |
 | PR title rules | `.github/workflows/pr-title.yml` |

@@ -6,6 +6,7 @@ import { compileTokenProject } from './lib/token-compiler.mjs';
 import { makeResolver, makeChainResolver, parseCssColor } from './lib/token-colors.mjs';
 import { buildActiveMatrix } from './lib/active-contrast.mjs';
 import { stampPackageLabel } from './lib/package-label.mjs';
+import { copySiteAssets } from './lib/site-assets.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const compilation = await compileTokenProject({ root });
@@ -160,6 +161,7 @@ for (const token of tokens.filter(token => token.path.includes('.background') ||
 
 const output = join(root, 'docs/graph');
 mkdirSync(output, { recursive: true });
+copySiteAssets(output);
 for (const file of ['graph.css', 'graph.mjs']) {
   copyFileSync(join(root, 'tools/color-graph', file), join(output, file));
 }

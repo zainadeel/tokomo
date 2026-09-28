@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark">
+<script src="./theme.js"></script>
+<link rel="stylesheet" href="./site.css">
 <title>TokoMo — Color tool</title>
 <!-- Sibling path, not ../favicon.svg: the tool is served as the server root by
      `npm run tool:colors` and from /tool/ on GitHub Pages. Copied in by
@@ -13,21 +16,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #ffffff;
-    --fg: #000000;
-    --fg-muted: rgb(0 0 0 / 0.5);
-    --fg-faint: rgb(0 0 0 / 0.3);
-    --divider: rgb(0 0 0 / 0.1);
+    --bg: var(--site-bg);
+    --fg: var(--site-fg);
+    --fg-muted: var(--site-muted);
+    --fg-faint: var(--site-faint);
+    --divider: var(--site-divider);
     --mono: 'JetBrains Mono', ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    color-scheme: light;
-  }
-  :root[data-theme="dark"] {
-    --bg: #161616;
-    --fg: #ffffff;
-    --fg-muted: rgb(255 255 255 / 0.5);
-    --fg-faint: rgb(255 255 255 / 0.3);
-    --divider: rgb(255 255 255 / 0.1);
-    color-scheme: dark;
   }
   * , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
@@ -39,38 +33,14 @@
     min-height: 100dvh;
   }
 
-  /* ── Toolbar ─────────────────────────────────────────────────────── */
-  .toolbar {
-    position: sticky; top: 0; z-index: 20;
-    display: flex; align-items: center; gap: 16px;
-    height: 48px; padding: 0 20px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--divider);
-  }
-  .logo { font-size: 12px; font-weight: 600; white-space: nowrap; }
-  .toolbar .spacer { flex: 1; }
-  .vdivider { width: 1px; height: 12px; background: var(--divider); flex-shrink: 0; }
-
-  /* Text-toggle buttons (theme tabs, reset, export) */
-  .toggle-btn {
-    background: none; border: none; padding: 0; cursor: pointer;
-    font: inherit; color: var(--fg-muted); line-height: 1; white-space: nowrap;
-  }
-  .toggle-btn:hover { color: var(--fg); }
-  .toggle-btn.active { color: var(--fg); }
-  a.toggle-btn { text-decoration: none; }
-
-  .tabs { display: flex; align-items: center; gap: 12px; }
-
   .checkbox-row { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-muted); font-size: 12px; cursor: pointer; }
   .checkbox-row input[type="checkbox"] { accent-color: var(--fg); }
   .checkbox-row:has(input:checked) { color: var(--fg); }
 
 
   /* ── Canvas — sits in theme bg ──────────────────────────────────── */
-  .canvas { padding: 24px 20px 64px; min-height: calc(100dvh - 48px); }
-  .canvas[data-theme="light"] { background: #ffffff; --canvas-text: #000000; --canvas-muted: rgb(0 0 0 / 0.5); --canvas-faint: rgb(0 0 0 / 0.3); --canvas-divider: rgb(0 0 0 / 0.1); }
-  .canvas[data-theme="dark"]  { background: #161616; --canvas-text: #ffffff; --canvas-muted: rgb(255 255 255 / 0.5); --canvas-faint: rgb(255 255 255 / 0.3); --canvas-divider: rgb(255 255 255 / 0.1); }
+  .canvas { padding: 24px 20px 64px; min-height: calc(100dvh - var(--site-header-height)); }
+  .canvas { background: var(--bg); --canvas-text: var(--fg); --canvas-muted: var(--fg-muted); --canvas-faint: var(--fg-faint); --canvas-divider: var(--divider); }
 
   /* ── Legend ─────────────────────────────────────────────────────── */
   .legend { display: grid; grid-template-columns: 1fr 4fr; gap: 4px; padding: 0 0 12px; }
@@ -133,24 +103,24 @@
   }
   .swatch .compare-btn {
     position: absolute; top: 4px; right: 4px;
-    background: rgb(0 0 0 / 0.5); color: #fff;
+    background: rgb(22 22 22 / 0.5); color: #fff;
     border: none; padding: 2px 5px;
     font: 600 9px var(--mono); letter-spacing: 0.06em;
     cursor: pointer; line-height: 1.2;
     border-radius: 0;
   }
-  .swatch .compare-btn:hover { background: rgb(0 0 0 / 0.75); }
-  .swatch .compare-btn.active { background: #fff; color: #000; }
+  .swatch .compare-btn:hover { background: rgb(22 22 22 / 0.75); }
+  .swatch .compare-btn.active { background: #fff; color: #161616; }
 
   .swatch .gamut-tag,
   .swatch .contrast-tag {
     font: 600 9px var(--mono); letter-spacing: 0.06em;
     padding: 1px 4px;
-    background: rgb(0 0 0 / 0.55); color: #fff;
+    background: rgb(22 22 22 / 0.55); color: #fff;
     border-radius: 0;
     line-height: 1.2;
   }
-  .swatch .gamut-tag.warn { background: #FFCC33; color: #000; }
+  .swatch .gamut-tag.warn { background: #FFCC33; color: #161616; }
   .swatch .gamut-tag.bad  { background: #FF4D4D; color: #fff; }
   .swatch .contrast-tag.fail { background: #FF4D4D; color: #fff; }
 
@@ -219,20 +189,20 @@
 <body>
 <header class="toolbar">
   <span class="logo" data-package-label>@ds-mo/tokens</span>
-  <nav class="tabs" aria-label="Primary">
+  <nav class="primary-nav" aria-label="Primary">
     <a class="toggle-btn" href="../#browser">Browser</a>
     <a class="toggle-btn" href="../#documentation">Documentation</a>
     <a class="toggle-btn" href="../graph/">Color graph</a>
     <a class="toggle-btn active" href="./" aria-current="page">Color tool</a>
   </nav>
-  <span class="spacer"></span>
-  <div class="tabs" id="theme-tabs" role="group" aria-label="Color theme">
-    <button class="toggle-btn active" data-theme="light">Light</button>
-    <button class="toggle-btn" data-theme="dark">Dark</button>
+  <div class="theme-options" role="group" aria-label="Color theme">
+    <button class="toggle-btn" data-theme-choice="light" aria-pressed="false">Light</button>
+    <button class="toggle-btn" data-theme-choice="dark" aria-pressed="false">Dark</button>
+    <button class="toggle-btn" data-theme-choice="system" aria-pressed="false">System</button>
   </div>
 </header>
 
-<div class="canvas" id="canvas" data-theme="light">
+<div class="canvas" id="canvas">
   <div class="legend">
     <div>
       <button class="lock-btn active" id="couple-toggle" type="button">Contrast-Link</button>
@@ -254,23 +224,23 @@
     loadTokens, tonesToCsv, gamutBadge,
     oklchToHex, contrastRatioP3, HUE_ORDER,
   } from "./color-tool.mjs";
-  import { solveLForContrast, relativeLuminanceFromOklch, contrastFromY } from "./oklch-utils.mjs";
+  import { solveLForContrast, relativeLuminanceFromOklch, relativeLuminanceFromHex, contrastFromY } from "./oklch-utils.mjs";
 
   const TONE_ORDER = ["faint", "medium", "bold", "strong"];
   const COUPLE = { faint: "bold", medium: "strong", bold: "faint", strong: "medium" };
   const TARGET_CONTRAST = 4.5;
   const FAINT_FLOOR = 1.2;
 
-  // Background luminance per theme
+  // Preview background luminance matches the shared site's white / #161616 surfaces.
   const BG = {
     light: { hex: "#FFFFFF", y: 1.0 },
-    dark:  { hex: "#161616", y: relativeLuminanceFromOklch(0.179, 0, 0) },
+    dark:  { hex: "#161616", y: relativeLuminanceFromHex("#161616") },
   };
 
   const state = {
     tones: [],
     original: [],
-    theme: localStorage.getItem("tokomo-theme") === "dark" ? "dark" : "light",
+    theme: window.TokomoTheme.theme,
     couple: { light: true, dark: true },
     locks: {
       light: { faint: false, medium: false, bold: false, strong: false },
@@ -560,8 +530,6 @@
   }
 
   function render() {
-    document.documentElement.dataset.theme = state.theme;
-    $("#canvas").dataset.theme = state.theme;
     buildRows();
     updateResetState();
   }
@@ -576,17 +544,9 @@
     $("#couple-toggle").classList.toggle("active", state.couple[state.theme]);
   }
 
-  function syncThemeTabs() {
-    document.querySelectorAll("#theme-tabs button").forEach(b => b.classList.toggle("active", b.dataset.theme === state.theme));
-  }
-  syncThemeTabs();
-
-  $("#theme-tabs").addEventListener("click", (e) => {
-    const btn = e.target.closest("button[data-theme]");
-    if (!btn) return;
-    state.theme = btn.dataset.theme;
-    localStorage.setItem("tokomo-theme", state.theme);
-    syncThemeTabs();
+  window.addEventListener("tokomo-theme-change", ({ detail }) => {
+    if (state.theme === detail.theme) return;
+    state.theme = detail.theme;
     syncTopControls();
     render();
   });

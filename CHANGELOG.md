@@ -7,6 +7,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [8.0.1](https://github.com/zainadeel/tokomo/compare/v8.0.0...v8.0.1) (2026-09-28)
+
+
+### Fixed
+
+* **docs:** unify site navigation and theme preferences ([#156](https://github.com/zainadeel/tokomo/issues/156)) ([8a6bcb2](https://github.com/zainadeel/tokomo/commit/8a6bcb225f4088ab915c5152f89b7e32b74f11b5))
+
 ## [8.0.0](https://github.com/zainadeel/tokomo/compare/v7.0.0...v8.0.0) (2026-09-24)
 
 

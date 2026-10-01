@@ -83,7 +83,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "1.63.0",
     "apca-w3": "^0.1.9",
     "chokidar": "^5.0.0"
   },

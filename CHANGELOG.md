@@ -7,6 +7,29 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [9.0.0](https://github.com/zainadeel/tokomo/compare/v8.0.1...v9.0.0) (2026-10-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **colors:** replace --color-translucent-translucent with --color-translucent-background and colorTranslucentTranslucent with colorTranslucentBackground. Values are unchanged.
+* remove the utilities export and stylesheet. Consumers must remove utilities imports and replace helper-class usage with application or component styles.
+
+### Fixed
+
+* **colors:** rename translucent surface to background ([f2505fb](https://github.com/zainadeel/tokomo/commit/f2505fbe00d96c7c7c18c3e7d59b3a6fc0e00a51))
+
+
+### Changed
+
+* remove generic CSS utilities ([d10f272](https://github.com/zainadeel/tokomo/commit/d10f2722df052231c69f4b10ddcfdd4e9f5cebf5))
+
+
+### Documentation
+
+* clarify document-root token theming ([8b6d546](https://github.com/zainadeel/tokomo/commit/8b6d546ff33f13df368bdb6e88aba1d9edef6f20))
+* qualify translucent contrast and add backdrop recipe ([c8245a2](https://github.com/zainadeel/tokomo/commit/c8245a290b881623ee9bc2af264b55867875f1c8))
+
 ## [8.0.1](https://github.com/zainadeel/tokomo/compare/v8.0.0...v8.0.1) (2026-09-28)
 
 

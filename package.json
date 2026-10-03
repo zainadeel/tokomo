@@ -35,7 +35,6 @@
     "./effects": "./dist/effects.css",
     "./reset": "./dist/reset.css",
     "./globals": "./dist/globals.css",
-    "./utilities": "./dist/utilities.css",
     "./themes/light": "./dist/themes/light.css",
     "./themes/dark": "./dist/themes/dark.css",
     "./json": "./dist/tokens.json",

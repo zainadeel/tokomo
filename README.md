@@ -48,6 +48,11 @@ indicator unless the application supplies one. The explicit
 `data-focus-from-shortcut` opt-out suppresses an outline only while its marker is
 present; remove it before ordinary keyboard navigation resumes.
 
+Generic CSS utility classes are no longer shipped. Remove imports of
+`@ds-mo/tokens/utilities` or `@ds-mo/tokens/dist/utilities.css`; replace any
+utility class usage with application styles or your component library's helpers.
+Tokens, globals, and reset remain available as separate imports.
+
 ### JS / TypeScript (via bundler)
 
 ```ts

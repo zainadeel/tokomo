@@ -28,7 +28,7 @@ TokoMo is an npm package (`@ds-mo/tokens`) that ships **design tokens** as:
 - Machine-readable JSON (`dist/tokens.json`, per-category files, and mode-aware `dist/json/colors.modes.json`)
 - Framework-neutral selection and composition guidance (`dist/agent.json`, exported only as `@ds-mo/tokens/agent`)
 - TypeScript constants for all token names (`dist/index.mjs` / `.cjs` / `.d.ts`)
-- Reset and global utility CSS
+- Reset and global base CSS (generic utility classes are not shipped)
 
 It's the **foundation** of the ds-mo design-system trilogy: `@ds-mo/tokens` → `@ds-mo/icons` → `@ds-mo/ui` (CompoMo). TokoMo is Figma-first — raw token JSON is exported from Figma variables and dropped into `src/`, then build scripts generate the distributable artifacts.
 
@@ -86,7 +86,6 @@ src/
   effects.css          # Animation, motion, blur, shadow, elevation tokens
   globals.css          # App base styles (focus rings, reduced-motion) — ships no font @import
   reset.css            # CSS reset
-  utilities.css        # Utility classes
   themes/
     light.css          # `color-scheme: light` only
     dark.css           # `color-scheme: dark` only

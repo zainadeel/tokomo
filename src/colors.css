@@ -706,6 +706,7 @@
   --color-shimmer-shimmer-on-medium-background: var(--color-reference-white-15);
   --color-shimmer-shimmer-on-strong-background: var(--color-reference-white-10);
   --color-shimmer-shimmer: var(--color-reference-white-30);
+  --color-translucent-background: var(--color-reference-white-50);
   --color-translucent-border-primary: var(--color-reference-black-50);
   --color-translucent-border-secondary: var(--color-reference-black-25);
   --color-translucent-border-tertiary: var(--color-reference-black-15);
@@ -720,7 +721,6 @@
   --color-translucent-interaction-hover: var(--color-reference-black-10);
   --color-translucent-interaction-pressed: var(--color-reference-black-15);
   --color-translucent-shimmer: var(--color-reference-white-30);
-  --color-translucent-translucent: var(--color-reference-white-50);
   --color-data-category-10: var(--color-reference-light-pink-0-l70-c22-medium);
   --color-data-category-11: var(--color-reference-light-teal-180-l75-c17-medium);
   --color-data-category-12: var(--color-reference-light-orange-60-l52-c13-bold);
@@ -1351,6 +1351,7 @@
   --color-shimmer-shimmer-on-medium-background: var(--color-reference-white-10);
   --color-shimmer-shimmer-on-strong-background: var(--color-reference-white-15);
   --color-shimmer-shimmer: var(--color-reference-white-10);
+  --color-translucent-background: var(--color-reference-black-50);
   --color-translucent-border-primary: var(--color-reference-white-60);
   --color-translucent-border-secondary: var(--color-reference-white-25);
   --color-translucent-border-tertiary: var(--color-reference-white-15);
@@ -1365,7 +1366,6 @@
   --color-translucent-interaction-hover: var(--color-reference-white-10);
   --color-translucent-interaction-pressed: var(--color-reference-white-15);
   --color-translucent-shimmer: var(--color-reference-white-10);
-  --color-translucent-translucent: var(--color-reference-black-50);
   --color-data-category-10: var(--color-reference-dark-pink-0-l68-c20-bold);
   --color-data-category-11: var(--color-reference-dark-teal-180-l70-c15-bold);
   --color-data-category-12: var(--color-reference-dark-orange-60-l51-c13-medium);

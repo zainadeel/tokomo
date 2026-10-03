@@ -262,14 +262,14 @@ export function buildActiveCombinations() {
   }
 
   // Translucent has no background token of its own and no universal backdrop —
-  // translucent.translucent is a scrim that takes the luminance of whatever sits
+  // translucent.background is a scrim that takes the luminance of whatever sits
   // behind it. Measuring it requires ASSUMING a backdrop, so these rows are
   // conditional and must never be reported as an unconditional pass (issue #130).
   for (const variant of ["active", "active-brand"]) {
     combos.push({
       group: "Translucent (conditional — assumed backdrop)",
       family: `translucent.interaction.${variant}`,
-      baseToken: "--color-translucent-translucent",
+      baseToken: "--color-translucent-background",
       baseUnderToken: "--color-background-primary",
       activeToken: `--color-translucent-interaction-${variant}`,
       foregroundToken: "--color-translucent-foreground-primary",

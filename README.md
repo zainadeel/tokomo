@@ -53,6 +53,10 @@ Generic CSS utility classes are no longer shipped. Remove imports of
 utility class usage with application styles or your component library's helpers.
 Tokens, globals, and reset remain available as separate imports.
 
+The translucent surface token is now `--color-translucent-background`, replacing
+`--color-translucent-translucent`. TypeScript consumers should use
+`colorTranslucentBackground` instead of `colorTranslucentTranslucent`.
+
 ### JS / TypeScript (via bundler)
 
 ```ts

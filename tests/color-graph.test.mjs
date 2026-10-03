@@ -75,6 +75,14 @@ test('graph links backgrounds to every documented foreground and interaction tok
     assert.ok(driver.includes(`--color-driver-status-interaction-on-on-duty-${state}`));
   }
 
+  const translucent = related('--color-translucent-background');
+  for (const step of ['primary', 'secondary', 'tertiary', 'quaternary']) {
+    assert.ok(translucent.includes(`--color-translucent-foreground-${step}`));
+  }
+  for (const state of ['active', 'active-brand', 'hover', 'pressed', 'focus']) {
+    assert.ok(translucent.includes(`--color-translucent-interaction-${state}`));
+  }
+
   const names = new Set(graph.tokens.map(token => token.name));
   for (const relation of graph.relationships) {
     assert.ok(names.has(relation.source));

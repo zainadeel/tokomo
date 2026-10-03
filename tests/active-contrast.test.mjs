@@ -135,7 +135,7 @@ test("rows over an assumed backdrop are marked conditional", () => {
   // marker is the other such surface, but markers are out of scope — see
   // EXCLUDED_ACTIVE_TOKENS.)
   const CONDITIONAL_BASES = [
-    "--color-translucent-translucent",
+    "--color-translucent-background",
     "--color-chrome-background-primary",
     "--color-chrome-background-secondary",
   ];

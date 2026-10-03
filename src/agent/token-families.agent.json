@@ -17,7 +17,7 @@
     },
     {
       "id": "principle:theme-automatic",
-      "summary": "Use the same semantic token names in light and dark modes. Their mode-aware values are the theming contract."
+      "summary": "Use the same semantic token names in light and dark modes. Switch their mode-aware values with data-theme on the document root (<html>); container attributes do not switch token values, and nested token themes are not supported."
     },
     {
       "id": "principle:meaning-needs-more-than-color",

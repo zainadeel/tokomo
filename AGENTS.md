@@ -246,13 +246,19 @@ Compiler tests compare committed CSS byte-for-byte and compare public JSON, Type
 
 ## Theming
 
-Light/dark theming is **CSS-only** — no JavaScript. Consuming apps toggle the `data-theme` attribute on `:root` (or a container element):
+Light/dark theming is **CSS-only** — no JavaScript. Consuming apps set the `data-theme` attribute on the document root (`<html>`):
 
 ```html
 <html data-theme="dark">
 ```
 
 All token values are defined as CSS custom properties. **Color** light/dark values live in `src/colors.css` under `:root` and `:root[data-theme="dark"]`. `src/themes/light.css` and `dark.css` only set `color-scheme` for native form controls.
+
+Import both theme files alongside the tokens when native controls should follow
+the selected theme. Theme attributes on containers do not switch tokens; nested
+light/dark token themes are not supported. The light theme file additionally
+accepts a light container attribute for native controls only; it does not reset
+inherited token values.
 
 ---
 

@@ -141,7 +141,7 @@ for (const token of tokens.filter(token => token.family === 'color-intent' && to
 // Fixed and specialized contexts keep their foregrounds and state colors inside
 // the same family. Driver status and safety score have per-surface foregrounds
 // (and, for driver status, per-surface interactions), so preserve that matching.
-for (const token of tokens.filter(token => token.path.includes('.background') || token.path === 'translucent.translucent')) {
+for (const token of tokens.filter(token => token.path.includes('.background'))) {
   const [family, , variant] = token.path.split('.');
   if (['background', 'color-intent'].includes(family)) continue;
   const familyTokens = tokens.filter(candidate => candidate.family === family);

@@ -28,7 +28,7 @@ TokoMo is an npm package (`@ds-mo/tokens`) that ships **design tokens** as:
 - Machine-readable JSON (`dist/tokens.json`, per-category files, and mode-aware `dist/json/colors.modes.json`)
 - Framework-neutral selection and composition guidance (`dist/agent.json`, exported only as `@ds-mo/tokens/agent`)
 - TypeScript constants for all token names (`dist/index.mjs` / `.cjs` / `.d.ts`)
-- Reset and global utility CSS
+- Reset and global base CSS (generic utility classes are not shipped)
 
 It's the **foundation** of the ds-mo design-system trilogy: `@ds-mo/tokens` → `@ds-mo/icons` → `@ds-mo/ui` (CompoMo). TokoMo is Figma-first — raw token JSON is exported from Figma variables and dropped into `src/`, then build scripts generate the distributable artifacts.
 
@@ -86,7 +86,6 @@ src/
   effects.css          # Animation, motion, blur, shadow, elevation tokens
   globals.css          # App base styles (focus rings, reduced-motion) — ships no font @import
   reset.css            # CSS reset
-  utilities.css        # Utility classes
   themes/
     light.css          # `color-scheme: light` only
     dark.css           # `color-scheme: dark` only
@@ -197,7 +196,7 @@ The resting figures and the selected-state figures answer different questions. A
 
 Coverage of the selected-state matrix is enforced by `tests/active-contrast.test.mjs`: if a new `interaction.*-active` token is added without being wired into `buildActiveCombinations()`, the test suite fails rather than silently omitting it. Hover, pressed, and focus overlays are not yet measured.
 
-There is no separate lint command. `npm test` covers token-mode preservation, color math, and the generated agent contract. The Build workflow re-runs the build, runs unit and browser tests, verifies distributable artifacts, and asserts `src/` was not mutated. Browser tests require `npx playwright install chromium webkit` locally.
+There is no separate lint command. `npm test` covers token-mode preservation, color math, the resting translucent hierarchy over every semantic bold backdrop, and the generated agent contract. The Build workflow re-runs the build, runs unit and browser tests, verifies distributable artifacts, and asserts `src/` was not mutated. Browser tests require `npx playwright install chromium webkit` locally.
 
 ---
 
@@ -247,13 +246,19 @@ Compiler tests compare committed CSS byte-for-byte and compare public JSON, Type
 
 ## Theming
 
-Light/dark theming is **CSS-only** — no JavaScript. Consuming apps toggle the `data-theme` attribute on `:root` (or a container element):
+Light/dark theming is **CSS-only** — no JavaScript. Consuming apps set the `data-theme` attribute on the document root (`<html>`):
 
 ```html
 <html data-theme="dark">
 ```
 
 All token values are defined as CSS custom properties. **Color** light/dark values live in `src/colors.css` under `:root` and `:root[data-theme="dark"]`. `src/themes/light.css` and `dark.css` only set `color-scheme` for native form controls.
+
+Import both theme files alongside the tokens when native controls should follow
+the selected theme. Theme attributes on containers do not switch tokens; nested
+light/dark token themes are not supported. The light theme file additionally
+accepts a light container attribute for native controls only; it does not reset
+inherited token values.
 
 ---
 

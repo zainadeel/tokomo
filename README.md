@@ -48,6 +48,15 @@ indicator unless the application supplies one. The explicit
 `data-focus-from-shortcut` opt-out suppresses an outline only while its marker is
 present; remove it before ordinary keyboard navigation resumes.
 
+Generic CSS utility classes are no longer shipped. Remove imports of
+`@ds-mo/tokens/utilities` or `@ds-mo/tokens/dist/utilities.css`; replace any
+utility class usage with application styles or your component library's helpers.
+Tokens, globals, and reset remain available as separate imports.
+
+The translucent surface token is now `--color-translucent-background`, replacing
+`--color-translucent-translucent`. TypeScript consumers should use
+`colorTranslucentBackground` instead of `colorTranslucentTranslucent`.
+
 ### JS / TypeScript (via bundler)
 
 ```ts
@@ -90,6 +99,20 @@ document.documentElement.setAttribute('data-theme', 'light');
 ```
 
 Light is the default. No JS required — pure CSS variable overrides.
+
+The theme applies to the whole document. Setting `data-theme` on a container
+does not switch token values; nested light/dark token themes are not supported.
+Import both theme files so native controls follow the root theme:
+
+```css
+@import '@ds-mo/tokens/themes/light';
+@import '@ds-mo/tokens/themes/dark';
+```
+
+These files set native `color-scheme` only. Color token values come from
+`@ds-mo/tokens` or `@ds-mo/tokens/colors`.
+The light theme file can also opt a container's native controls into light
+appearance, but that does not reset the container's inherited color tokens.
 
 ## Token categories
 

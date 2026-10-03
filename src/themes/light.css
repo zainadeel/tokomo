@@ -2,10 +2,13 @@
  * Light theme (default)
  *
  * Light theme tokens are included in colors.css by default under :root.
- * This file exists for explicit theme switching use cases where you want
- * to force light theme on a specific subtree:
+ * Import this file and dark.css so native controls follow the document theme.
+ * To activate light theme, set data-theme="light" on the <html> element:
  *
- *   <div data-theme="light"> ... </div>
+ *   <html data-theme="light"> ... </html>
+ *
+ * This file only sets color-scheme. A light container attribute can opt native
+ * controls into light appearance, but does not reset inherited color tokens.
  */
 :root,
 [data-theme='light'] {

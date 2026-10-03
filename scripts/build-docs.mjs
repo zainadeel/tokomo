@@ -658,7 +658,7 @@ copyFileSync(join(distDir, 'tokens-index.json'), join(docsDir, 'tokens-index.jso
 
 const LLMS_TXT = `# TokoMo (${pkg.name})
 
-> Design tokens for the ds-mo design system, shipped as CSS custom properties, JSON, and TypeScript constants. Light and dark themes switch through the \`data-theme\` attribute; token names never change between themes. Choose tokens by meaning and rendering context, never by their current value.
+> Design tokens for the ds-mo design system, shipped as CSS custom properties, JSON, and TypeScript constants. Light and dark themes switch through the \`data-theme\` attribute on the document root (\`<html>\`); container themes are not supported. Token names never change between themes. Choose tokens by meaning and rendering context, never by their current value.
 
 Version: ${pkg.version}
 

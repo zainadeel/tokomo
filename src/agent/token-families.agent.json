@@ -17,7 +17,7 @@
     },
     {
       "id": "principle:theme-automatic",
-      "summary": "Use the same semantic token names in light and dark modes. Their mode-aware values are the theming contract."
+      "summary": "Use the same semantic token names in light and dark modes. Switch their mode-aware values with data-theme on the document root (<html>); container attributes do not switch token values, and nested token themes are not supported."
     },
     {
       "id": "principle:meaning-needs-more-than-color",
@@ -240,24 +240,30 @@
       ],
       "selectionRole": "direct",
       "useWhen": [
-        "Rendering content inside the matching always-dark, inverted, media, navigation, or translucent context."
+        "Rendering content inside the matching always-dark, inverted, media, navigation, or translucent context.",
+        "Showing a translucent map or media label while keeping the underlying content visible; compose its surface, matching foregrounds, and backdrop blur with the translucent-surface recipe."
       ],
       "avoidWhen": [
         "The element is on an ordinary primary, secondary, or semantic-intent surface.",
-        "The surface is a floating toolbar, control bar, or overlay panel above arbitrary content \u2014 use the chrome family instead."
+        "The surface is a floating toolbar, control bar, or application control panel above arbitrary content \u2014 use the chrome family instead; translucent content annotations such as map labels use the translucent-surface recipe."
       ],
       "constraints": [
         "Keep foregrounds, borders, dividers, and interaction states within the same context family.",
-        "A context name describes its rendering environment, not a light- or dark-theme override."
+        "A context name describes its rendering environment, not a light- or dark-theme override.",
+        "Translucent containers over busy maps, imagery, or overlapping UI require backdrop blur from the effect.blur family; blur the backdrop, never the text or other foreground content.",
+        "For translucent surfaces, semantic bold backgrounds are an approximate backdrop boundary: avoid darker backdrops in light mode and lighter backdrops in dark mode. This is an at-rest reference, not a guarantee for arbitrary hues, imagery, or interaction states."
       ],
       "recipes": [
         "token-recipe:foreground-hierarchy",
         "token-recipe:neutral-border-hierarchy",
-        "token-recipe:interaction-layers"
+        "token-recipe:interaction-layers",
+        "token-recipe:translucent-surface"
       ],
       "accessibility": [
-        "Primary and secondary foregrounds clear 4.5:1 on the matching context background; tertiary foregrounds clear 3:1.",
-        "Primary borders clear 3:1 on the matching context background; secondary and tertiary borders are decorative.",
+        "On opaque fixed-context backgrounds, primary and secondary foregrounds clear 4.5:1 and tertiary foregrounds clear 3:1.",
+        "On opaque fixed-context backgrounds, primary borders clear 3:1; secondary and tertiary borders are decorative.",
+        "Translucent foreground and border contrast depends on the rendered backdrop after filtering and compositing. Verify 4.5:1 for primary and secondary text and 3:1 for meaningful non-text strokes; tertiary and quaternary retain their inactive or decorative restrictions.",
+        "Backdrop blur reduces visual detail but does not guarantee contrast; a uniform backdrop is unchanged by blur. If the actual backdrop cannot be verified, choose an opaque surface and its matching foregrounds.",
         "Do not mix an ordinary foreground with a fixed-context background unless that pairing is explicitly verified."
       ]
     },
@@ -648,7 +654,8 @@
       ],
       "constraints": [
         "Use the lowest blur step that achieves the treatment."
-      ]
+      ],
+      "recipes": ["token-recipe:translucent-surface"]
     },
     {
       "id": "token-family:effect.animation",
@@ -775,6 +782,7 @@
         "A component may use tertiary for a non-text boundary, such as an unchecked checkbox or radio outline, when that exact treatment is verified to meet 3:1 on every supported surface.",
         "On medium, bold, or strong semantic surfaces, use the corresponding on-background hierarchy rather than an ordinary foreground.",
         "Inside a fixed context, keep the foreground and background in that same context family.",
+        "Translucent foregrounds require the translucent-surface recipe: backdrop blur and verification against the actual composited surface, not an unconditional same-context contrast claim.",
         "Chrome is the one fixed context with three background steps; pair a chrome foreground with chrome.background.theme when the pairing must be measurable, because the primary and secondary steps are translucent glass."
       ],
       "variants": [
@@ -853,7 +861,7 @@
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "primary", "property": "color", "tokenPattern": "--color-*-foreground-primary" }
           ],
-          "notes": ["Keep both assignments in the same context family; the documented pairings clear 4.5:1."]
+          "notes": ["Keep both assignments in the same context family. Opaque fixed-context pairings clear 4.5:1; translucent pairings require backdrop blur and verification against the rendered backdrop."]
         },
         {
           "id": "foreground-context-secondary",
@@ -864,7 +872,7 @@
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "secondary", "property": "color", "tokenPattern": "--color-*-foreground-secondary" }
           ],
-          "notes": ["Keep both assignments in the same context family; the documented pairings clear 4.5:1."]
+          "notes": ["Keep both assignments in the same context family. Opaque fixed-context pairings clear 4.5:1; translucent pairings require backdrop blur and verification against the rendered backdrop."]
         },
         {
           "id": "foreground-context-tertiary",
@@ -875,7 +883,7 @@
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "tertiary", "property": "color", "tokenPattern": "--color-*-foreground-tertiary" }
           ],
-          "notes": ["Keep both assignments in the same context family; the documented pairings clear 3:1 but are not normal-text defaults."]
+          "notes": ["Keep both assignments in the same context family. Opaque fixed-context pairings clear 3:1; translucent pairings depend on the rendered backdrop. Tertiary is not a normal-text default."]
         },
         {
           "id": "foreground-chrome-primary",
@@ -935,9 +943,9 @@
         }
       ],
       "accessibility": [
-        "Every documented primary and secondary foreground pairing clears WCAG 2.x AA 4.5:1 in both themes.",
-        "Every documented tertiary foreground pairing clears 3:1 in both themes, which supports large text and meaningful icons but not normal-size text.",
-        "A foreground guarantee applies only on the documented ordinary, matching on-background, or same-context surface."
+        "Every documented opaque-surface primary and secondary foreground pairing clears WCAG 2.x AA 4.5:1 in both themes; translucent and glass surfaces require checking the rendered backdrop.",
+        "Every documented opaque-surface tertiary foreground pairing clears 3:1 in both themes, which supports large text and meaningful icons but not normal-size text; translucent and glass surfaces are backdrop-dependent.",
+        "A foreground guarantee applies only on the documented ordinary, matching on-background, or opaque same-context surface."
       ],
       "examples": [
         {
@@ -1052,7 +1060,7 @@
             { "role": "surface", "property": "background-color", "tokenPattern": "--color-*-background" },
             { "role": "primary", "property": "border-color", "tokenPattern": "--color-*-border-primary" }
           ],
-          "notes": ["Keep both assignments in the same context family; documented primary context borders clear 3:1."]
+          "notes": ["Keep both assignments in the same context family. Opaque primary context borders clear 3:1; translucent borders require verification against the rendered backdrop."]
         },
         {
           "id": "context-border-secondary",
@@ -1114,7 +1122,7 @@
         }
       ],
       "accessibility": [
-        "Every documented primary neutral border pairing clears WCAG 1.4.11 non-text contrast at 3:1 in both themes.",
+        "Every documented opaque-surface primary neutral border pairing clears WCAG 1.4.11 non-text contrast at 3:1 in both themes; translucent and glass surfaces require verification against the rendered backdrop.",
         "The tertiary foreground used as a control outline clears 3:1 on primary, secondary, and faint ordinary surfaces in both themes.",
         "Secondary and tertiary neutral borders are intentionally below 3:1 and may be used only when the border does not carry the information required to identify a control or state."
       ],
@@ -1122,6 +1130,58 @@
         {
           "language": "css",
           "content": "/* Decorative edge: the container is identifiable without it. */\n.container { border: var(--dimension-stroke-width-012) solid var(--color-border-tertiary); }\n\n/* Controls draw the stroke inset so it never changes their size and stays\n   above interaction washes (on ::after when the control has them). */\n\n/* Field: its label and value identify it; the stroke only defines the region. */\n.field { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-border-secondary); }\n\n/* Bare checkbox: the outline is the only identifier, so it uses the verified\n   3:1 tertiary foreground as a component-owned stroke. */\n.checkbox { box-shadow: inset 0 0 0 var(--dimension-stroke-width-012) var(--color-foreground-tertiary); }"
+        }
+      ]
+    },
+    {
+      "id": "token-recipe:translucent-surface",
+      "kind": "token-recipe",
+      "status": "stable",
+      "summary": "Translucent content labels over maps, media, or overlapping content, composed with matching foregrounds and backdrop blur.",
+      "useWhen": [
+        "A map annotation, tooltip label, or media caption should preserve a view of the content behind it."
+      ],
+      "avoidWhen": [
+        "Building a floating toolbar, control bar, or application control panel; use the chrome family.",
+        "The rendered backdrop cannot be verified and text contrast must be guaranteed; choose an opaque documented surface with matching foregrounds."
+      ],
+      "tokenRoles": [
+        { "id": "surface", "summary": "Theme-aware translucent container fill.", "tokenPatterns": ["--color-translucent-background"], "required": true },
+        { "id": "primary", "summary": "Main label or value, from the matching translucent foreground family.", "tokenPatterns": ["--color-translucent-foreground-primary"], "required": true },
+        { "id": "secondary", "summary": "Optional supporting label or metadata.", "tokenPatterns": ["--color-translucent-foreground-secondary"], "required": false },
+        { "id": "blur", "summary": "Blur applied to the backdrop while keeping foreground content sharp.", "tokenPatterns": ["--effect-blur-*"], "required": true }
+      ],
+      "compositionRules": [
+        "Combine translucent.background with matching translucent foregrounds; do not substitute ordinary foregrounds.",
+        "Apply backdrop blur using an effect.blur radius and backdrop-filter: blur(...); do not apply filter: blur(...) to the label or its content.",
+        "Choose the lowest blur step that removes distracting backdrop detail. The medium step in the example is a starting point, not a universal requirement.",
+        "Use semantic bold surfaces as an approximate backdrop boundary: avoid darker backdrops in light mode and lighter backdrops in dark mode. Check the actual filtered and composited surface, especially over imagery.",
+        "The bold boundary describes resting contrast only. Interactive labels also follow interaction-layers and require checking their selected, hover, pressed, and focus treatments.",
+        "If backdrop blur is unavailable or the actual backdrop cannot satisfy the foreground targets, use an opaque surface with its matching foregrounds."
+      ],
+      "variants": [
+        {
+          "id": "map-label",
+          "label": "Translucent map label",
+          "when": "A label overlays a busy map while the map remains visible beneath the container.",
+          "assignments": [
+            { "role": "surface", "property": "background-color", "token": "--color-translucent-background" },
+            { "role": "primary", "property": "color", "token": "--color-translucent-foreground-primary" },
+            { "role": "secondary", "property": "supporting text color", "token": "--color-translucent-foreground-secondary" },
+            { "role": "blur", "property": "backdrop-filter blur radius", "token": "--effect-blur-md" }
+          ],
+          "notes": ["This example supplies no unconditional contrast guarantee for map imagery; measure the filtered backdrop and composited fill beneath the label."]
+        }
+      ],
+      "accessibility": [
+        "Verify primary and secondary text at 4.5:1 against the composited surface. Check meaningful non-text boundaries at 3:1; tertiary and quaternary retain the foreground-hierarchy recipe's inactive or decorative restrictions.",
+        "All nine semantic bold backdrops meet the primary 4.5:1, secondary 4.5:1, and tertiary 3:1 targets at rest in both themes under the repository's sRGB compositing model. This measured reference does not guarantee contrast over arbitrary imagery or after interaction overlays.",
+        "Blur reduces spatial detail, not necessarily the luminance behind the text. Uniform regions remain unchanged by blur; validate actual backdrops rather than treating blur as a contrast guarantee."
+      ],
+      "examples": [
+        {
+          "language": "css",
+          "content": "/* Use only after verifying the rendered backdrop; otherwise use an opaque surface. */\n.map-label {\n  background-color: var(--color-translucent-background);\n  color: var(--color-translucent-foreground-primary);\n  backdrop-filter: blur(var(--effect-blur-md));\n}\n.map-label__description {\n  color: var(--color-translucent-foreground-secondary);\n}"
         }
       ]
     },

@@ -34,7 +34,7 @@ function stageBuild(compilation) {
       writeFileSync(path.join(stageDist, `${category}.css`), compilation.css[category], 'utf8');
     }
 
-    for (const file of ['index.css', 'reset.css', 'globals.css', 'utilities.css']) {
+    for (const file of ['index.css', 'reset.css', 'globals.css']) {
       cpSync(path.join(SRC_DIR, file), path.join(stageDist, file));
     }
     for (const file of ['light.css', 'dark.css']) {
@@ -115,7 +115,7 @@ if (isWatch) {
     path.join(PKG_ROOT, 'agent'),
     path.join(PKG_ROOT, 'scripts/lib/manual-effects.mjs'),
     path.join(SRC_DIR, 'themes'),
-    ...['index.css', 'reset.css', 'globals.css', 'utilities.css']
+    ...['index.css', 'reset.css', 'globals.css']
       .map(file => path.join(SRC_DIR, file)),
   ], {
     ignoreInitial: true,

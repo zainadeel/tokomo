@@ -44,7 +44,6 @@ jobs:
             dist/effects.css \
             dist/reset.css \
             dist/globals.css \
-            dist/utilities.css \
             dist/tokens.json \
             dist/tokens-index.json \
             dist/json/colors.modes.json \

@@ -11,10 +11,9 @@
  * responsibility, so TokoMo never initiates a runtime font request.
  *
  * Usage:
- *   @import '@tokomo/tokens';
- *   @import '@tokomo/tokens/globals';
- *   @import '@tokomo/tokens/reset';     // optional
- *   @import '@tokomo/tokens/utilities'; // optional
+ *   @import '@ds-mo/tokens';
+ *   @import '@ds-mo/tokens/globals';
+ *   @import '@ds-mo/tokens/reset'; // optional
  */
 
 :root {

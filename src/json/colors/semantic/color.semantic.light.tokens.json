@@ -4251,7 +4251,7 @@
     }
   },
   "translucent": {
-    "translucent": {
+    "background": {
       "$type": "color",
       "$value": {
         "colorSpace": "srgb",

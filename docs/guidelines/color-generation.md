@@ -436,6 +436,12 @@ Usage rules live in the agent contract (`src/agent/token-families.agent.json`). 
 2. Selected-state pairings (`reports/active-contrast.md` and `.json`): the same content read against `composite(active overlay, background)`, because the selected overlay sits between the background and the content. A resting pass does not imply a selected pass.
 3. Not measured: hover, pressed, and focus overlays. They sit above the content, so they need their own audit rather than a re-run of the selected one.
 
+`tests/translucent-contrast.test.mjs` separately checks resting translucent
+foregrounds and the primary border over every semantic bold backdrop in both
+themes. This verifies the measured reference behind the agent recipe, not
+arbitrary map or media imagery. It also checks uniform extreme backdrops where
+secondary text fails, so the conditional nature of the guidance remains explicit.
+
 A flagged stroke is a prompt to check usage, not an automatic defect: the $3{:}1$ threshold binds only when the stroke identifies a control or its state. `border.secondary`, `border.tertiary`, `divider.*`, every `quaternary` step, and the secondary and tertiary on-background border steps are decorative by design and stay flagged permanently.
 
 ### 13.2 Thresholds And Scope Decisions

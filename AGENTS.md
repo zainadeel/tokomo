@@ -256,10 +256,15 @@ Compiler tests compare committed CSS byte-for-byte and compare public JSON, Type
 ### Mobile bundle contract
 
 `dist/mobile/manifest.json` identifies the package release and lists nine native
-JSON files beneath `dist/mobile/tokens/`, matching the existing `design_tokens`
-layout. `schemaVersion` versions the manifest shape; `version` is the TokoMo
+JSON files beneath `dist/mobile/tokens/` for downstream native consumers.
+`schemaVersion` versions the manifest shape; `version` is the TokoMo
 package version. Each entry includes a relative path, authored source, platform,
 category, mode, format, and SHA-256 checksum. No build timestamp is emitted.
+
+The repository and npm package are public, including mobile token values and
+embedded Figma metadata. Platform opt-in controls imports, not access. Do not
+add private application code, credentials, internal service details, or private
+repository identifiers to token sources, package metadata, or public docs.
 
 Shared color/effect entries use `mobileOutput` in `TOKEN_SOURCE_MANIFEST`; never
 copy these definitions into mobile source folders. Mobile colors retain the

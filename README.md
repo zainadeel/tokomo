@@ -203,11 +203,17 @@ dist/mobile/
 
 The nine token files preserve the authored JSON, including Figma metadata,
 aliases, numeric values, duration units, and the native text-style format.
-The `tokens/` layout matches `design_tokens`, so its fetch workflow can copy the
-listed files from a specific published version after verifying their checksums.
+The `tokens/` layout lets downstream fetch workflows copy the listed files from
+a specific published version after verifying their checksums.
 Native Swift/Kotlin code generation stays in the mobile engineering pipeline.
 The downstream fetch action is a separate integration; publishing this bundle
-does not itself update `design_tokens`.
+does not itself update downstream repositories.
+
+TokoMo is public. Mobile tokens and their embedded Figma metadata are public in
+the source repository and are included in the published npm package. Explicit
+mobile imports separate platform usage; they do not restrict access. Keep
+private application code, credentials, and internal service details out of token
+sources and package metadata.
 
 Colors reuse the shared reference, semantic, and data sources in both themes.
 Native JSON retains the existing Figma sRGB values; web CSS continues to emit

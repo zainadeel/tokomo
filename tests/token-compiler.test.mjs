@@ -87,7 +87,7 @@ test('production compilation preserves committed CSS and golden artifact hashes'
     .sort();
   assert.deepEqual([...production.artifacts.keys()].sort(), compilerBaselines);
   for (const [relativePath, contents] of production.artifacts) {
-    const digest = createHash('sha256').update(contents).digest('hex');
+    const digest = createHash('sha256').update(contents.replaceAll(pkg.version, '__PACKAGE_VERSION__')).digest('hex');
     assert.equal(digest, artifactHashes[relativePath], `${relativePath} changed`);
   }
 

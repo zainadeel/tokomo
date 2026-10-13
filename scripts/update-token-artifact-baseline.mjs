@@ -15,7 +15,7 @@ const pkg = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 const hashes = Object.fromEntries(
   [...compilation.artifacts].map(([relativePath, contents]) => [
     relativePath,
-    createHash('sha256').update(contents).digest('hex'),
+    createHash('sha256').update(contents.replaceAll(pkg.version, '__PACKAGE_VERSION__')).digest('hex'),
   ]),
 );
 for (const relativePath of ['agent.json', 'agent.mjs', 'agent.d.ts', 'agent.schema.json']) {

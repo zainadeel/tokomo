@@ -1,0 +1,128 @@
+{
+  "mobile/display/display": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 36, "variable": "typography-mobile/font-size/2xl" },
+    "fontWeight": { "value": 700, "variable": "typography-mobile/weight/bold" },
+    "lineHeight": { "value": 40, "variable": "typography-mobile/line-height/2xl" },
+    "letterSpacing": { "value": -0.6, "variable": "typography-mobile/letter-spacing/negative-double" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/title/large": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 28, "variable": "typography-mobile/font-size/xl" },
+    "fontWeight": { "value": 600, "variable": "typography-mobile/weight/semibold" },
+    "lineHeight": { "value": 36, "variable": "typography-mobile/line-height/xl" },
+    "letterSpacing": { "value": -0.6, "variable": "typography-mobile/letter-spacing/negative-double" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/title/medium": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 21, "variable": "typography-mobile/font-size/lg" },
+    "fontWeight": { "value": 600, "variable": "typography-mobile/weight/semibold" },
+    "lineHeight": { "value": 28, "variable": "typography-mobile/line-height/lg" },
+    "letterSpacing": { "value": -0.3, "variable": "typography-mobile/letter-spacing/negative" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/title/small": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 17, "variable": "typography-mobile/font-size/md" },
+    "fontWeight": { "value": 600, "variable": "typography-mobile/weight/semibold" },
+    "lineHeight": { "value": 24, "variable": "typography-mobile/line-height/md" },
+    "letterSpacing": { "value": -0.3, "variable": "typography-mobile/letter-spacing/negative" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/body/large-emphasis": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 21, "variable": "typography-mobile/font-size/lg" },
+    "fontWeight": { "value": 500, "variable": "typography-mobile/weight/medium" },
+    "lineHeight": { "value": 28, "variable": "typography-mobile/line-height/lg" },
+    "letterSpacing": { "value": -0.3, "variable": "typography-mobile/letter-spacing/negative" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/body/large": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 21, "variable": "typography-mobile/font-size/lg" },
+    "fontWeight": { "value": 400, "variable": "typography-mobile/weight/regular" },
+    "lineHeight": { "value": 28, "variable": "typography-mobile/line-height/lg" },
+    "letterSpacing": { "value": -0.15, "variable": "typography-mobile/letter-spacing/negative-half" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/body/medium-emphasis": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 17, "variable": "typography-mobile/font-size/md" },
+    "fontWeight": { "value": 500, "variable": "typography-mobile/weight/medium" },
+    "lineHeight": { "value": 24, "variable": "typography-mobile/line-height/md" },
+    "letterSpacing": { "value": -0.3, "variable": "typography-mobile/letter-spacing/negative" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/body/medium": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 17, "variable": "typography-mobile/font-size/md" },
+    "fontWeight": { "value": 400, "variable": "typography-mobile/weight/regular" },
+    "lineHeight": { "value": 24, "variable": "typography-mobile/line-height/md" },
+    "letterSpacing": { "value": -0.15, "variable": "typography-mobile/letter-spacing/negative-half" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/body/small-emphasis": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 15, "variable": "typography-mobile/font-size/sm" },
+    "fontWeight": { "value": 500, "variable": "typography-mobile/weight/medium" },
+    "lineHeight": { "value": 20, "variable": "typography-mobile/line-height/sm" },
+    "letterSpacing": { "value": -0.15, "variable": "typography-mobile/letter-spacing/negative-half" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/body/small": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 15, "variable": "typography-mobile/font-size/sm" },
+    "fontWeight": { "value": 400, "variable": "typography-mobile/weight/regular" },
+    "lineHeight": { "value": 20, "variable": "typography-mobile/line-height/sm" },
+    "letterSpacing": { "value": 0, "variable": "typography-mobile/letter-spacing/none" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/caption/caption-medium-emphasis": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 12, "variable": "typography-mobile/font-size/xs" },
+    "fontWeight": { "value": 600, "variable": "typography-mobile/weight/semibold" },
+    "lineHeight": { "value": 16, "variable": "typography-mobile/line-height/xs" },
+    "letterSpacing": { "value": 0.3, "variable": "typography-mobile/letter-spacing/positive" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/caption/caption-medium": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 12, "variable": "typography-mobile/font-size/xs" },
+    "fontWeight": { "value": 500, "variable": "typography-mobile/weight/medium" },
+    "lineHeight": { "value": 16, "variable": "typography-mobile/line-height/xs" },
+    "letterSpacing": { "value": 0.3, "variable": "typography-mobile/letter-spacing/positive" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/caption/caption-small-emphasis": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 9, "variable": "typography-mobile/font-size/2xs" },
+    "fontWeight": { "value": 600, "variable": "typography-mobile/weight/semibold" },
+    "lineHeight": { "value": 12, "variable": "typography-mobile/line-height/2xs" },
+    "letterSpacing": { "value": 0.3, "variable": "typography-mobile/letter-spacing/positive" },
+    "textCase": "none",
+    "textDecoration": "none"
+  },
+  "mobile/caption/caption-small": {
+    "fontFamily": "Inter",
+    "fontSize": { "value": 9, "variable": "typography-mobile/font-size/2xs" },
+    "fontWeight": { "value": 500, "variable": "typography-mobile/weight/medium" },
+    "lineHeight": { "value": 12, "variable": "typography-mobile/line-height/2xs" },
+    "letterSpacing": { "value": 0.3, "variable": "typography-mobile/letter-spacing/positive" },
+    "textCase": "none",
+    "textDecoration": "none"
+  }
+}

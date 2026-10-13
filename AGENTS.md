@@ -8,12 +8,16 @@ Keep this file as the single source of truth for project conventions. Update it 
 
 If you are *using* TokoMo tokens (in CompoMo, an app, or a prototype) rather than changing TokoMo itself, you only need:
 
-1. **`@ds-mo/tokens/agent`** (`dist/agent.json`) is the selection contract. Read `principles`, then `intents` for color meaning, then the `families` entry for the category you need, then the `recipes` it links to. It uses exact CSS variable names and is validated against the shipped tokens, so it cannot name a token that does not exist.
+1. **`@ds-mo/tokens/agent`** (`dist/agent.json`) is the web selection contract. Read `principles`, then `intents` for color meaning, then the `families` entry for the category you need, then the `recipes` it links to. It uses exact CSS variable names and is validated against the shipped web tokens, so it cannot name a token that does not exist.
 2. **`@ds-mo/tokens/json/index`** (`dist/tokens-index.json`) confirms a token exists and gives its value.
 
 The site's [`llms.txt`](https://zainadeel.github.io/tokomo/llms.txt) links both.
 
 Never pick a `--color-reference-*` token or a hardcoded value in product code. The rest of this file is for maintaining TokoMo.
+
+Native mobile integrations explicitly consume `@ds-mo/tokens/mobile` (the bundle
+manifest) and its listed `mobile/tokens/` JSON files. Default CSS, JSON, TypeScript,
+index, browser, and agent entry points remain scoped to web + shared sources.
 
 **Before changing any color token, read `docs/guidelines/color-generation.md`** (palette model, contrast and gamut constraints, validation rules, and the contrast audit in §13). It is a hand-written spec, not generated output. Rules for *choosing* tokens live only in `src/agent/token-families.agent.json`; do not add a parallel usage document.
 
@@ -26,6 +30,7 @@ TokoMo is an npm package (`@ds-mo/tokens`) that ships **design tokens** as:
 - CSS custom properties (the primary deliverable — one file per category + a combined index)
 - Light/dark theme files (`dist/themes/light.css`, `dist/themes/dark.css`)
 - Machine-readable JSON (`dist/tokens.json`, per-category files, and mode-aware `dist/json/colors.modes.json`)
+- A native mobile JSON bundle (`dist/mobile/manifest.json` and nine `dist/mobile/tokens/` files), exported through `@ds-mo/tokens/mobile` and `@ds-mo/tokens/mobile/*`
 - Framework-neutral selection and composition guidance (`dist/agent.json`, exported only as `@ds-mo/tokens/agent`)
 - TypeScript constants for all token names (`dist/index.mjs` / `.cjs` / `.d.ts`)
 - Reset and global base CSS (generic utility classes are not shipped)
@@ -95,9 +100,14 @@ src/
       reference/       # Reference palette (source of truth)
       semantic/        # Semantic color tokens (light + dark)
       data/            # Data-visualization palettes (light + dark)
-    dimensions/        # Spacing/sizing tokens
-    typography/        # Font family/size/weight/line-height tokens
-    effects/           # Blur, opacity, and animation primitives
+    dimensions/
+      web/value.tokens.json     # Web spacing/sizing tokens
+      mobile/value.tokens.json  # Mobile spacing/sizing tokens
+    typography/
+      web/value.tokens.json     # Web typography primitives
+      mobile/value.tokens.json  # Mobile typography primitives
+      mobile/semantic.tokens.json # Native mobile text styles
+    effects/           # Shared blur, opacity, and animation primitives
 agent/
   schemas/
     token-agent.schema.json # Public JSON Schema copied to dist/agent.schema.json
@@ -117,6 +127,7 @@ scripts/
   report-contrast.mjs           # WCAG + APCA report over shipped pairings (manual, not in build)
   lib/
     token-compiler.mjs          # Source manifest → normalized graph → validated artifacts
+    mobile-tokens.mjs           # Native validation + mobile manifest and source JSON bundle
     manual-effects.mjs          # Authored compiler input for composite effect tokens
     transactional-output.mjs    # Failure-safe generated output replacement + rollback
     token-colors.mjs            # Shared token resolution, CSS colour parsing, sRGB compositing
@@ -148,7 +159,7 @@ release-please-config.json      # Release Please config (node, changelog section
 ## Commands
 
 ```bash
-npm run build            # Full build — CSS + JSON + TypeScript
+npm run build            # Full build — web CSS/JSON/TypeScript + native mobile bundle
 npm run test             # Token JSON mode preservation + OKLCH/contrast math + active-overlay matrix
 npm run test:browser     # Native and component focus ownership in Chromium/WebKit
 npm run test:update-compiler-baseline # Accept intentional public JSON/TS artifact changes
@@ -230,9 +241,9 @@ then rewrites back.
 ## Build pipeline (what `npm run build` does)
 
 1. **Load** — read every Figma/DTCG source declared by the authoritative manifest in `scripts/lib/token-compiler.mjs`, plus registered derived/manual tokens.
-2. **Normalize** — retain source path, type, mode, aliases, Figma extensions, provenance, and deterministic output ordering in one internal graph.
+2. **Scope and normalize** — source entries declare `shared`, `web`, or `mobile`. Normalize shared + web sources into the CSS graph, retaining source path, type, mode, aliases, Figma extensions, provenance, and deterministic output ordering. Mobile primitives and native text styles are validated separately from the same loaded manifest so overlapping web/mobile paths cannot collide or leak.
 3. **Validate globally** — reject malformed values, mode mismatches, missing/invalid aliases, dependency cycles, ignored token branches, and CSS/TypeScript name collisions.
-4. **Render in memory** — generate the four committed `src/*.css` files plus legacy JSON, token index, and TypeScript constants from the same graph.
+4. **Render in memory** — generate the four committed `src/*.css` files plus legacy JSON, token index, and TypeScript constants from the web graph. Emit the native mobile bundle from validated shared + mobile source bytes, preserving native formats and adding a versioned manifest with file checksums.
 5. **Stage and validate guidance** — populate a temporary `dist/`, validate the agent manifest against graph-derived `tokens.json`, and emit agent artifacts.
 6. **Replace transactionally** — replace generated `src/*.css` and `dist/` only after all prior steps succeed; roll back replacements on filesystem failure.
 
@@ -241,6 +252,38 @@ The category generator scripts remain compatibility entry points, but they deleg
 Watch mode observes raw JSON, agent/schema/manual inputs, and authored CSS. It deliberately excludes generated `src/{colors,dimensions,typography,effects}.css` so a build cannot trigger itself.
 
 Compiler tests compare committed CSS byte-for-byte and compare public JSON, TypeScript, and agent output against checked-in SHA-256 baselines. Run `npm run test:update-compiler-baseline` only when a reviewed source-token or guidance change intentionally changes those public artifacts; include the baseline diff in the same PR.
+
+### Mobile bundle contract
+
+`dist/mobile/manifest.json` identifies the package release and lists nine native
+JSON files beneath `dist/mobile/tokens/` for downstream native consumers.
+`schemaVersion` versions the manifest shape; `version` is the TokoMo
+package version. Each entry includes a relative path, authored source, platform,
+category, mode, format, and SHA-256 checksum. No build timestamp is emitted.
+
+The repository and npm package are public, including mobile token values and
+embedded Figma metadata. Platform opt-in controls imports, not access. Do not
+add private application code, credentials, internal service details, or private
+repository identifiers to token sources, package metadata, or public docs.
+
+Shared color/effect entries use `mobileOutput` in `TOKEN_SOURCE_MANIFEST`; never
+copy these definitions into mobile source folders. Mobile colors retain the
+Figma sRGB representation and metadata; web CSS retains its existing OKLCH
+behavior. Manual CSS effect composites are web-only. Mobile dimensions and
+typography have distinct source folders; the mobile text-style file is the
+native composition input, not an additional web guidance manifest.
+
+New mobile files must be registered in the same manifest and supported by
+`scripts/lib/mobile-tokens.mjs`. Native validation checks primitive types,
+dimension scales/sheet heights, text-style references and their embedded values,
+and native shared-value formats before transactional replacement. The existing
+web graph also validates shared color aliases and light/dark parity. Tests guard
+web isolation, source preservation, native validation, and build rollback.
+Mobile artifacts are included in the compiler baseline; the manifest's package
+version is normalized so release-only version changes do not invalidate it.
+
+Mobile code generation and the downstream manual fetch action belong to the
+engineering-owned repositories. This package supplies the versioned input only.
 
 ---
 
@@ -416,8 +459,10 @@ Must be done manually by the package owner once:
 | Need to change... | Edit this |
 |---|---|
 | Color token values | `src/json/colors/` (reference, semantic, data) |
-| Dimension/spacing values | `src/json/dimensions/` |
-| Typography values | `src/json/typography/` |
+| Dimension/spacing values | `src/json/dimensions/{web,mobile}/value.tokens.json` |
+| Typography values | `src/json/typography/{web,mobile}/value.tokens.json` |
+| Native mobile text styles | `src/json/typography/mobile/semantic.tokens.json` |
+| Native mobile export / validation | `scripts/lib/mobile-tokens.mjs`; source registration in `TOKEN_SOURCE_MANIFEST` |
 | Text style recipes (documentation only) | `token-recipe:typography-composites` in `src/agent/token-families.agent.json`; this package ships no `.text-*` classes |
 | Token selection guidance and recipes | `src/agent/token-families.agent.json` |
 | Agent guidance schema | `agent/schemas/token-agent.schema.json` |

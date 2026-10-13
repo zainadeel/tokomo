@@ -22,6 +22,11 @@ pnpm add file:../path/to/tokomo
 
 ## Usage
 
+The default CSS, JSON, TypeScript, token index, browser, and agent guidance target
+**web consumers**. Native mobile consumers explicitly use the [mobile bundle](#mobile-bundle).
+Semantic/data colors and effect primitives have one shared source; dimensions
+and typography have separate web and mobile sources.
+
 ### CSS
 
 ```css
@@ -168,10 +173,70 @@ Keep split parts on the same suffix. An element's own overflow does not automati
 
 Available: `elevated-none`, `elevated-sm`, `elevated-md`, `elevated-floating`, `depressed-sm`, `depressed-md`, `elevated-panel-top/right/bottom/left`
 
+## Mobile bundle
+
+`npm run build` also produces `dist/mobile/`. It ships in the same npm release as
+the web tokens, with a separate package entry point:
+
+```js
+import manifest from '@ds-mo/tokens/mobile' with { type: 'json' };
+import dimensions from '@ds-mo/tokens/mobile/tokens/dimensions/mobile/value.tokens.json' with { type: 'json' };
+```
+
+The entry point is a manifest containing `schemaVersion`, the package name and
+version, and a `files` list. Each file records its path relative to `dist/mobile/`,
+source path, platform (`shared` or `mobile`), category, mode, format, and SHA-256
+checksum. The manifest schema is versioned independently of the package release.
+
+```text
+dist/mobile/
+  manifest.json
+  tokens/
+    colors/reference/hex.tokens.json
+    colors/semantic/{light,dark}.tokens.json
+    colors/data/{light,dark}.tokens.json
+    effects/value.tokens.json
+    dimensions/mobile/value.tokens.json
+    typography/mobile/value.tokens.json
+    typography/mobile/semantic.tokens.json
+```
+
+The nine token files preserve the authored JSON, including Figma metadata,
+aliases, numeric values, duration units, and the native text-style format.
+The `tokens/` layout matches `design_tokens`, so its fetch workflow can copy the
+listed files from a specific published version after verifying their checksums.
+Native Swift/Kotlin code generation stays in the mobile engineering pipeline.
+The downstream fetch action is a separate integration; publishing this bundle
+does not itself update `design_tokens`.
+
+Colors reuse the shared reference, semantic, and data sources in both themes.
+Native JSON retains the existing Figma sRGB values; web CSS continues to emit
+OKLCH for named chromatic references. These are platform representations of the
+same authored palette, with the gamut behavior described in
+[the color specification](docs/guidelines/color-generation.md#42-working-color-space).
+Effects contain the shared authored primitives; CSS composite shadows and
+elevation remain web outputs.
+
+Mobile dimensions, typography primitives, and text styles are validated before
+any build output is replaced. A text style must reference a mobile primitive and
+its embedded value must agree within Figma's floating-point tolerance. Update
+the corresponding text-style values when changing typography primitives. The
+existing CSS imports, web JSON/TypeScript exports, and agent guidance continue
+to contain only web and shared tokens.
+
 ## Updating from Figma
 
 1. Export updated variable JSON from Figma
-2. Drop into `src/json/{colors,dimensions,typography,effects}/`
+2. Replace the appropriate authored source:
+
+   | Collection | Source |
+   | --- | --- |
+   | Shared colors | `src/json/colors/{reference,semantic,data}/` |
+   | Shared effect primitives | `src/json/effects/effects.tokens.json` |
+   | Web dimensions / typography | `src/json/{dimensions,typography}/web/value.tokens.json` |
+   | Mobile dimensions / typography | `src/json/{dimensions,typography}/mobile/value.tokens.json` |
+   | Mobile text styles | `src/json/typography/mobile/semantic.tokens.json` |
+
 3. Run the build:
 
 ```bash

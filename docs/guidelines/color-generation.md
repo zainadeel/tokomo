@@ -126,7 +126,14 @@ OKLCH is the working model **and** the shipped output for the chromatic referenc
 
 1. `scripts/generate-color-tokens.mjs` parses `L<lightness>-C<chroma>` out of each reference token name and takes the hue angle from the family suffix (`blue-250` → 250).
 2. It emits that as a CSS `oklch()` value — `light/blue-250/L32-C09-strong` becomes `--color-reference-light-blue-250-l32-c09-strong: oklch(32% 0.09 250)`.
-3. The `hex` and `components` fields in the reference JSON are **Figma-mirror metadata**. They are not the shipped value for chromatic families, so renaming a token changes the shipped color even if the hex is left untouched.
+3. The `hex` and `components` fields in the reference JSON are **Figma-mirror metadata for web CSS**. They do not determine the web CSS value for chromatic families, so renaming a token changes the shipped CSS color even if the hex is left untouched.
+
+The native mobile bundle preserves these same authored JSON files, including
+their sRGB `hex`, `components`, `alpha`, and Figma alias metadata, for the existing
+mobile generators. It does not convert CSS OKLCH back to hex. Thus both platforms
+share the semantic/data definitions and reference source, while native tooling
+retains its existing sRGB representation. This export does not promise identical
+gamut mapping between web CSS and native output.
 
 Because the name drives the output, a reference token's name and its stored hex must agree. See Section 9 for the parity rule.
 

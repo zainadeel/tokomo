@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { compileMobileArtifacts } from './mobile-tokens.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ROOT = path.resolve(__dirname, '../..');
@@ -13,6 +14,8 @@ export const TOKEN_SOURCE_MANIFEST = Object.freeze([
     category: 'colors',
     layer: 'reference',
     mode: 'light',
+    platform: 'shared',
+    mobileOutput: 'tokens/colors/reference/hex.tokens.json',
   },
   {
     id: 'colors.semantic.light',
@@ -20,6 +23,8 @@ export const TOKEN_SOURCE_MANIFEST = Object.freeze([
     category: 'colors',
     layer: 'semantic',
     mode: 'light',
+    platform: 'shared',
+    mobileOutput: 'tokens/colors/semantic/light.tokens.json',
   },
   {
     id: 'colors.semantic.dark',
@@ -27,6 +32,8 @@ export const TOKEN_SOURCE_MANIFEST = Object.freeze([
     category: 'colors',
     layer: 'semantic',
     mode: 'dark',
+    platform: 'shared',
+    mobileOutput: 'tokens/colors/semantic/dark.tokens.json',
   },
   {
     id: 'colors.data.light',
@@ -34,6 +41,8 @@ export const TOKEN_SOURCE_MANIFEST = Object.freeze([
     category: 'colors',
     layer: 'data',
     mode: 'light',
+    platform: 'shared',
+    mobileOutput: 'tokens/colors/data/light.tokens.json',
   },
   {
     id: 'colors.data.dark',
@@ -41,12 +50,15 @@ export const TOKEN_SOURCE_MANIFEST = Object.freeze([
     category: 'colors',
     layer: 'data',
     mode: 'dark',
+    platform: 'shared',
+    mobileOutput: 'tokens/colors/data/dark.tokens.json',
   },
   {
     id: 'dimensions',
-    file: 'src/json/dimensions/dimensions.tokens.json',
+    file: 'src/json/dimensions/web/value.tokens.json',
     category: 'dimensions',
     mode: 'default',
+    platform: 'web',
     expectedGroups: [
       'space',
       'radius',
@@ -69,9 +81,10 @@ export const TOKEN_SOURCE_MANIFEST = Object.freeze([
   },
   {
     id: 'typography',
-    file: 'src/json/typography/typography.tokens.json',
+    file: 'src/json/typography/web/value.tokens.json',
     category: 'typography',
     mode: 'default',
+    platform: 'web',
     expectedGroups: [
       'font-family',
       'weight',
@@ -86,12 +99,41 @@ export const TOKEN_SOURCE_MANIFEST = Object.freeze([
     file: 'src/json/effects/effects.tokens.json',
     category: 'effects',
     mode: 'default',
+    platform: 'shared',
+    mobileOutput: 'tokens/effects/value.tokens.json',
     expectedGroups: ['animation', 'blur', 'opacity'],
     expectedPaths: [
       ['animation', 'duration'],
       ['animation', 'delay'],
       ['animation', 'easing'],
     ],
+  },
+  {
+    id: 'dimensions.mobile',
+    file: 'src/json/dimensions/mobile/value.tokens.json',
+    category: 'dimensions',
+    mode: 'default',
+    platform: 'mobile',
+    mobileOutput: 'tokens/dimensions/mobile/value.tokens.json',
+    expectedGroups: ['space', 'radius', 'size', 'size-icon', 'width-stroke', 'height-sheet'],
+  },
+  {
+    id: 'typography.mobile',
+    file: 'src/json/typography/mobile/value.tokens.json',
+    category: 'typography',
+    mode: 'default',
+    platform: 'mobile',
+    mobileOutput: 'tokens/typography/mobile/value.tokens.json',
+    expectedGroups: ['font-family', 'weight', 'font-size', 'line-height', 'letter-spacing', 'paragraph-spacing'],
+  },
+  {
+    id: 'typography.mobile.semantic',
+    file: 'src/json/typography/mobile/semantic.tokens.json',
+    category: 'typography',
+    mode: 'default',
+    platform: 'mobile',
+    format: 'text-styles',
+    mobileOutput: 'tokens/typography/mobile/semantic.tokens.json',
   },
 ]);
 
@@ -599,12 +641,14 @@ export function loadTokenSources(root = DEFAULT_ROOT, manifest = TOKEN_SOURCE_MA
   return manifest.map(source => {
     const absolutePath = path.join(root, source.file);
     let document;
+    let contents;
     try {
-      document = JSON.parse(readFileSync(absolutePath, 'utf8'));
+      contents = readFileSync(absolutePath, 'utf8');
+      document = JSON.parse(contents);
     } catch (error) {
       throw new Error(`${source.file}: failed to load token source: ${error.message}`, { cause: error });
     }
-    return { ...source, absolutePath, document };
+    return { ...source, absolutePath, contents, document };
   });
 }
 
@@ -1189,7 +1233,7 @@ function renderDimensionsCss(graph) {
 
   return [
     '/* AUTO-GENERATED. See scripts/generate-dimension-tokens.mjs */',
-    '/* Source: src/json/dimensions/dimensions.tokens.json        */',
+    '/* Source: src/json/dimensions/web/value.tokens.json         */',
     '',
     ':root {',
     ...lines,
@@ -1209,7 +1253,7 @@ function renderTypographyCss(graph) {
   }
   return [
     '/* AUTO-GENERATED. See scripts/generate-typography-tokens.mjs */',
-    '/* Source: src/json/typography/typography.tokens.json          */',
+    '/* Source: src/json/typography/web/value.tokens.json           */',
     '',
     ':root {',
     ...lines,
@@ -1369,13 +1413,30 @@ export async function compileTokenProject({
     manualEffectTokens = manualEffects.MANUAL_EFFECT_TOKENS;
     renderManualEffects = manualEffects.renderManualEffectsCss;
   }
-  const graph = normalizeTokenSources(sources, { manualEffectTokens, renderManualEffects });
+  // Scope before normalization: the same primitive path may have different
+  // web and mobile values. Only shared + web sources own CSS/TS names and agent guidance.
+  const webSources = sources.filter(source => source.platform !== 'mobile');
+  const graph = normalizeTokenSources(webSources, { manualEffectTokens, renderManualEffects });
   validateTokenGraph(graph);
+  const compilation = compileTokenArtifacts(graph);
+  const mobileSources = sources.filter(source => source.mobileOutput).map(source => {
+    assertExpectedGroups(source);
+    return {
+      ...source,
+      leaves: source.format === 'text-styles' ? [] : walkTokenLeaves(source.document, source),
+    };
+  });
+  if (mobileSources.length) {
+    const pkg = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
+    for (const [file, contents] of compileMobileArtifacts(mobileSources, pkg)) {
+      compilation.artifacts.set(file, contents);
+    }
+  }
   return {
     root,
     sources,
     graph,
-    ...compileTokenArtifacts(graph),
+    ...compilation,
   };
 }
 

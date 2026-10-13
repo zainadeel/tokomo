@@ -47,6 +47,16 @@ jobs:
             dist/tokens.json \
             dist/tokens-index.json \
             dist/json/colors.modes.json \
+            dist/mobile/manifest.json \
+            dist/mobile/tokens/colors/reference/hex.tokens.json \
+            dist/mobile/tokens/colors/semantic/light.tokens.json \
+            dist/mobile/tokens/colors/semantic/dark.tokens.json \
+            dist/mobile/tokens/colors/data/light.tokens.json \
+            dist/mobile/tokens/colors/data/dark.tokens.json \
+            dist/mobile/tokens/effects/value.tokens.json \
+            dist/mobile/tokens/dimensions/mobile/value.tokens.json \
+            dist/mobile/tokens/typography/mobile/value.tokens.json \
+            dist/mobile/tokens/typography/mobile/semantic.tokens.json \
             dist/agent.json \
             dist/agent.mjs \
             dist/agent.d.ts \

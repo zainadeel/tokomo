@@ -44,6 +44,8 @@
     "./json/dimensions": "./dist/json/dimensions.json",
     "./json/typography": "./dist/json/typography.json",
     "./json/effects": "./dist/json/effects.json",
+    "./mobile": "./dist/mobile/manifest.json",
+    "./mobile/*": "./dist/mobile/*",
     "./agent": {
       "import": "./dist/agent.mjs",
       "types": "./dist/agent.d.ts",

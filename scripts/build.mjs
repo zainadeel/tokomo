@@ -1,5 +1,5 @@
 /**
- * Build @ds-mo/tokens from one normalized, validated token graph.
+ * Build web artifacts and a native mobile bundle from one source manifest.
  *
  * All token artifacts are rendered into staging before any committed source or
  * dist output is replaced. Replacement is rolled back if a filesystem step fails.
@@ -84,7 +84,7 @@ async function build() {
     console.log('  → Loading, normalizing, and validating token sources...');
     const compilation = await compileTokenProject({ root: PKG_ROOT });
 
-    console.log('  → Rendering CSS, JSON, index, and TypeScript artifacts...');
+    console.log('  → Rendering web artifacts and the native mobile JSON bundle...');
     stageDist = stageBuild(compilation);
     sourceReplacements = prepareSourceCss(compilation);
 
@@ -95,7 +95,8 @@ async function build() {
     ]);
 
     const elapsed = Date.now() - startTime;
-    console.log(`\n✅ @ds-mo/tokens built (${compilation.graph.nodes.length} tokens) in ${elapsed}ms\n`);
+    const mobileFiles = [...compilation.artifacts.keys()].filter(file => file.startsWith('mobile/tokens/')).length;
+    console.log(`\n✅ @ds-mo/tokens built (${compilation.graph.nodes.length} web tokens + ${mobileFiles} mobile JSON files) in ${elapsed}ms\n`);
   } catch (error) {
     for (const replacement of sourceReplacements) removePath(replacement.staged);
     if (stageDist) removePath(stageDist);

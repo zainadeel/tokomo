@@ -143,6 +143,9 @@ dist/                   # Generated — do not edit directly
 tools/color-graph/       # Authored Color graph page, map interactions, and styles
 tools/site/              # Shared docs header styles and Light / Dark / System controller
 .github/
+  actions/
+    setup-toolchain/   # Node from .nvmrc + exact npm check, shared by all npm workflows
+    retry-deploy-pages/ # Retries the Pages deploy step on transient failures
   workflows/
     build.yml          # PR: npm ci, build, test, build docs, verify artifacts + src unchanged
     codeql.yml         # JS/TS security scan — PR + push + weekly Sunday cron
@@ -217,8 +220,13 @@ Node and npm are both pinned, and CI uses exactly these:
 
 | | Version | Pinned by |
 |---|---|---|
-| Node | `24.15.0` | `.nvmrc` |
-| npm | `11.12.1` | `packageManager` (Corepack) |
+| Node | `24.22.1` | `.nvmrc` |
+| npm | `11.19.1` | `packageManager` (Corepack) |
+
+`.nvmrc` is the only Node pin. Every workflow that runs npm uses the local
+`.github/actions/setup-toolchain` action, which reads `.nvmrc` and fails unless
+the bundled npm equals `packageManager`. To upgrade, choose a Node release
+whose bundled npm you want, then update both pins together.
 
 Interactive shells with an `.nvmrc` hook pick Node up on `cd`. **Agent and CI
 shells usually do not** — they inherit whatever Node started the session. Select
@@ -450,7 +458,10 @@ Must be done manually by the package owner once:
 - **Do not `git push` to `main`** — always branch + PR.
 - **Do not delete a token from `src/json/` without explicit user confirmation** — even if a Figma re-export omits it; it might be a Figma filter accident.
 - **Do not commit `NPM_TOKEN` or any npm auth** — publishing uses OIDC, no secrets required.
-- **Do not skip the npm upgrade step** in the publish job — Trusted Publisher requires npm ≥ 11.5.1.
+- **Do not install a floating npm in the publish job** — Trusted Publisher requires npm ≥ 11.5.1, which the pinned `packageManager` version satisfies and `setup-toolchain` verifies.
+- **Do not use mutable action tags or `npx --yes`** — pin external actions to a full commit SHA with a version comment, and add CLI tools as exact devDependencies.
+- **Do not widen workflow permissions** — workflows default to `contents: read`; only the release-please, publish, and Pages jobs request write or OIDC access. Checkouts set `persist-credentials: false` because no job pushes with Git.
+- **Do not add a job without `timeout-minutes`** — GitHub's default is 6 hours, so a hung step runs that long. PR workflows also cancel superseded runs; release and Pages runs are never cancelled mid-flight.
 
 ---
 

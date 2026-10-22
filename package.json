@@ -76,8 +76,8 @@
     "report:contrast": "node scripts/report-contrast.mjs",
     "clean": "rm -rf dist",
     "dev": "node scripts/build.mjs --watch",
-    "tool:colors": "node scripts/copy-tool-assets.mjs && npx --yes serve tools/color-system -p 4040 -L",
-    "preview:docs": "npm run build && npm run build:docs && npx --yes serve docs -p 4040 -L",
+    "tool:colors": "node scripts/copy-tool-assets.mjs && serve tools/color-system -p 4040 -L",
+    "preview:docs": "npm run build && npm run build:docs && serve docs -p 4040 -L",
     "test:browser": "playwright test"
   },
   "engines": {
@@ -86,10 +86,16 @@
   "devDependencies": {
     "@playwright/test": "1.63.0",
     "apca-w3": "^0.1.9",
-    "chokidar": "^5.0.0"
+    "chokidar": "^5.0.0",
+    "serve": "14.2.6"
+  },
+  "overrides": {
+    "serve": {
+      "compression": "1.8.2"
+    }
   },
   "sideEffects": [
     "**/*.css"
   ],
-  "packageManager": "npm@11.12.1"
+  "packageManager": "npm@11.19.1"
 }

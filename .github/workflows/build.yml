@@ -4,17 +4,26 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
+# A new push to the same PR supersedes the previous run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build tokens
     runs-on: ubuntu-latest
+    # A healthy run takes ~1 minute; fail fast instead of the 6-hour default.
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: '24.15.0'
-          cache: 'npm'
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-toolchain
 
       - name: Install dependencies
         run: npm ci

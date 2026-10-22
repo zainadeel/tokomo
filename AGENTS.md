@@ -121,6 +121,7 @@ scripts/
   generate-ts-constants.mjs     # Graph → TypeScript token-name constants
   generate-agent-manifest.mjs   # Validates guidance coverage + emits dist/agent.*
   update-token-artifact-baseline.mjs # Accept intentional public artifact changes
+  verify-exports.mjs            # CI: every package.json `exports` target exists in dist/
   build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation) and docs/llms.txt
   build-color-graph.mjs         # Compiler graph + guidance + measured pairings → docs/graph/
   docs-template.html            # Template for the Browser and Documentation views
@@ -147,7 +148,8 @@ tools/site/              # Shared docs header styles and Light / Dark / System c
     setup-toolchain/   # Node from .nvmrc + exact npm check, shared by all npm workflows
     retry-deploy-pages/ # Retries the Pages deploy step on transient failures
   workflows/
-    build.yml          # PR: npm ci, build, test, build docs, verify artifacts + src unchanged
+    build.yml          # PR: npm ci, build, test, build docs, verify exports + src unchanged
+    browser.yml        # PR touching globals/reset/themes/browser tests/lockfile: Playwright focus tests
     codeql.yml         # JS/TS security scan — PR + push + weekly Sunday cron
     pr-title.yml       # Lints PR titles as conventional commits
     release-please.yml # Opens release PRs for visible changelog types; auto-publishes on merge (OIDC)
@@ -210,7 +212,7 @@ The resting figures and the selected-state figures answer different questions. A
 
 Coverage of the selected-state matrix is enforced by `tests/active-contrast.test.mjs`: if a new `interaction.*-active` token is added without being wired into `buildActiveCombinations()`, the test suite fails rather than silently omitting it. Hover, pressed, and focus overlays are not yet measured.
 
-There is no separate lint command. `npm test` covers token-mode preservation, color math, the resting translucent hierarchy over every semantic bold backdrop, and the generated agent contract. The Build workflow re-runs the build, runs unit and browser tests, verifies distributable artifacts, and asserts `src/` was not mutated. Browser tests require `npx playwright install chromium webkit` locally.
+There is no separate lint command. `npm test` covers token-mode preservation, color math, the resting translucent hierarchy over every semantic bold backdrop, and the generated agent contract. The Build workflow re-runs the build, runs unit tests, builds docs, checks that every `package.json` `exports` target exists in `dist/` (`scripts/verify-exports.mjs`, so a new export needs no CI edit), and asserts `src/` was not mutated — the build rewrites the generated `src/*.css`, so that check is what catches stale committed CSS. The Browser workflow runs the Playwright focus tests only when a PR changes `src/globals.css`, `src/reset.css`, `src/themes/`, `tests/browser/`, `playwright.config.mjs`, or `package-lock.json`; run `npm run test:browser` locally whenever you touch focus behaviour. Browser tests require `npx playwright install chromium webkit` locally.
 
 ---
 
@@ -441,7 +443,8 @@ Must be done manually by the package owner once:
 
 | Workflow | Trigger | Purpose |
 |---|---|---|
-| `build.yml` | PR to main | `npm ci` + build + tests + docs build + verify dist artifacts + verify `src/` not mutated |
+| `build.yml` | PR to main | `npm ci` + build + tests + docs build + verify package exports + verify `src/` not mutated |
+| `browser.yml` | PR to main touching `src/globals.css`, `src/reset.css`, `src/themes/**`, `tests/browser/**`, `playwright.config.mjs`, or `package-lock.json` | Build + Playwright focus tests in Chromium/WebKit |
 | `pr-title.yml` | PR opened/edited | Enforce conventional-commit PR titles (lowercase subject) |
 | `codeql.yml` | Push/PR to main, weekly Sunday | GitHub CodeQL JS/TS security scan |
 | `release-please.yml` | Push to main | Open release PR for visible changelog types; publish via npm OIDC when it merges |

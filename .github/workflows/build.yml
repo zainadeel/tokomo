@@ -34,51 +34,11 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Install focus-test browsers
-        run: npx playwright install --with-deps chromium webkit
-
-      - name: Test global focus in browsers
-        run: npm run test:browser
-
       - name: Build docs
         run: npm run build:docs
 
-      - name: Verify dist artifacts
-        run: |
-          for f in \
-            dist/index.css \
-            dist/colors.css \
-            dist/dimensions.css \
-            dist/typography.css \
-            dist/effects.css \
-            dist/reset.css \
-            dist/globals.css \
-            dist/tokens.json \
-            dist/tokens-index.json \
-            dist/json/colors.modes.json \
-            dist/mobile/manifest.json \
-            dist/mobile/tokens/colors/reference/hex.tokens.json \
-            dist/mobile/tokens/colors/semantic/light.tokens.json \
-            dist/mobile/tokens/colors/semantic/dark.tokens.json \
-            dist/mobile/tokens/colors/data/light.tokens.json \
-            dist/mobile/tokens/colors/data/dark.tokens.json \
-            dist/mobile/tokens/effects/value.tokens.json \
-            dist/mobile/tokens/dimensions/mobile/value.tokens.json \
-            dist/mobile/tokens/typography/mobile/value.tokens.json \
-            dist/mobile/tokens/typography/mobile/semantic.tokens.json \
-            dist/agent.json \
-            dist/agent.mjs \
-            dist/agent.d.ts \
-            dist/agent.schema.json \
-            dist/index.mjs \
-            dist/index.cjs \
-            dist/index.d.ts; do
-            if [ ! -f "$f" ]; then
-              echo "❌ Missing expected output: $f"
-              exit 1
-            fi
-          done
-          echo "✅ All expected dist files present."
+      - name: Verify package exports
+        run: node scripts/verify-exports.mjs
 
       - name: Verify src/ was not mutated by build
         run: |

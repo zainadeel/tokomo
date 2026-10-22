@@ -1,0 +1,51 @@
+name: Browser
+
+# The Playwright focus tests cover `src/globals.css` behaviour only, so they run
+# when that CSS, its theme/reset neighbours, the tests, or the Playwright
+# install can change — not on every PR.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/globals.css'
+      - 'src/reset.css'
+      - 'src/themes/**'
+      - 'tests/browser/**'
+      - 'playwright.config.mjs'
+      - 'package-lock.json'
+      - '.github/workflows/browser.yml'
+
+permissions:
+  contents: read
+
+# A new push to the same PR supersedes the previous run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  focus:
+    name: Global focus in browsers
+    runs-on: ubuntu-latest
+    # A healthy run takes ~1 minute. `--with-deps` pulls ~120 MB of WebKit
+    # system packages from the Ubuntu mirror, which has taken 9+ minutes on slow
+    # days, so allow headroom. This check is not required for merging.
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-toolchain
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Install focus-test browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Test global focus in browsers
+        run: npm run test:browser

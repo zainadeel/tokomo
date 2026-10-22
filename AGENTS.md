@@ -121,6 +121,7 @@ scripts/
   generate-ts-constants.mjs     # Graph → TypeScript token-name constants
   generate-agent-manifest.mjs   # Validates guidance coverage + emits dist/agent.*
   update-token-artifact-baseline.mjs # Accept intentional public artifact changes
+  verify-exports.mjs            # CI: every package.json `exports` target exists in dist/
   build-docs.mjs                # Regenerates docs/index.html (Browser + Documentation) and docs/llms.txt
   build-color-graph.mjs         # Compiler graph + guidance + measured pairings → docs/graph/
   docs-template.html            # Template for the Browser and Documentation views
@@ -145,9 +146,9 @@ tools/site/              # Shared docs header styles and Light / Dark / System c
 .github/
   actions/
     setup-toolchain/   # Node from .nvmrc + exact npm check, shared by all npm workflows
-    retry-deploy-pages/ # Retries the Pages deploy step on transient failures
   workflows/
-    build.yml          # PR: npm ci, build, test, build docs, verify artifacts + src unchanged
+    build.yml          # PR: npm ci, build, test, build docs, verify exports + src unchanged
+    browser.yml        # PR touching globals/reset/themes/browser tests/lockfile: Playwright focus tests
     codeql.yml         # JS/TS security scan — PR + push + weekly Sunday cron
     pr-title.yml       # Lints PR titles as conventional commits
     release-please.yml # Opens release PRs for visible changelog types; auto-publishes on merge (OIDC)
@@ -210,7 +211,7 @@ The resting figures and the selected-state figures answer different questions. A
 
 Coverage of the selected-state matrix is enforced by `tests/active-contrast.test.mjs`: if a new `interaction.*-active` token is added without being wired into `buildActiveCombinations()`, the test suite fails rather than silently omitting it. Hover, pressed, and focus overlays are not yet measured.
 
-There is no separate lint command. `npm test` covers token-mode preservation, color math, the resting translucent hierarchy over every semantic bold backdrop, and the generated agent contract. The Build workflow re-runs the build, runs unit and browser tests, verifies distributable artifacts, and asserts `src/` was not mutated. Browser tests require `npx playwright install chromium webkit` locally.
+There is no separate lint command. `npm test` covers token-mode preservation, color math, the resting translucent hierarchy over every semantic bold backdrop, and the generated agent contract. The Build workflow re-runs the build, runs unit tests, builds docs, checks that every `package.json` `exports` target exists in `dist/` (`scripts/verify-exports.mjs`, so a new export needs no CI edit), and asserts `src/` was not mutated — the build rewrites the generated `src/*.css`, so that check is what catches stale committed CSS. The Browser workflow runs the Playwright focus tests only when a PR changes `src/globals.css`, `src/reset.css`, `src/themes/`, `tests/browser/`, `playwright.config.mjs`, or `package-lock.json`; run `npm run test:browser` locally whenever you touch focus behaviour. Browser tests require `npx playwright install chromium webkit` locally.
 
 ---
 
@@ -441,7 +442,8 @@ Must be done manually by the package owner once:
 
 | Workflow | Trigger | Purpose |
 |---|---|---|
-| `build.yml` | PR to main | `npm ci` + build + tests + docs build + verify dist artifacts + verify `src/` not mutated |
+| `build.yml` | PR to main | `npm ci` + build + tests + docs build + verify package exports + verify `src/` not mutated |
+| `browser.yml` | PR to main touching `src/globals.css`, `src/reset.css`, `src/themes/**`, `tests/browser/**`, `playwright.config.mjs`, or `package-lock.json` | Build + Playwright focus tests in Chromium/WebKit |
 | `pr-title.yml` | PR opened/edited | Enforce conventional-commit PR titles (lowercase subject) |
 | `codeql.yml` | Push/PR to main, weekly Sunday | GitHub CodeQL JS/TS security scan |
 | `release-please.yml` | Push to main | Open release PR for visible changelog types; publish via npm OIDC when it merges |
@@ -459,7 +461,7 @@ Must be done manually by the package owner once:
 - **Do not delete a token from `src/json/` without explicit user confirmation** — even if a Figma re-export omits it; it might be a Figma filter accident.
 - **Do not commit `NPM_TOKEN` or any npm auth** — publishing uses OIDC, no secrets required.
 - **Do not install a floating npm in the publish job** — Trusted Publisher requires npm ≥ 11.5.1, which the pinned `packageManager` version satisfies and `setup-toolchain` verifies.
-- **Do not use mutable action tags or `npx --yes`** — pin external actions to a full commit SHA with a version comment, and add CLI tools as exact devDependencies.
+- **Do not use mutable action tags or `npx --yes`** — pin external actions to a full commit SHA with a version comment. Avoid wrapper actions that call other actions by tag internally (a SHA pin on the wrapper doesn't pin what it runs); the Pages deploy retries with native steps for this reason, and add CLI tools as exact devDependencies.
 - **Do not widen workflow permissions** — workflows default to `contents: read`; only the release-please, publish, and Pages jobs request write or OIDC access. Checkouts set `persist-credentials: false` because no job pushes with Git.
 - **Do not add a job without `timeout-minutes`** — GitHub's default is 6 hours, so a hung step runs that long. PR workflows also cancel superseded runs; release and Pages runs are never cancelled mid-flight.
 

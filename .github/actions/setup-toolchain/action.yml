@@ -1,0 +1,33 @@
+name: Set up pinned toolchain
+description: |
+  Installs the Node version pinned in .nvmrc and verifies that its bundled npm
+  matches package.json `packageManager`. Every workflow that runs npm uses this
+  action so Node and npm selections cannot drift from the local pins.
+inputs:
+  registry-url:
+    description: Optional npm registry URL (set for publishing)
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+        registry-url: ${{ inputs.registry-url }}
+
+    - name: Verify Node and npm versions
+      shell: bash
+      run: |
+        expected_node="v$(tr -d '[:space:]' < .nvmrc)"
+        expected_npm="$(node -p "require('./package.json').packageManager.replace(/^npm@/, '')")"
+        actual_node="$(node --version)"
+        actual_npm="$(npm --version)"
+        echo "node ${actual_node} (expected ${expected_node})"
+        echo "npm ${actual_npm} (expected ${expected_npm})"
+        if [ "${actual_node}" != "${expected_node}" ] || [ "${actual_npm}" != "${expected_npm}" ]; then
+          echo "::error::Toolchain mismatch: update .nvmrc and package.json packageManager together."
+          exit 1
+        fi

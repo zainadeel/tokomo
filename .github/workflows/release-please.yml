@@ -14,21 +14,25 @@ on:
         type: string
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   release-please:
     name: Open / update release PR
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    # Release Please opens/updates the release PR, tags, and creates the GitHub
+    # Release, so only this job gets write access.
+    permissions:
+      contents: write
+      pull-requests: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - name: Run release-please
         id: release
-        uses: googleapis/release-please-action@v5
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
@@ -53,23 +57,18 @@ jobs:
       id-token: write  # required for npm OIDC trusted publisher
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tag || needs.release-please.outputs.tag_name }}
+          persist-credentials: false
 
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24.15.0'
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Upgrade npm to support OIDC trusted publishing
+      - name: Setup toolchain
         # npm Trusted Publisher (OIDC to registry) requires npm >= 11.5.1.
-        # Node 20 ships with npm 10.x, which signs provenance but cannot
-        # complete the OIDC-authenticated registry PUT — it fails with a
-        # misleading 404. Pin npm 11.x — npm 12+ requires Node 22+.
-        run: npm install -g npm@^11.5.1
+        # The Node pinned in .nvmrc bundles the exact npm declared in
+        # package.json `packageManager`; the action fails if they disagree.
+        uses: ./.github/actions/setup-toolchain
+        with:
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci

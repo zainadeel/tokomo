@@ -21,6 +21,7 @@ jobs:
     name: Open / update release PR
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    timeout-minutes: 10
     # Release Please opens/updates the release PR, tags, and creates the GitHub
     # Release, so only this job gets write access.
     permissions:
@@ -52,6 +53,7 @@ jobs:
         github.event_name == 'workflow_dispatch'
       )
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       id-token: write  # required for npm OIDC trusted publisher

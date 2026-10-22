@@ -11,10 +11,16 @@ on:
 permissions:
   contents: read
 
+# Only PR runs are superseded; main and scheduled scans always complete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       security-events: write
       actions: read

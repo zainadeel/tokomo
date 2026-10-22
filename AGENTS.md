@@ -461,6 +461,7 @@ Must be done manually by the package owner once:
 - **Do not install a floating npm in the publish job** — Trusted Publisher requires npm ≥ 11.5.1, which the pinned `packageManager` version satisfies and `setup-toolchain` verifies.
 - **Do not use mutable action tags or `npx --yes`** — pin external actions to a full commit SHA with a version comment, and add CLI tools as exact devDependencies.
 - **Do not widen workflow permissions** — workflows default to `contents: read`; only the release-please, publish, and Pages jobs request write or OIDC access. Checkouts set `persist-credentials: false` because no job pushes with Git.
+- **Do not add a job without `timeout-minutes`** — GitHub's default is 6 hours, so a hung step runs that long. PR workflows also cancel superseded runs; release and Pages runs are never cancelled mid-flight.
 
 ---
 

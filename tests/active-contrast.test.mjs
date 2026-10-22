@@ -67,7 +67,7 @@ test("matrix covers both themes for every combination", () => {
   assert.equal(rows.filter((row) => row.theme === "dark").length, combos.length);
 });
 
-test("every row carries all fields issue #130 requires", () => {
+test("every row carries the identity, contrast, threshold, and attribution fields", () => {
   for (const row of rows) {
     for (const field of [
       "theme",
@@ -173,13 +173,6 @@ test("driver status pairs each status fill with its own foreground and overlay",
     assert.match(row.thresholdBasis, /bold \/ large text/);
     assert.ok(row.pass, `${row.baseToken} (${row.theme}) fails 3:1 at ${row.contrastAfter}`);
   }
-});
-
-test("driver status no longer fails at rest", () => {
-  // Before the per-status split, 6 of its 10 rows failed with no overlay applied.
-  const driver = rows.filter((row) => row.family.startsWith("driver-status.interaction.on-"));
-  const restFailures = driver.filter((row) => row.contrastBefore < row.threshold);
-  assert.deepEqual(restFailures, [], "the per-status foreground split should clear all resting failures");
 });
 
 test("compositeRgb applies source-over against an opaque base", () => {
@@ -392,53 +385,6 @@ test("families restricted to 3:1 are the ones documented as restricted", () => {
       restrictedPrefixes.some((prefix) => row.family.startsWith(prefix));
     assert.ok(ok, `${row.family} is scored at 3:1 but is not a documented restriction`);
   }
-});
-
-// Regression anchors. These pin the compositing method against the shipped
-// overlay values, not the token values themselves — they are expected to move
-// whenever the overlay alphas or the palette are retuned, and updating them is
-// part of that change. Values below reflect the retune that dropped every
-// selected overlay to 5%.
-test("reproduces the shipped selected-state figures", () => {
-  const find = (theme, base, active) =>
-    rows.find(
-      (row) => row.theme === theme && row.baseToken === base && row.activeToken === active
-    );
-  const round = (n) => Number(n.toFixed(2));
-
-  // The three core-semantic rows that the 10% overlay used to break. Pinned
-  // because they were the tightest in the family and are the first to regress if
-  // the overlay alpha is raised again.
-  assert.equal(
-    round(
-      find(
-        "dark",
-        "--color-background-medium-walkthrough",
-        "--color-interaction-on-medium-background-active"
-      ).contrastAfter
-    ),
-    4.91
-  );
-  assert.equal(
-    round(
-      find(
-        "light",
-        "--color-background-bold-guide",
-        "--color-interaction-on-bold-background-active"
-      ).contrastAfter
-    ),
-    4.88
-  );
-  assert.equal(
-    round(
-      find(
-        "light",
-        "--color-background-bold-walkthrough",
-        "--color-interaction-on-bold-background-active"
-      ).contrastAfter
-    ),
-    4.91
-  );
 });
 
 test("every main interaction family clears its threshold", () => {

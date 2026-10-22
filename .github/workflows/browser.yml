@@ -27,8 +27,10 @@ jobs:
   focus:
     name: Global focus in browsers
     runs-on: ubuntu-latest
-    # A healthy run takes ~1 minute; a stuck browser install must not hold the PR.
-    timeout-minutes: 15
+    # A healthy run takes ~1 minute. `--with-deps` pulls ~120 MB of WebKit
+    # system packages from the Ubuntu mirror, which has taken 9+ minutes on slow
+    # days, so allow headroom. This check is not required for merging.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

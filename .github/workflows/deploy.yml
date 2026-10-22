@@ -30,9 +30,10 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy3.outputs.page_url }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Three deploy attempts of at most 5 minutes each, plus build and waits.
+    timeout-minutes: 25
 
     steps:
       - name: Checkout
@@ -61,6 +62,35 @@ jobs:
         with:
           path: './docs'
 
+      # Pages deploys occasionally fail transiently ("Deployment failed, try
+      # again later."), so promote the uploaded artifact up to three times.
+      # Native retries keep every executed action pinned to a reviewed SHA.
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: ./.github/actions/retry-deploy-pages
+        id: deploy1
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          timeout: 300000
+
+      - name: Wait before retrying deploy
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 45
+
+      - name: Deploy to GitHub Pages (attempt 2)
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          timeout: 300000
+
+      - name: Wait before final deploy attempt
+        if: steps.deploy2.outcome == 'failure'
+        run: sleep 45
+
+      - name: Deploy to GitHub Pages (attempt 3)
+        id: deploy3
+        if: steps.deploy2.outcome == 'failure'
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          timeout: 300000

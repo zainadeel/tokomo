@@ -25,7 +25,7 @@ The CLI workflow still expects a hand-maintained **CSS working file** for batch 
 
 ## Dependencies
 
-Everything here is ESM. Node **20.19+** (see repo `.nvmrc` and `package.json` `engines`).
+Everything here is ESM. Node **22.22+** for development (see repo `.nvmrc` and `package.json` `devEngines`).
 
 `oklch-utils.mjs` must stay **dependency-free and browser-loadable**. `index.html` imports it directly via `<script type="module">` with no bundler and no import map, and `docs/tool/` is served as static files on GitHub Pages with no `node_modules`. A bare specifier there resolves as a URL, 404s, and takes the whole tool down. `tests/oklch-utils.test.mjs` asserts every specifier in that file is relative.
 

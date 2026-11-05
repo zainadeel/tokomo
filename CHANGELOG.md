@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [10.0.0](https://github.com/zainadeel/tokomo/compare/v9.1.0...v10.0.0) (2026-11-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* the mobile text style mobile/display/display is renamed to mobile/display/small (values unchanged). Native consumers must update references to the old name.
+
+### Added
+
+* add mobile display large/medium and title extra-large styles ([9135b52](https://github.com/zainadeel/tokomo/commit/9135b52035b37386fb160c06c5b0ec5b97632030))
+
 ## [9.1.0](https://github.com/zainadeel/tokomo/compare/v9.0.0...v9.1.0) (2026-10-13)
 
 

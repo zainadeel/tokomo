@@ -124,6 +124,26 @@
           "FONT_SIZE"
         ]
       }
+    },
+    "3xl": {
+      "$type": "number",
+      "$value": 52,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:20416:11",
+        "com.figma.scopes": [
+          "FONT_SIZE"
+        ]
+      }
+    },
+    "4xl": {
+      "$type": "number",
+      "$value": 64,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:20416:12",
+        "com.figma.scopes": [
+          "FONT_SIZE"
+        ]
+      }
     }
   },
   "line-height": {
@@ -192,6 +212,26 @@
       "$value": 40,
       "$extensions": {
         "com.figma.variableId": "VariableID:18576:62",
+        "com.figma.scopes": [
+          "LINE_HEIGHT"
+        ]
+      }
+    },
+    "3xl": {
+      "$type": "number",
+      "$value": 56,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:20416:13",
+        "com.figma.scopes": [
+          "LINE_HEIGHT"
+        ]
+      }
+    },
+    "4xl": {
+      "$type": "number",
+      "$value": 64,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:20416:14",
         "com.figma.scopes": [
           "LINE_HEIGHT"
         ]

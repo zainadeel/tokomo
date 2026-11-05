@@ -64,8 +64,19 @@ test('mobile values and text-style bindings use the latest Figma export', () => 
   assert.equal(typography['font-size'].md.$value, 17);
   assert.equal(typography['line-height'].xl.$value, 36);
   assert.equal(typography['line-height']['2xl'].$value, 40);
-  assert.equal(Object.keys(styles).length, 14);
-  assert.equal(styles['mobile/display/display'].lineHeight.value, 40);
+  assert.equal(typography['font-size']['3xl'].$value, 52);
+  assert.equal(typography['font-size']['4xl'].$value, 64);
+  assert.equal(typography['line-height']['3xl'].$value, 56);
+  assert.equal(typography['line-height']['4xl'].$value, 64);
+  assert.equal(Object.keys(styles).length, 17);
+  assert.equal(styles['mobile/display/display'], undefined);
+  assert.equal(styles['mobile/display/large'].fontSize.variable, 'typography-mobile/font-size/4xl');
+  assert.equal(styles['mobile/display/large'].lineHeight.value, 64);
+  assert.equal(styles['mobile/display/medium'].fontSize.value, 52);
+  assert.equal(styles['mobile/display/medium'].lineHeight.value, 56);
+  assert.equal(styles['mobile/display/small'].lineHeight.value, 40);
+  assert.equal(styles['mobile/title/extra-large'].fontSize.value, 36);
+  assert.equal(styles['mobile/title/extra-large'].fontWeight.value, 600);
   assert.equal(styles['mobile/title/large'].lineHeight.value, 36);
   assert.equal(production.graph.byCssName.get('--dimension-iconography-md').values.default.raw, 20);
   assert.equal(production.graph.byCssName.get('--typography-fontsize-md').values.default.raw, 14);
@@ -112,11 +123,11 @@ for (const [name, sourceId, mutate, expected] of [
   ['invalid grid value', 'dimensions.mobile', d => { d.space['100'].$value = 9; }, /scale key and base/],
   ['unsupported sheet height', 'dimensions.mobile', d => { d['height-sheet'].half.$value = '150%'; }, /sheet height/],
   ['stale text style', 'typography.mobile', d => { d['line-height']['2xl'].$value = 42; }, /value disagrees/],
-  ['missing style primitive', 'typography.mobile.semantic', d => { d['mobile/display/display'].lineHeight.variable = 'typography-mobile/line-height/missing'; }, /missing numeric primitive/],
-  ['web style reference', 'typography.mobile.semantic', d => { d['mobile/display/display'].lineHeight.variable = 'typography-web/line-height/2xl'; }, /typography-mobile/],
-  ['wrong reference category', 'typography.mobile.semantic', d => { d['mobile/display/display'].fontSize.variable = 'typography-mobile/line-height/2xl'; }, /typography-mobile\/font-size/],
-  ['missing style category', 'typography.mobile.semantic', d => { delete d['mobile/display/display']; }, /missing required mobile text-style category/],
-  ['unsupported text transform', 'typography.mobile.semantic', d => { d['mobile/display/display'].textCase = 'uppercase'; }, /native text-style generators/],
+  ['missing style primitive', 'typography.mobile.semantic', d => { d['mobile/display/small'].lineHeight.variable = 'typography-mobile/line-height/missing'; }, /missing numeric primitive/],
+  ['web style reference', 'typography.mobile.semantic', d => { d['mobile/display/small'].lineHeight.variable = 'typography-web/line-height/2xl'; }, /typography-mobile/],
+  ['wrong reference category', 'typography.mobile.semantic', d => { d['mobile/display/small'].fontSize.variable = 'typography-mobile/line-height/2xl'; }, /typography-mobile\/font-size/],
+  ['missing style category', 'typography.mobile.semantic', d => { for (const key of Object.keys(d)) if (key.startsWith('mobile/display/')) delete d[key]; }, /missing required mobile text-style category/],
+  ['unsupported text transform', 'typography.mobile.semantic', d => { d['mobile/display/small'].textCase = 'uppercase'; }, /native text-style generators/],
   ['invalid native color', 'colors.semantic.light', d => { d.background.primary.$value.hex = '#bad-color'; }, /native colors require/],
   ['CSS-only duration shape', 'effects', d => { d.animation.duration.instant = { $type: 'number', $value: 0 }; }, /native durations require/],
 ]) {
